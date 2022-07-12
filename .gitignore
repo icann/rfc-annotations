@@ -1,0 +1,6 @@
+.idea
+__pycache__
+generated-html
+raw-originals
+annotations/
+program/__pycache__
