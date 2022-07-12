@@ -1,0 +1,27 @@
+#A John Klensin
+#S 2.1
+#L 668
+#T Editorial
+#X errata_id:1354
+#X checksum:56726ebb4e28f6cb25ace48c77163c08
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+The syntax of a legal Internet host name was specified in RFC-952 [DNS:4].
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+The syntax of a legal Internet host name was specified in RFC-952
+[DNS:4]<ins> and reiterated in RFC-1034 Section 3.5 [DNS:1]</ins>.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+This essentially trivial editorial change makes it slightly easier for
+anyone (or any tool) that tracks changes and updates to host and domain
+naming rules to identify the applicability of this section.
+</div>
+

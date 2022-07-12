@@ -1,0 +1,27 @@
+#A Petr Špaček
+#S global
+#T Technical
+#X errata_id:4927
+#X checksum:66826d2c1cd9799e641959ffa2a95194
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+(This document specifies no IANA Actions.)
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+(Add following text:)
+<ins>This document adds an additional reference for CD bit in the DNS
+Parameters - DNS Header Flags registry.</ins>
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+RFC6840 introduces new requirements for validating resolvers. This
+should be reflected in the DNS Header Flags registry otherwise it is
+likely DNS Implementors will overlook the new behaviour.
+</div>
+

@@ -1,0 +1,30 @@
+#A Jeremy C. Reed
+#S 3.3.5
+#L 812
+#T Technical
+#X errata_id:3421
+#X checksum:ea05f38e783966b08852aad922cc8bc9
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+The recommended policy for dealing with MD RRs found in
+a master file is to reject them, or to convert them to MX RRs with a
+preference of 10.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+The recommended policy for dealing with <del>MD</del><ins>MF</ins> RRs found in
+a master file is to reject them, or to convert them to MX RRs with a
+preference of 10.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+3.3.5 about MF says "dealing with MD". It should probably say "dealing
+with MF". I assume this is a copy and paste error from earlier section
+about MD.
+</div>
+

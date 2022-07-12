@@ -1,0 +1,37 @@
+#A Sergiusz Wolicki
+#S appendix c
+#T Technical
+#X errata_id:806
+#X checksum:ddbb54cfecfbd262f2ac7ecd164e323d
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+C. Prohibition tables
+
+   The tables in this appendix consist of lines with one prohibited code
+   point per line.  The format of the lines are the value of the code
+   point, a semicolon, and a comment which is the name of the code
+   point.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+[see Notes]
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+This is not true as the tables in this appendix consist of lines with
+one prohibited code point _range_ per line.  The format of the lines
+are the value of the starting code point of the range, a hyphen,
+the value of the ending code point of the range, a semicolon,
+and a comment which is the informal name of the range in square
+brackets.
+If the range contains only one code point, then the hyphen and the
+ending
+code point value are omitted, and the comment contains the name of
+the code point without brackets.
+</div>
+

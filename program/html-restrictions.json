@@ -1,0 +1,18 @@
+{
+    "allowed": ["p","br","hr","ul","ol","li","a","div","span","b","pre","i","code","style","svg","ins","del","em"],
+    "allowed-children": {
+        "svg": ["g","text","path","polygon","circle"], 
+        "g":   ["g","path","polygon","circle","text"]
+    },
+    "forbidden-attributes": ["contenteditable","dir","hidden","on*"],
+    "uri-filter": [{
+        "allowed-schemes": ["http", "https"],
+        "attributes": ["href"]
+    }, {
+        "allowed-schemes": [],
+        "attributes": ["action", "archive", "background", "classid", "cite", 
+            "codebase", "data", "formaction", "icon", "manifest", "longdesc", 
+            "poster", "profile", "src", "srcset", "usemap"
+        ]
+    }]
+}

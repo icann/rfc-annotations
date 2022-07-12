@@ -1,0 +1,17 @@
+#A Sam Bretheim
+#S 2.1
+#L 120
+#T Editorial
+#X errata_id:2647
+#X checksum:b75f4fe7dd1bfcc970e2dd3f6bdc2b02
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+   ("."), which can be expressed as and \046 or \.  It is advisable to
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+   ("."), which can be expressed as <del>and </del>\046 or \.  It is advisable to
+</pre></div>

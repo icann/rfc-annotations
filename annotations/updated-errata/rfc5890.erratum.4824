@@ -1,0 +1,62 @@
+#A Juan Altmayer Pizzorno
+#S 4.2
+#L 866
+#T Technical
+#X errata_id:4824
+#X checksum:696b68db207105a40e8c1e7d572e4502
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+Because A-labels (the form actually used in the
+DNS) are potentially much more compressed than UTF-8 (and UTF-8 is,
+in general, more compressed that UTF-16 or UTF-32), U-labels that
+obey all of the relevant symmetry (and other) constraints of these
+documents may be quite a bit longer, potentially up to 252 characters
+(Unicode code points).
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+Because A-labels (the form actually used in the
+DNS) are potentially much more compressed than UTF-8 (and UTF-8 is,
+in general, more compressed that UTF-16 or UTF-32), U-labels that
+obey all of the relevant symmetry (and other) constraints of these
+documents may be quite a bit longer, potentially up to <del>252 characters
+(Unicode code points)</del><ins>59 Unicode
+code points, or up to 236 octets</ins>.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+(The same rationale as my report for 2.3.2.1 applies:)
+<br/>
+The contents of U-labels are encoded in the up to 59 ASCII characters
+(see 2.3.2.1)
+output by the Punycode algorithm in their corresponding A-labels.  The
+Punycode
+decoder (<https://tools.ietf.org/html/rfc3492#section-6.2>) consumes at
+least one
+of those ASCII characters for each code point inserted into the U-label.
+An U-label,
+thus, can contain at the most 59 Unicode code points.
+<br/>
+Since U-labels are defined (in 2.3.2.1) to be expressed in a standard
+Unicode Encoding
+Form, and UTF-32, UTF-16 and UTF-8 (as revised by RFC3629) all can
+encode a code
+point in at most 4 octets, 236 octets is an upper bound for an U-label's
+length.
+<br/>
+I think it should be possible to derive a tighter bound, but its
+rationale would likely be
+less straighforward.
+<br/>
+I imagine the number 252 was originally derived by multiplying 63, the
+maximum
+length of an A-label (including the "xn--" prefix), by 4, the maximum
+number of
+octets needed to represent a code point.
+</div>
+

@@ -1,0 +1,30 @@
+#A John Kristoff
+#S 6.1
+#L 2115
+#T Technical
+#X errata_id:755
+#X checksum:fe5977d19e39d70390e26d5c8a1104fa
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+Section 6.1. ends this way:
+
+  Relative and absolute domain names may be freely intermixed in a
+  master
+
+which is incomplete.  It's unclear exactly how that sentence may have
+been intended to end, but minimally I would suggeste it at least
+terminated with 'file.'.
+</pre></div>
+####################
+#L 2507
+<div class="original"><pre>
+Section 6.2.8. in the diagram shows 'QTYPE=A', but should be of
+type 'CNAME' based on the context of the example.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+[see above]
+</pre></div>

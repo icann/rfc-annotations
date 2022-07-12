@@ -1,0 +1,30 @@
+#A Jonathan Teague
+#S 2.4
+#L 283
+#T Editorial
+#X errata_id:5381
+#X checksum:6d1dd8a9b10999c654b5452cfac87abf
+#X errata_status_code:Reported
+#
+#
+<div class="original"><pre>
+   A CNAME record is not allowed to coexist with any other data.  In
+   other words, if suzy.podunk.xx is an alias for sue.podunk.xx, you
+   can't also have an MX record for suzy.podunk.edu, or an A record, or
+   even a TXT record.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+   A CNAME record is not allowed to coexist with any other data.  In
+   other words, if suzy.podunk.xx is an alias for sue.podunk.xx, you
+   can't also have an MX record for suzy.podunk.<del>edu</del><ins>xx</ins>, or an A record, or
+   even a TXT record.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+The .edu is a typo and should be corrected to .xx
+</div>
+

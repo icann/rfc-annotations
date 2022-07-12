@@ -1,0 +1,25 @@
+#A Ben Harris
+#S 2.5
+#L 771
+#T Technical
+#X errata_id:558
+#X checksum:ddbda932cd42ab522164fd472a868599
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+Host names of up to 635 characters |2.1 |x| | | | | 
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+Host names of up to 63<del>5</del> characters |2.1 |x| | | | | 
+</pre></div>
+#
+#
+<hr/>
+<div class="note"><pre>
+<a href="#section-2.1">Section 2.1</a> says "Host software MUST handle host names of up to 63
+characters" and doesn't mention the number 635 at all.
+</pre></div>
+

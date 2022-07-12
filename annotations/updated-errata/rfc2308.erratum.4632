@@ -1,0 +1,34 @@
+#A Nikolai Malykh
+#S 11
+#L 897
+#T Editorial
+#X errata_id:4632
+#X checksum:df4f0dee386e39b4bcd6792eeabec0fa
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+   For such an attack to be successful, the NXDOMAIN indiction must be
+   injected into a parent server (or a busy caching resolver).  One way
+   this might be done by the use of a CNAME which results in the parent
+   server querying an attackers server.  Resolvers that wish to prevent
+   such attacks can query again the final QNAME ignoring any NS data in
+   the query responses it has received for this query.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+   For such an attack to be successful, the NXDOMAIN indic<ins>a</ins>tion must be
+   injected into a parent server (or a busy caching resolver).  One way
+   this might be done by the use of a CNAME which results in the parent
+   server querying an attackers server.  Resolvers that wish to prevent
+   such attacks can query again the final QNAME ignoring any NS data in
+   the query responses it has received for this query.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+A typo in the word "indication".
+</div>
+

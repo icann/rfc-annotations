@@ -1,0 +1,27 @@
+#A Bodo Moeller
+#S 5.1
+#T Editorial
+#X errata_id:4083
+#X checksum:8d8e7fff5e2be17d002f5d31eb07d553
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+N/A
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+<ins>[RFC6605]   Hoffman, P. and W. Wijngaards, "Elliptic Curve Digital Signature
+            Algorithm (DSA) for DNSSEC", RFC 6605, April 2012.</ins>
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+This Normative Reference is simply missing from the document, even
+though the algorithms from RFC 6605 are "Recommended to Implement" in
+RFC 6944.  (Cf. how RFC 5933 is referenced, even though its algorithms
+are merely optional.)
+</div>
+

@@ -1,0 +1,26 @@
+#A Etan Wexler
+#S 3.3.5
+#L 811
+#T Editorial
+#X errata_id:5728
+#X checksum:c1774e34ac5fe298713a04772fe9f34a
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+See the definition of MX and [RFC-974] for details ofw
+the new scheme.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+See the definition of MX and [RFC-974] for details of<del>w</del>
+the new scheme.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+ofw -&gt; of
+</div>
+

@@ -1,0 +1,48 @@
+#A Peter van Dijk
+#S 3.1.4.1
+#L 781
+#T Technical
+#X errata_id:5226
+#X checksum:46a7e0f37a60d0c780a4e9fb790cf613
+#X errata_status_code:Reported
+#
+#
+<div class="original"><pre>
+   The need for special processing by a security-aware name server only
+   arises when all the following conditions are met:
+
+   o  The name server has received a query for the DS RRset at a zone
+      cut.
+
+   o  The name server is authoritative for the child zone.
+
+   o  The name server is not authoritative for the parent zone.
+
+   o  The name server does not offer recursion.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+   The need for special processing by a security-aware name server only
+   arises when all the following conditions are met:
+
+   o  The name server has received a query for the DS RRset at a zone
+      cut.
+
+   o  The name server is authoritative for the child zone.
+
+   o  The name server is not authoritative for <del>the parent zone</del><ins>any zone above the
+      child's apex</ins>.
+
+   o  The name server does not offer recursion.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+The original text is ambiguous in the face of an authoritative server
+having zones C.B.A. and A. but not B.A., and could cause DS queries for
+C to return a NODATA at C's apex, instead of the desired referral to B.
+which would allow resolution to continue correctly.
+</div>
+

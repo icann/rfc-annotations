@@ -1,0 +1,24 @@
+#A Ivan Panchenko
+#S 5.3
+#L 1715
+#T Editorial
+#X errata_id:6460
+#X checksum:0affd5126e36fa1def35f0b69861fd4c
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+than typical occurances.  This section outlines a recommended basic
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+than typical occur<del>a</del><ins>re</ins>nces.  This section outlines a recommended basic
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Misspelled "occurrences".
+</div>
+

@@ -1,0 +1,33 @@
+#A Stéphane Bortzmeyer
+#S 1
+#L 80
+#T Editorial
+#X errata_id:4018
+#X checksum:fc8e2d75e9fefc1579ff48cf7c9f2c60
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+   A SEP key either used to generate a
+   DS RR or is distributed to resolvers that use the key as the root of
+   a trusted subtree
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+   A SEP key <ins>is </ins>either used to generate a
+   DS RR or is distributed to resolvers that use the key as the root of
+   a trusted subtree
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+I am not a native english speaker so I may be wrong... But the first
+part of the sentence without a verb puzzles me.
+<br/>
+I know that the RFC is theorically obsolete but RFC 4034 is very short
+on this secure entry point (SEP) and defers to the RFC 3757 it
+obsoletes.
+</div>
+

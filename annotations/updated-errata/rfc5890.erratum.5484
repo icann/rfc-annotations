@@ -1,0 +1,29 @@
+#A Peter Occil
+#S 2.3.2.1
+#L 577
+#T Editorial
+#X errata_id:5484
+#X checksum:9ec1c901d2b92317211b65627d76f50b
+#X errata_status_code:Reported
+#
+#
+<div class="original"><pre>
+   For IDNA-aware applications, the three types of valid labels are
+   "A-labels", "U-labels", and "NR-LDH labels", each of which is defined
+   below.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+   For IDNA-aware applications, the three types of valid labels are
+   "A-labels", "U-labels", and "NR-LDH labels", each of which is defined
+   below<ins> and in section 2.3.1</ins>.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+The term NR-LDH label is actually defined in section 2.3.1, not later in
+this section.
+</div>
+

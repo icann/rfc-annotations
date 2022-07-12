@@ -1,0 +1,103 @@
+#A Alfred Hoenes
+#S 99
+#L 423
+#T Technical
+#X errata_id:46
+#X checksum:1551af361f4379533b0d674163a6393a
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+(1)  [improper/misleading wording]
+
+In the explanations to the Example in Section 2.2.1, RFC 4592
+(near the top of page 9) says:
+
+|  The following responses would not be synthesized from any of the
+|  wildcards in the zone:
+
+This wording is improper/misleading.
+Perhaps, the RFC should better say:
+
+|  The following queries would not cause RRs to be synthesized for the
+|  answer from any of the wildcards in the zone:
+</pre></div>
+####################
+#L 504
+<div class="original"><pre>
+(2)  [typo]
+
+The last paragraph of Section 2.2.2, on page 10, says:
+
+   As RFC 1034 also defines "an authoritative name error indicating that
+|  the name does not exist" in section 4.3.1, so this apparently is not
+   the intent of the original definition, justifying the need for an
+   updated definition in the next section.
+
+"As ..., so ..." is redundant.
+Thus, the RFC should say instead:
+
+   As RFC 1034 also defines "an authoritative name error indicating that
+|  the name does not exist" in section 4.3.1, <del>so </del>this apparently is not the
+   intent of the original definition, justifying the need for an updated
+   definition in the next section.
+</pre></div>
+####################
+#L 641
+<div class="original"><pre>
+(3)  [typo]
+
+In Section 3.3.1, the 4th paragraph, on page 12, says:
+
+   A source of synthesis does not guarantee having a RRSet to use for
+   synthesis.  The source of synthesis could be an empty non-terminal.
+
+It should say:
+
+|  A source of synthesis does not guarantee having a<ins>n</ins> RRSet to use for
+   synthesis.  The source of synthesis could be an empty non-terminal.
+</pre></div>
+####################
+#L 703
+<div class="original"><pre>
+(4)  [typo]
+
+In Section 3.3.3, the last paragraph on page 13 says:
+
+   This is essentially the same text in part 'a' covering the processing
+   of CNAME RRSets.
+
+It should say:
+
+|  This is essentially the same text <ins>as </ins>in part 'a' covering the
+   processing of CNAME RRSets.
+</pre></div>
+####################
+#L 859
+<div class="original"><pre>
+(5)  [incomplete change in example?]
+
+In Section 4.4, the second-to-last paragraph on page 16 says:
+
+   The DNAME specification is not clear on whether DNAME records in a
+   cache are used to rewrite queries.  In some interpretations, the
+   rewrite occurs; in others, it does not.  Allowing for the occurrence
+   of rewriting, queries for "sub.a.b.example. A" may be rewritten as
+|  "sub.foo.bar.tld. A" by the former caching server and may be
+|  rewritten as "sub.a.foo.bar.tld. A" by the latter.  Coherency is
+   lost, and an operational nightmare ensues.
+
+"tld." does never appear in the preceding text; apparently it has
+been replaced there by "example.net."
+Therefore, the RFC should say instead:
+
+   The DNAME specification is not clear on whether DNAME records in a
+   cache are used to rewrite queries.  In some interpretations, the
+   rewrite occurs; in others, it does not.  Allowing for the occurrence
+   of rewriting, queries for "sub.a.b.example. A" may be rewritten as
+|  "sub.foo.bar.<del>tld</del><ins>example.net</ins>. A" by the former caching server and may be
+|  rewritten as "sub.a.foo.bar.<del>tld</del><ins>example.net</ins>. A" by the latter.  Coherency
+   is lost, and an operational nightmare ensues.
+</pre></div>
+#
+#

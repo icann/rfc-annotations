@@ -1,0 +1,17 @@
+<script>
+function clicked(element) {
+  // attempt to select text?
+  var selObj = window.getSelection();
+  var selText = selObj == null ? "" : selObj.toString();
+  if (selText != "") return;
+
+  var source = event.target || event.srcElement;
+  if (source.tagName == "A") return;
+  element = element.getElementsByClassName("notes")[0];
+  if (!element) return;
+  if (element.hasAttribute("hidden"))
+    element.removeAttribute("hidden");
+  else
+    element.setAttribute("hidden", "hidden");
+}
+</script>

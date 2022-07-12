@@ -1,0 +1,14 @@
+# Example using plain text
+#A John Doe
+#C Simple Example
+#L 123
+#
+This annotation would be plain text.
+It will be displayed respecting
+all
+line breaks,
+using a fixed-width font.
+
+Blank lines will be displayed as normal, as are
+  lines that start with spaces
+			and even those witt tab characters.

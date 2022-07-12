@@ -1,0 +1,25 @@
+#A Mikko Rantanen
+#S 4
+#L 211
+#T Editorial
+#X errata_id:4502
+#X checksum:ce6ef3e40314bb2e839cd34120388790
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+conservative choice would be 65537 (F4, the fourth fermat number).
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+conservative choice would be 65537 (F4, the <del>fourth</del><ins>fifth</ins> Fermat number).
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Numbering of Fermat numbers starts from zero. F4 and 65537 agree, but F4
+is fifth Fermat number in the series, not fourth.
+</div>
+

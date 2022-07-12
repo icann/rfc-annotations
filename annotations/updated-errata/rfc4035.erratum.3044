@@ -1,0 +1,26 @@
+#A Mark Andrews
+#S updates
+#L 5
+#T Technical
+#X errata_id:3044
+#X checksum:4b641d0d3a585834e70092dc351a5472
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+Updates: 1034, 1035, 2136, 2181, 2308, 3225,                   M. Larson
+         3007, 3597, 3226                                       VeriSign
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+Updates: 1034, 1035, 2136, 2181, 2308, 3225,                   M. Larson
+         <del>3007, </del>3597, 3226                                             VeriSign
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+4033, 4034 and 4035 all list 3007 as being updated but none update 3007
+</div>
+

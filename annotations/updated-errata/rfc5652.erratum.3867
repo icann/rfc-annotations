@@ -1,0 +1,54 @@
+#A Jos Breek
+#S 5.3
+#L 761
+#T Editorial
+#X errata_id:3867
+#X checksum:c83aa7e331fbebe7f38b161eadbab332
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+digestAlgorithm identifies the message digest algorithm, and any
+associated parameters, used by the signer.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+digestAlgorithm identifies the message digest algorithm, and any
+associated parameters, used by the signer<ins> in the signature Generation 
+Process.</ins> 
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+<p>
+The text stated that the message digest algorithm is "used by the
+signer". It is unclear for what purpose the message digest algorithm is
+used.  This recommendation is editorial and was accepted.
+</p>
+<p>
+Additional text provided was not accepted as there is no requirement
+that digest used on the body is the same as the digest used in the
+signature operation.
+</p>
+<p>
+The following sentence was suggested (and rejected):
+"The message digest algorithm shall be equal to the message
+digest algorithm used in the signatureAlgorithm field."
+</p>
+<p>
+With the explanation in the original errata report for this additional
+sentence as:
+</p>
+<p>
+There are implementations that use the message digest algorithm
+specified in the messageDigest field instead of the message digest
+algorithm specified in the signatureAlgorithm.
+</p>
+<p>
+Is the purpose of the messageDigest field to nest the hashing algorithm
+used in the signing process? If so, please use the corrected text to
+clarify the goal of the field.
+</p></div>
+

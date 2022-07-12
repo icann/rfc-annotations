@@ -1,0 +1,24 @@
+#A Ivan Panchenko
+#S 4.1.4
+#L 1636
+#T Editorial
+#X errata_id:6464
+#X checksum:b5de46507647fc364348a71bd224c1fd
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+Pointers can only be used for occurances of a domain name where the
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+Pointers can only be used for occur<del>a</del><ins>re</ins>nces of a domain name where the
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Misspelled "occurrences".
+</div>
+

@@ -1,0 +1,40 @@
+#A Mark Andrews
+#S 4
+#L 233
+#T Technical
+#X errata_id:6734
+#X checksum:195b5adbe748a899d341e92259548edc
+#X errata_status_code:Reported
+#
+#
+<div class="original"><pre>
+   The first of these NSEC RRs proves that no exact match for
+   foo.example.com exists, and the second proves that there is no
+   wildcard in example.com.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+TBD
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+"the second proves that there is no wildcard in example.com" is
+incorrect.
+<br/>
+<pre>
+\)\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255
+\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255
+\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255
+\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255
+\255\255.example.com 3600 IN NSEC \000.*.example.com ( NSEC RRSIG )
+</pre>
+<br/>
+Actually proves that *.example.com exists as it is part of the next
+field.  It is an empty non-terminal wildcard.  '\000.domain' can only be
+used to prove no data  exists at 'domain', not that 'domain' doesn't
+exist.
+</div>
+

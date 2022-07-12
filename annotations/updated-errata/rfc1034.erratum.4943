@@ -1,0 +1,24 @@
+#A Shane Kerr
+#S 4.3.5
+#L 1527
+#T Editorial
+#X errata_id:4943
+#X checksum:1273ceb4e444e4c2ca4350655c75d91e
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+it must assume that its copy of the zone is obsolete an discard it.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+it must assume that its copy of the zone is obsolete an<ins>d</ins> discard it.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Fix typo; "an" should be "and".
+</div>
+

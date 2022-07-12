@@ -1,0 +1,34 @@
+#A Nathan Osman
+#S 6.1
+#L 905
+#T Technical
+#X errata_id:4977
+#X checksum:08acc77c7b89d4aaecc79ddfaf293fdb
+#X errata_status_code:Reported
+#
+#
+<div class="original"><pre>
+The 'Next Domain Name' field contains the record's own name. When
+used with name compression, this means that the 'Next Domain Name'
+field always takes exactly two bytes in the message.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+The 'Next Domain Name' field contains the record's own name.<del> When
+used with name compression, this means that the 'Next Domain Name'
+field always takes exactly two bytes in the message.</del>
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Section 4.1.1 of RFC 4034 states:
+<br/><br/>
+"A sender MUST NOT use DNS name compression on the Next Domain Name
+field when transmitting an NSEC RR."
+<br/><br/>
+In order to comply with the existing RFC, name compression should not
+be suggested.
+</div>
+

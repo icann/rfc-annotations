@@ -1,0 +1,26 @@
+#A Jehan Pagès
+#S 3.2
+#L 423
+#T Editorial
+#X errata_id:2686
+#X checksum:82ef2bbcdd90495ffd35c1d172d63e15
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+The list of characters to add to the mapping table can determined 
+by the following algorithm:
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+The list of characters to add to the mapping table can <ins>be</ins> determined 
+by the following algorithm:
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+A small omission of a single word: "be" is missing.
+</div>
+

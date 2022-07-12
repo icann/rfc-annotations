@@ -1,0 +1,58 @@
+#A Nikolai Malykh
+#S 9
+#T Editorial
+#X errata_id:4627
+#X checksum:238f1bea7cd64307f090fded50983ba1
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+   The history of the early CHIVES work (Section 9.1) was supplied by
+   Rob Austein <&shy;sra@epilogue.com> and is reproduced here in the form in
+   which he supplied it [MPA].
+
+   Sometime around the spring of 1985, I mentioned to Paul Mockapetris
+   that our experience with his JEEVES DNS resolver had pointed out the
+   need for some kind of negative caching scheme.  Paul suggested that
+   we simply cache authoritative errors, using the SOA MINIMUM value for
+   the zone that would have contained the target RRs.  I'm pretty sure
+   that this conversation took place before RFC-973 was written, but it
+   was never clear to me whether this idea was something that Paul came
+   up with on the spot in response to my question or something he'd
+   already been planning to put into the document that became RFC-973.
+   In any case, neither of us was entirely sure that the SOA MINIMUM
+   value was really the right metric to use, but it was available and
+   was under the control of the administrator of the target zone, both
+   of which seemed to us at the time to be important feature.
+
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+   The history of the early CHIVES work (Section 9.1) was supplied by
+   Rob Austein <&shy;sra@epilogue.com> and is reproduced here in the form in
+   which he supplied it [MPA].
+<ins>
+9.1 CHIVES</ins>
+   Sometime around the spring of 1985, I mentioned to Paul Mockapetris
+   that our experience with his JEEVES DNS resolver had pointed out the
+   need for some kind of negative caching scheme.  Paul suggested that
+   we simply cache authoritative errors, using the SOA MINIMUM value for
+   the zone that would have contained the target RRs.  I'm pretty sure
+   that this conversation took place before RFC-973 was written, but it
+   was never clear to me whether this idea was something that Paul came
+   up with on the spot in response to my question or something he'd
+   already been planning to put into the document that became RFC-973.
+   In any case, neither of us was entirely sure that the SOA MINIMUM
+   value was really the right metric to use, but it was available and
+   was under the control of the administrator of the target zone, both
+   of which seemed to us at the time to be important feature.
+
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Section name are referenced but absent.
+</div>
+

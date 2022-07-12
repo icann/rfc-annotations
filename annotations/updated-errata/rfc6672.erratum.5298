@@ -1,0 +1,46 @@
+#A Pieter Lexis
+#S 5.3.4.2
+#T Editorial
+#X errata_id:5298
+#X checksum:3888999cc582bda2a97e702d3597e230
+#X errata_status_code:Reported
+#
+<div class="original"><pre>
+   ;; Header: QR AA RCODE=3(NXDOMAIN)
+   ;; OPT PSEUDOSECTION:
+   ; EDNS: version: 0, flags: do; udp: 4096
+
+   ;; Question
+   cee.example.com. IN A
+   ;; Authority
+   bar.example.com. NSEC dub.example.com. A DNAME
+   bar.example.com. RRSIG NSEC [valid signature]
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+   ;; Header: QR AA RCODE=3(NXDOMAIN)
+   ;; OPT PSEUDOSECTION:
+   ; EDNS: version: 0, flags: do; udp: 4096
+
+   ;; Question
+   cee.example.com. IN A
+   ;; Authority
+   bar.example.com. NSEC dub.example.com. A DNAME<ins> RRSIG NSEC</ins>
+   bar.example.com. RRSIG NSEC [valid signature]
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+The NSEC record in the original text would in no case be valid as it
+denies it's own existence and the existence of the RRSIG, while the text
+indicates that " the validator can see that it is a BOGUS reply from an
+attacker that collated existing records from the DNS to create a
+confusing reply". This indicates that NSEC and RRSIG should be set in
+the NSEC bitmap
+<br/>
+<br/>
+Edit: Thread - <https://www.ietf.org/mail-archive/web/dnsext/current/msg13879.html>
+</pre></div>
+

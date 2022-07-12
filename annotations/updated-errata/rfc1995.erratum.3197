@@ -1,0 +1,45 @@
+#A Alfred Hoenes
+#S 4
+#L 135
+#T Technical
+#X errata_id:3197
+#X checksum:4a2a48ffe4347af7262d4b465a579a86
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+   RRs in the incremental transfer messages may be partial.  That is, if
+   a single RR of multiple RRs of the same RR type changes, only the
+   changed RR is transferred.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+   RR<ins>sets</ins> in the incremental transfer messages may be partial.  That is,
+   if a single RR <ins>out </ins>of multiple RRs of the same RR type<ins> at the same
+   owner name and CLASS</ins> changes, only the changed RR is transferred.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Rationale:
+<br/>
+DNS resource records (RRs) are always transferred as integral
+entities in the DNS protocol, and IXFR is no exception for this
+rule.  So there never are partial RRs in any IXFR response packets.
+However, as indicated more precisely in the adjusted text above,
+it is intended that partial _RRsets_ are carried in IXFR responses;
+unchanged RRs are not sent inside incremental response messages.
+<br/>
+Historical Note:
+<br/>The above issue has been identified by the submitter in 2008,
+but no Errata have been filed so far.  However, it already had
+been observed in 1999 by Andreas Gustafsson, who, in the context of
+the work on RFC 1995bis, recently has provided the DNSEXT WG access
+to a privately archived DNSIND mailing list thread on RFC 1995,
+in which such issues have been discussed in November 1999.
+For the record, the technical issues in RFC 1995 that can be
+addressed by Errata Notes are now being submitted this way.
+</div>
+

@@ -1,0 +1,24 @@
+#A Ivan Panchenko
+#S 3.2.1
+#L 854
+#T Editorial
+#X errata_id:6475
+#X checksum:a6fbc252cb676536e5f0805794a929e0
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+         option-negotiation loops.  A host MUST refuse (i.e, reply
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+         option-negotiation loops.  A host MUST refuse (i.e<ins>.</ins>, reply
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Missing full stop.
+</div>
+

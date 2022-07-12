@@ -1,0 +1,40 @@
+#A Ben Laurie
+#S appendix b
+#L 1381
+#T Technical
+#X errata_id:4552
+#X checksum:100394392a60e6e536b4e304b192170a
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+These groups are then added together, ignoring any carry bits.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+These groups are then added together<del>, ignoring any carry bits</del><ins> with at least 32-bit precision,
+retaining any carry bits.
+The carry bits are then added to the result, and finally, only the lower
+16 bits of the result are used as the key tag. Note that this means any
+carries generated during the addition of the carry bits are ignored.
+This, in turn, means that the keytag calculation is often the same as
+reduction modulo 65535, but not always</ins>.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Errata 2681 already proposes a fix to Appendix B, however the proposed
+fix is not quite clear. The first part of the corrected text is from
+2681.
+<br/>
+Its worth pointing this out because a naive analysis says in fact the
+keytag is exactly the same as reduction modulo 65535, and this has
+already wasted a fair amount of time.
+<br/>
+It is also worth pointing out, perhaps, that this is a poor choice of
+algorithm for this particular application as it interacts badly with the
+properties of keys.
+</div>
+

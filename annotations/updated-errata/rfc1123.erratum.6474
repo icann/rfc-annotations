@@ -1,0 +1,26 @@
+#A Ivan Panchenko
+#S 6.1.3.6
+#L 4355
+#T Editorial
+#X errata_id:6474
+#X checksum:43548c4502932d3193be6add1b484ce7
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+                 on the the existence of a TXT or WKS RR in most
+                 domains.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+                 on <del>the </del>the existence of a TXT or WKS RR in most
+                 domains.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Doubled word.
+</div>
+

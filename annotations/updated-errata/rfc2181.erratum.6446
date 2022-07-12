@@ -1,0 +1,26 @@
+#A Robert Edmonds
+#S 1, 5, 6, 10
+#L 1
+#T Technical
+#X errata_id:6446
+#X checksum:98694e9e4587641e72b1486143d20ff2
+#X errata_status_code:Reported
+#
+#
+<div class="original"><pre>
+label
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+<del>label</del><ins>owner</ins>
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Sections 1, 5, 6, and 10 consistently use the term "label" to
+incorrectly refer to what STD 13 calls an "owner". There may also be
+additional instances of "label" being used incorrectly in Section 11.
+</div>
+
