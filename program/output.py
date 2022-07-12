@@ -6,7 +6,7 @@ import htmlize_rfcs  # markup
 import rfcindex      # read_xml_document, fetch_element
 import util          # correct_path, get_from_environment
 
-''' Create the new HTMLized RFCs for RFC repository tools '''
+''' Create the new HTMLized RFCs for RFC annotations tools '''
 
 
 def create_index(rfc_list: list, write_directory: str = ".", path: str = "."):

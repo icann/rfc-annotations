@@ -11,7 +11,7 @@ import htmlfilter   # filter_html
 import rfcindex     # fetch_element, referenced_document_ids
 import util         # filtered_files, correct_path, replace_links_in_text, rewrite_rfc_anchor
 
-''' Get and output the annotations for RFC repository tools '''
+''' Get and output the annotations for RFC annotations tools '''
 
 
 def special_annotation_types() -> List[str]:

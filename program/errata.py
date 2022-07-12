@@ -6,7 +6,7 @@ from urllib.request import urlopen
 
 import util  # correct_path
 
-''' Create errata for RFC repository tools '''
+''' Create errata for RFC annotations tools '''
 
 
 def read_errata(path: str = ".", url: str = "https://www.rfc-editor.org/errata.json") -> Optional[list]:

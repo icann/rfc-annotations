@@ -4,7 +4,7 @@ from xml.dom.minidom import Element, Node, Document, parseString
 from urllib.request import urlopen
 from typing import Union, Optional
 
-''' Create the RFC index for RFC repository tools '''
+''' Create the RFC index for RFC annotations tools '''
 
 
 def read_xml_document(path: str = ".", url: str = "https://www.rfc-editor.org/rfc-index.xml") -> Optional[Document]:

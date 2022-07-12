@@ -8,7 +8,7 @@ from xml.dom.minidom import Document, parseString, Element
 
 from util import filtered_files
 
-''' Read and process Internet Drafts for RFC repository tools '''
+''' Read and process Internet Drafts for RFC annotations tools '''
 
 
 INDEX_FILE = "draft-index.json"

@@ -8,7 +8,7 @@ import output       # create_index, create_files
 import rfcfile      # download_rfcs
 import util         # get_from_environment
 
-''' Main creator for RFC repository tools '''
+''' Main creator for RFC annotations tools '''
 
 # check python version
 python_version = sys.version_info

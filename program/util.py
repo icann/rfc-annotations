@@ -4,7 +4,7 @@ import re
 from typing import Optional
 
 
-''' Utility functions for RFC repository tools '''
+''' Utility functions for RFC annotations tools '''
 
 
 def correct_path(directory: str) -> str:

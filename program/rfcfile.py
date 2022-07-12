@@ -4,7 +4,7 @@ from urllib.request import urlopen
 
 from util import correct_path
 
-''' Download the RFC files for RFC repository tools '''
+''' Download the RFC files for RFC annotations tools '''
 
 
 def download_rfcs(rfc_list: list, directory: str = "."):

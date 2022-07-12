@@ -7,7 +7,7 @@ from typing import Optional
 import util         # replace_links_in_text
 
 
-''' Parse HTML for RFC repository tools '''
+''' Parse HTML for RFC annotations tools '''
 
 html_restrictions: Optional[dict] = None
 
