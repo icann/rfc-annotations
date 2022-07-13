@@ -117,7 +117,7 @@ if __name__ == "__main__":
 		has_rsync = False
 
 	# Name of config file
-	config_name = "rfc_config.txt"
+	config_name = "rfc-config.txt"
 	# Location of config file
 	config_location = Path(f"annotations/{config_name}")
 	if not config_location.exists():
