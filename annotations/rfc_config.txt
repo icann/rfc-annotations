@@ -1,0 +1,13 @@
+# This is an example of how configurations will work
+# Lines starting with a "#" are ignored. Blank lines are ignored.
+# Other lines are formatted as <url><tab><directory_name>
+
+# The following repo is supplied by ICANN, and will presumably
+#   be updated by ICANN over time. It contains two directories,
+#   one for errata put in place in the RFCs, the other for
+#   explanations of how RFCs update other RFCs
+# It is meant only as starting point for the RFC annotations
+#   tool project, not as the complete list of annotations one
+#   would ever want.
+
+git@github.com:icann/icann-annotations.git	from-icann
