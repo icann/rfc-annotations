@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 
 import annotations  # create_from_status, create_from_errata
@@ -15,6 +16,11 @@ python_version = sys.version_info
 if python_version[0] < 3 or (python_version[0] == 3 and python_version[1] < 7):
     print(f"Error: the minimum python version is 3.7.\n\nYou're running: {sys.version}", file=sys.stderr)
     exit(-1)
+
+# Determine if they have rsync
+p = subprocess.run("which rsync", capture_output=True, shell=True)
+if not p.stdout:
+  exit('Did not find rsync on system. Exiting.')
 
 # determine and create directories
 TXT_DIR = util.get_from_environment("TXT_DIR", "raw-originals")

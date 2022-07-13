@@ -10,4 +10,4 @@
 #   tool project, not as the complete list of annotations one
 #   would ever want.
 
-git@github.com:icann/icann-annotations.git	from-icann
+https://github.com/icann/icann-annotations.git	from-icann

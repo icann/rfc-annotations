@@ -1,8 +1,29 @@
 #!/usr/bin/env python3
 ''' Program to get updates to annotations from rmote locations '''
 
-import re, subprocess, urllib.request
+import subprocess, urllib.request
 from pathlib import Path
+
+def handle_git(this_url, target_dir):
+	# Do a git clone, if necessary; do a git pull if not
+	# If the directory does have a .git subdirectory, do a "git clone"
+	if not (target_dir / ".git").exists():
+		try:
+			print(f"Cloning {this_url} into {str(target_dir)} for the first time.")
+			p = subprocess.run(f"git clone {this_url} {str(target_dir)}", shell=True, check=True)
+		except:
+			print(f"** Running the initial 'git clone {this_url} {str(target_dir)}' failed. Skipping.")
+			return
+	# Pull the contents
+	else:
+		try:
+			p = subprocess.run(f"cd {str(target_dir)} && git pull", shell=True, check=True, capture_output=True, text=True)
+			if "Already up to date" in p.stdout:
+				print(f"Already up to date: {this_url}")
+			else:
+				print(f"Got updates for {this_url}")
+		except:
+			print(f"** Running 'cd {str(target_dir)} && git pull' failed. Skipping.")
 
 def process_config_content(config_content):
 	# This is defined as a function so it can be called recursively
@@ -37,30 +58,14 @@ def process_config_content(config_content):
 			if not this_url.endswith(".git"):
 				print(f"** There is an git-as-SSH URL in line {line_count}, \"{this_url}\", but it does not end with \".git\". Skipping.")
 				continue
-			# If the directory does have a .git subdirectory, do a "git clone"
-			if not (target_dir / ".git").exists():
-				try:
-					print(f"Cloning {this_url} into {str(target_dir)} for the first time.")
-					p = subprocess.run(f"git clone {this_url} {str(target_dir)}", shell=True, check=True)
-				except:
-					print(f"** Running the initial 'git clone {this_url} {str(target_dir)}' failed. Skipping.")
-					continue
-			# Pull the contents
-			else:
-				try:
-					p = subprocess.run(f"cd {str(target_dir)} && git pull", shell=True, check=True, capture_output=True, text=True)
-					if "Already up to date" in p.stdout:
-						print(f"Already up to date: {this_url}")
-					else:
-						print(f"Got updates for {this_url}")
-				except:
-					print(f"** Running 'cd {str(target_dir)} && git pull' failed. Skipping.")
+			handle_git(this_url, target_dir)
 			continue
 		else:
 			(this_scheme, _) = this_line.split(":", maxsplit=1)
 			if this_scheme == "git":
 				print(f"** Line {line_count} has a full git URL of \"{this_url}\", but this program doesn't handle \"git://\" URLs.")
-				print("** Instead, use an SSH-style URL for git, such as git@github.com:some_person/some_repo.git instead. Skipping.")
+				print("** Instead, use an SSH-style URL for git, such as git@github.com:some_person/some_repo.git")
+				print("** or an https URL such as https://github.com/some_person/some_repo.git. Skipping.")
 				continue
 			elif this_scheme == "rsync":
 				if not has_rsync:
@@ -68,17 +73,15 @@ def process_config_content(config_content):
 					continue
 				# Do the rsync
 				try:
-					p = subprocess.run(f"rsync -av {this_url} {str(target_dir)}", shell=True, check=True, capture_output=True, text=True)
+					subprocess.run(f"rsync -av {this_url} {str(target_dir)}", shell=True, check=True, capture_output=True, text=True)
 					print(f"Successful rsync for {this_url}")
 				except Exception as e:
 					print(f"The rsync URL in line {line_count}, \"{this_url}\", failed with {e}. Skipping.")
 				continue
 			elif this_scheme in ("http", "https"):
-				# Get the last part of the URL, make sure it is in the form "rfc*"
-				web_parts = this_url.split("/")
-				filename_part = web_parts[-1]
-				if not re.match(r'rfc\d\d\d\d\..*',filename_part):
-					print(f"The last part of {this_url} does not look line rfcxxxx.something, which it needs to. Skipping.")
+				# Get the last part of the URL to see if it is .git
+				if this_url.endswith(".git"):
+					handle_git(this_url, target_dir)
 					continue
 				try:
 					with urllib.request.urlopen(this_url) as f:
@@ -87,6 +90,7 @@ def process_config_content(config_content):
 					print(f"** Error reading {this_url}: {e}. Skipping.")
 					continue
 				# See if it nees to be updated
+				filename_part = this_url.split("/")[-1]
 				out_name_path = Path(target_dir) / filename_part
 				if out_name_path.exists():
 					with out_name_path.open(mode="rt") as in_f:
