@@ -13,6 +13,7 @@ generated-html raw-originals raw-originals/drafts:
 folders: generated-html raw-originals raw-originals/drafts
 
 annotations: folders
+	python3 program/pull_updates.py
 	RFC_FETCH_FILES="NO" python3 program/main.py
 
 test: tests
