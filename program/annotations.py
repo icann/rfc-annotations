@@ -130,22 +130,28 @@ def get_annotation_from_file(path: str, errata_list: list, patches: dict, rfc_li
 def get_annotations_from_dir(rfc: str, directory: str, errata_list: list, patches: dict,
                              rfc_list: Optional[list] = None) -> list:
     ret = []
-    if not os.path.exists(os.path.join(directory, ".ignore")):
-        print(f"Fetching annotations for {rfc} in '{directory}'... ", end="")
-        current = 0
-        try:
-            for file in util.filtered_files(directory, rfc + "."):
-                path = os.path.join(directory, file)
-                annotations_in_dir = get_annotation_from_file(path, errata_list, patches, rfc_list)
-                ret.extend(annotations_in_dir)
-                current += len(annotations_in_dir)
-            print(f" Found {current}.")
-            for subdir in os.scandir(directory):
-                if subdir.is_dir():
-                    ret.extend(get_annotations_from_dir(rfc, subdir.path, errata_list, patches, rfc_list))
-        except FileNotFoundError:
-            print(f"\n   Error: Directory '{directory}' does not exist.", file=sys.stderr)
-            pass
+    # Do not fetch annotations if the directory is called ".git"
+    if os.path.basename(directory) == ".git":
+    	return ret
+    # Do not fetch annotations if there is a file called ".ignore"
+    if os.path.exists(os.path.join(directory, ".ignore")):
+    	return ret
+    # Normal processing
+    print(f"Fetching annotations for {rfc} in '{directory}'... ", end="")
+    current = 0
+    try:
+        for file in util.filtered_files(directory, rfc + "."):
+            path = os.path.join(directory, file)
+            annotations_in_dir = get_annotation_from_file(path, errata_list, patches, rfc_list)
+            ret.extend(annotations_in_dir)
+            current += len(annotations_in_dir)
+        print(f" Found {current}.")
+        for subdir in os.scandir(directory):
+            if subdir.is_dir():
+                ret.extend(get_annotations_from_dir(rfc, subdir.path, errata_list, patches, rfc_list))
+    except FileNotFoundError:
+        print(f"\n   Error: Directory '{directory}' does not exist.", file=sys.stderr)
+        pass
     return ret
 
 
@@ -296,7 +302,7 @@ def create_from_errata(rfc_list: list, annotation_directory: str, errata_list: O
                     f.write(f'#X checksum:{checksum}\n')
                     if "errata_status_code" in erratum:
                         f.write(f'#X errata_status_code:{erratum["errata_status_code"]}\n')
-                    f.write(f'#\n#\n')
+                    f.write('#\n#\n')
                     text_added = False
                     if "orig_text" in erratum and erratum["orig_text"] is not None:
                         text_added = True
