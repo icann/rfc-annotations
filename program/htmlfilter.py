@@ -120,6 +120,26 @@ class MyHTMLParser(HTMLParser):
             self.removed += data
 
 
+def replace_between(s: str, section_start: str, section_end: str, replacements: dict) -> str:
+    ret = s
+    if section_start in s:
+        start = s.index(section_start) + len(section_start)
+        ret = s[0:start]
+        s = s[start:]
+        if section_end in s:
+            end = s.index(section_end)
+            section = s[0:end]
+            for key, replacement in replacements.items():
+                section = section.replace(key, replacement)
+            ret = ret + section + section_end
+            end = end + len(section_end)
+            if end < len(s):
+                ret = ret + replace_between(s[end:], section_start, section_end, replacements)
+        else:
+            ret = ret + s
+    return ret
+
+
 def filter_html(lines: [str], file: Optional[str] = None, path: str = None) -> [str]:
     show_warnings = util.means_true(util.get_from_environment("HTML_WARNINGS", "0"))
     s = ""
@@ -143,6 +163,11 @@ def filter_html(lines: [str], file: Optional[str] = None, path: str = None) -> [
     parser = MyHTMLParser(html_restrictions, path)
     for tag in ["br", "hr"]:
         s = s.replace(f"<{tag}>", f"<{tag}/>").replace(f"</{tag}>", "")
+
+    # replaces all < and > characters inside a <pre></pre> section with an escaped version so that the html parser
+    # does not try to handle these as html tags
+    s = replace_between(s, "<pre>", "</pre>", {"<": "&amp;lt;", ">": "&amp;gt;"})
+
     parser.feed(s)
     result = parser.result
     if len(parser.open_tags) > 0:
