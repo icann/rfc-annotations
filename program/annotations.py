@@ -93,6 +93,8 @@ def get_annotation_from_file(path: str, errata_list: list, patches: dict, rfc_li
                     entry["submitter_name"] = s
                 elif tag == "C":
                     entry["caption"] = s
+                elif tag == "D":
+                    entry["date"] = s
                 elif tag == "L":
                     entry["section"] = "line-" + s
                 elif tag == "S":
@@ -132,10 +134,10 @@ def get_annotations_from_dir(rfc: str, directory: str, errata_list: list, patche
     ret = []
     # Do not fetch annotations if the directory is called ".git"
     if os.path.basename(directory) == ".git":
-    	return ret
+        return ret
     # Do not fetch annotations if there is a file called ".ignore"
     if os.path.exists(os.path.join(directory, ".ignore")):
-    	return ret
+        return ret
     # Normal processing
     print(f"Fetching annotations for {rfc} in '{directory}'... ", end="")
     current = 0

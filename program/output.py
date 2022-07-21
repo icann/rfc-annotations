@@ -178,6 +178,7 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                                     remark_written = True
                                     erratum_id = str(rem["errata_id"]) if "errata_id" in rem else None
                                     caption = str(rem["caption"]) if "caption" in rem else None
+                                    date = str(rem["date"]) if "date" in rem else None
                                     annotation_type = str(rem["type"]) if "type" in rem else None
                                     title = rem["submitter_name"] if "submitter_name" in rem else "Unknown Author"
 
@@ -231,6 +232,7 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                                         annotation_text += f'<a href="#{section}">{section}</a> '
                                     annotation_text += f'{title}</span>' \
                                                        f'<span class="caption">{caption}</span>' \
+                                                       f'<span class="timestamp">{date}</span>' \
                                                        f'</div>'
                                     if "outdated" in rem:
                                         annotation_text += '<span class="info">based on outdated version</span>'
