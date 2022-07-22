@@ -161,8 +161,14 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
               f"in {str(len(remarks_sections)).rjust(2)} sections...", end="")
         try:
             with open(write_filename, "w") as f:
+                rfc_class = "rfc"
+                for r in remarks:
+                    if "type" in r:
+                        t = r["type"]
+                        if t in annotations.special_annotation_types():
+                            rfc_class += " " + t
                 f.write(f'<html>\n<head><meta charset="UTF-8">\n{css}</head>\n')
-                f.write('<body>\n<div class="area">\n<pre><div class="rfc">')
+                f.write(f'<body>\n<div class="area">\n<pre><div class="{rfc_class}">')
                 line_nr = 0
                 annotation_text = ""
                 for line in htmlize_rfcs.markup(open(read_filename).read()).splitlines():
@@ -205,7 +211,7 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
 
                                     if not remarks_present:
                                         f.write(f'</div></pre>\n<div class="annotation">{annotation_text}</div></div>'
-                                                f'\n\n<div class="area">\n<pre><div class="rfc">')
+                                                f'\n\n<div class="area">\n<pre><div class="{rfc_class}">')
                                         remarks_present = True
                                         annotation_text = ""
 
