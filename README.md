@@ -87,6 +87,10 @@ likely fast enough.
 - `RFC_INDEX` tells the tool whether to create the `index.html` file.
 Generating this file can sometimes be slow, so setting `RFC_INDEX=NO`
 can speed up the overall building process.
+- `RFC_INDEX_TEXT` if the `index.html` will be created this value will be used for injecting a html fragment on top of the page. 
+It can be used as an extra explanation to the user describing the listed RFCs. 
+The value of the environment variable overrides the contents derived from the
+`rfcs-to-use.txt` file.
 - `RFC_CSS` adds custom CSS to the HTMLized RFCs that are generated. See below.
 - `RFC_HTML_WARNINGS` set to `"YES"` tells the annotation collector to display warnings about HTML
 fix-ups that it is automatically applying.
