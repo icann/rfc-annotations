@@ -9,7 +9,7 @@ import util          # correct_path, get_from_environment
 ''' Create the new HTMLized RFCs for RFC annotations tools '''
 
 
-def create_index(rfc_list: list, write_directory: str = ".", path: str = "."):
+def create_index(rfc_list: list, write_directory: str = ".", path: str = ".", rfcs_last_updated: Optional[dict] = None):
     root = None
     response = rfcindex.read_xml_document(path)
     if response is not None:
@@ -21,10 +21,15 @@ def create_index(rfc_list: list, write_directory: str = ".", path: str = "."):
     try:
         with open(write_directory + "index.html", "w") as f:
             f.write(f'<html>\n<head>\n<meta charset="UTF-8">\n{css}</head>\n'
-                    f'<body><table class="index">\n<tr class="header"><th class="rfc">RFC</th>')
+                    f'<body><table class="index" id="rfcs">\n<thead><tr class="header">'
+                    '<th class="rfc" data-type="int">RFC</th>')
             if root is not None:
-                f.write('<th class="title">Title</th><th class="date">Date</th><th class="status">Status</th>')
-            f.write("</tr>\n")
+                f.write('<th class="title">Title</th>'
+                        '<th class="date" data-type="month-year">Date</th>'
+                        '<th class="status">Status</th>')
+            if rfcs_last_updated is not None:
+                f.write('<th class="timestamp">Latest Ann.</th>')
+            f.write("</tr></thead>\n<tbody>\n")
             odd = True
             for rfc in rfc_list:
                 rfc: str = rfc.lower().strip()
@@ -51,8 +56,15 @@ def create_index(rfc_list: list, write_directory: str = ".", path: str = "."):
                     f.write(f"<td class='title'>{title}</td>"
                             f"<td class='date'>{date}</td>"
                             f"<td class='status'>{status}</td>")
+                if rfcs_last_updated is not None:
+                    s = rfcs_last_updated[rfc] if rfc in rfcs_last_updated else ""
+                    f.write(f'<td class="timestamp">{s}</td>')
                 f.write("</tr>\n")
-            f.write("</table></body></html>")
+            f.write("</tbody></table>\n")
+            scripts = read_html_fragments(["index-scripts.html"])
+            if scripts is not None:
+                f.write(f"{scripts}\n")
+            f.write("</body></html>")
             print(" Done.")
     except Exception as e:
         print(f"Error: can't create index.html: {e}.", file=sys.stderr)
@@ -131,7 +143,8 @@ def get_remark_sections(remark_list: list) -> list:
 
 
 def create_files(rfc_list: list, errata_list: list, patches: dict, read_directory: str = ".",
-                 annotation_directory: str = None, write_directory: str = "."):
+                 annotation_directory: str = None, write_directory: str = ".") -> dict:
+    rfcs_last_updated = {}
     read_directory = util.correct_path(read_directory)
     write_directory = util.correct_path(write_directory)
     css = read_html_fragments()
@@ -179,6 +192,13 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                                     erratum_id = str(rem["errata_id"]) if "errata_id" in rem else None
                                     caption = str(rem["caption"]) if "caption" in rem else None
                                     date = str(rem["date"]) if "date" in rem else ""
+                                    if len(date) > 0:
+                                        if rfc in rfcs_last_updated:
+                                            old_entry = rfcs_last_updated[rfc]
+                                            if old_entry < date:
+                                                rfcs_last_updated[rfc] = date
+                                        else:
+                                            rfcs_last_updated[rfc] = date
                                     annotation_type = str(rem["type"]) if "type" in rem else None
                                     title = rem["submitter_name"] if "submitter_name" in rem else "Unknown Author"
 
@@ -264,3 +284,4 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                 print(" Done.")
         except Exception as e:
             print(f"Error: can't read {read_filename}: {e}.", file=sys.stderr)
+    return rfcs_last_updated

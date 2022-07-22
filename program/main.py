@@ -20,7 +20,7 @@ if python_version[0] < 3 or (python_version[0] == 3 and python_version[1] < 7):
 # Determine if they have rsync
 p = subprocess.run("which rsync", capture_output=True, shell=True)
 if not p.stdout:
-  exit('Did not find rsync on system. Exiting.')
+    exit('Did not find rsync on system. Exiting.')
 
 # determine and create directories
 TXT_DIR = util.get_from_environment("TXT_DIR", "raw-originals")
@@ -55,8 +55,8 @@ if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
     annotations.create_from_errata(RFC_LIST, ANN_DIR_GENERATED, errata_list, patches)
 
 # create html files
-output.create_files(RFC_LIST, errata_list, patches, TXT_DIR, ANN_DIR, GEN_DIR)
+rfcs_last_updated = output.create_files(RFC_LIST, errata_list, patches, TXT_DIR, ANN_DIR, GEN_DIR)
 
 # create index.html if necessary
 if util.means_true(util.get_from_environment("INDEX", "NO")):
-    output.create_index(RFC_LIST, GEN_DIR, TXT_DIR)
+    output.create_index(RFC_LIST, GEN_DIR, TXT_DIR, rfcs_last_updated)
