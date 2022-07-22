@@ -17,6 +17,7 @@ All errata are shown in-line, and preliminary custom annotations include descrip
 how each RFC is updated by others.
 The primary intended audiences of this tool and the associated annotations are security researchers, DNS software developers,
 and DNS protocol developers.
+You can see the output of the tool for the DNS RFCs [here] (https://rfc-annotations.research.icann.org/).
 
 Although the automatically generated annotations will be useful to the intended audiences,
 the expected value of the tool will be incorporating annotations from individuals.
