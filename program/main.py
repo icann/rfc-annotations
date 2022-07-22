@@ -33,10 +33,15 @@ for directory in [TXT_DIR, GEN_DIR, ANN_DIR, ANN_DIR_GENERATED]:
 
 # determine list of RFCs to use
 defaults = []
+index_text = ""
 with open("rfcs-to-use.txt", "r") as file:
     for line in file.readlines():
         if not line.startswith("#"):
-            defaults.append(line.strip())
+            if len(line) > 0 and line[0] in "0123456789":
+                defaults.append(line.strip())
+            else:
+                index_text += line
+INDEX_TEXT = util.get_from_environment("INDEX_TEXT", index_text)
 RFC_LIST = util.get_from_environment("LIST", defaults)
 if isinstance(RFC_LIST, str):
     RFC_LIST = RFC_LIST.strip().replace(",", " ").split()
@@ -59,4 +64,4 @@ rfcs_last_updated = output.create_files(RFC_LIST, errata_list, patches, TXT_DIR,
 
 # create index.html if necessary
 if util.means_true(util.get_from_environment("INDEX", "NO")):
-    output.create_index(RFC_LIST, GEN_DIR, TXT_DIR, rfcs_last_updated)
+    output.create_index(RFC_LIST, GEN_DIR, TXT_DIR, INDEX_TEXT, rfcs_last_updated)

@@ -9,7 +9,8 @@ import util          # correct_path, get_from_environment
 ''' Create the new HTMLized RFCs for RFC annotations tools '''
 
 
-def create_index(rfc_list: list, write_directory: str = ".", path: str = ".", rfcs_last_updated: Optional[dict] = None):
+def create_index(rfc_list: list, write_directory: str = ".", path: str = ".", index_text: str = "",
+                 rfcs_last_updated: Optional[dict] = None):
     root = None
     response = rfcindex.read_xml_document(path)
     if response is not None:
@@ -20,8 +21,8 @@ def create_index(rfc_list: list, write_directory: str = ".", path: str = ".", rf
     css = read_html_fragments(["css.html"])
     try:
         with open(write_directory + "index.html", "w") as f:
-            f.write(f'<html>\n<head>\n<meta charset="UTF-8">\n{css}</head>\n'
-                    f'<body><table class="index" id="rfcs">\n<thead><tr class="header">'
+            f.write(f'<html>\n<head>\n<meta charset="UTF-8">\n{css}</head>\n<body>\n{index_text}')
+            f.write('<table class="index" id="rfcs">\n<thead><tr class="header">'
                     '<th class="rfc" data-type="int">RFC</th>')
             if root is not None:
                 f.write('<th class="title">Title</th>'
