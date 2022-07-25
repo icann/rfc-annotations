@@ -168,6 +168,12 @@ def filter_html(lines: [str], file: Optional[str] = None, path: str = None) -> [
     # does not try to handle these as html tags
     s = replace_between(s, "<pre>", "</pre>", {"<": "&amp;lt;", ">": "&amp;gt;"})
 
+    # fix the opening and closing tags for allowed html element names inside the <pre>-sections
+    if "allowed" in html_restrictions:
+        for tag in html_restrictions["allowed"]:
+            s = replace_between(s, "<pre>", "</pre>", {f"&amp;lt;{tag}&amp;gt;": f"<{tag}>",
+                                                       f"&amp;lt;/{tag}&amp;gt;": f"</{tag}>"})
+
     parser.feed(s)
     result = parser.result
     if len(parser.open_tags) > 0:
