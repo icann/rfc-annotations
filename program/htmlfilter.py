@@ -4,7 +4,7 @@ import os
 from html.parser import HTMLParser
 from typing import Optional
 
-import util         # replace_links_in_text
+import util         # replace_links_in_text, means_true, get_from_environment
 
 
 ''' Parse HTML for RFC annotations tools '''

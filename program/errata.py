@@ -4,7 +4,7 @@ import sys
 from typing import Optional
 from urllib.request import urlopen
 
-import util  # correct_path
+import util  # correct_path, create_checksum
 
 ''' Create errata for RFC annotations tools '''
 

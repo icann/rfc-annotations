@@ -1,7 +1,7 @@
 import sys
 from typing import Optional
 
-import annotations   # get_annotations
+import annotations   # get_annotations, special_annotation_types
 import htmlize_rfcs  # markup
 import rfcindex      # read_xml_document, fetch_element
 import util          # correct_path, get_from_environment
