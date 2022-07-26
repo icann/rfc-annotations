@@ -1,6 +1,7 @@
 # Example using HTML
 #A John Doe
 #C example containing html
+#D 2022-07-26
 #S 2.1
 <div>
 This is text using <b>html</b> formatting. Only a limited number of element names
