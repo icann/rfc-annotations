@@ -5,10 +5,10 @@ import textwrap
 from typing import Optional, List
 from xml.dom.minidom import Element
 
-import drafts       # get_draft_index
-import errata       # filter_errata
+import drafts       # get_draft_index, get_draft_status
+import errata       # filter_errata, errata_checksum
 import htmlfilter   # filter_html
-import rfcindex     # fetch_element, referenced_document_ids
+import rfcindex     # read_xml_document, fetch_element, referenced_document_ids
 import util         # filtered_files, correct_path, replace_links_in_text, rewrite_rfc_anchor
 
 ''' Get and output the annotations for RFC annotations tools '''
