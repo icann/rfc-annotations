@@ -1,17 +1,31 @@
 <script>
 function clicked(element) {
-  // attempt to select text?
-  var selObj = window.getSelection();
-  var selText = selObj == null ? "" : selObj.toString();
-  if (selText != "") return;
+    // attempt to select text?
+    var selObj = window.getSelection();
+    var selText = selObj == null ? "" : selObj.toString();
+    if (selText != "") return;
 
-  var source = event.target || event.srcElement;
-  if (source.tagName == "A") return;
-  element = element.getElementsByClassName("notes")[0];
-  if (!element) return;
-  if (element.hasAttribute("hidden"))
-    element.removeAttribute("hidden");
-  else
-    element.setAttribute("hidden", "hidden");
+    var source = event.target || event.srcElement;
+    if (source.tagName == "A") return;
+    element = element.getElementsByClassName("notes")[0];
+    if (!element) return;
+    if (element.hasAttribute("hidden"))
+        element.removeAttribute("hidden");
+    else
+        element.setAttribute("hidden", "hidden");
+}
+
+function hideRFC() {
+    const tags = document.querySelectorAll("pre .rfc");
+    Array.from(tags).forEach(tag => {tag.style.display = "none";});
+    document.getElementById("hideBtn").setAttribute("hidden", "hidden")
+    document.getElementById("showBtn").removeAttribute("hidden")
+}
+
+function showRFC() {
+    const tags = document.querySelectorAll("pre .rfc");
+    Array.from(tags).forEach(tag => {tag.style.display = "block";});
+    document.getElementById("showBtn").setAttribute("hidden", "hidden")
+    document.getElementById("hideBtn").removeAttribute("hidden")
 }
 </script>
