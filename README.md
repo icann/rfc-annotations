@@ -82,7 +82,7 @@ The programs called by `make` (which are in `program/`) allow user configuration
 - `RFC_TXT_DIR`, `RFC_OUTPUT` and `RFC_ANNOTATIONS` change the defaults of
 `raw-originals/`, `generated-html/`, and `annotations/`, respectively,
 - `RFC_LIST` can be used to act on a subset of RFCs.
-The value is a space-separated list of numbers, such as "1035 2181".
+The value is a space-separated list of numbers, such as `1035 2181`.
 This can be used to speed processing, but processing all RFCs on a typical laptop is
 likely fast enough.
 - `RFC_INDEX` tells the tool whether to create the `index.html` file.
@@ -93,7 +93,9 @@ It can be used as an extra explanation to the user describing the listed RFCs.
 The value of the environment variable overrides the contents derived from the
 `rfcs-to-use.txt` file.
 - `RFC_CSS` adds custom CSS to the HTMLized RFCs that are generated. See below.
-- `RFC_HTML_WARNINGS` set to `"YES"` tells the annotation collector to display warnings about HTML
+- `RFC_INDEX_SCRIPTS` adds custom javascript to the generated `index.html`.
+- `RFC_SCRIPTS` adds custom javascript to the to the HTMLized RFCs that are generated.
+- `RFC_HTML_WARNINGS` set to `YES` tells the annotation collector to display warnings about HTML
 fix-ups that it is automatically applying.
 
 ## Viewing the Annotated RFCs
@@ -122,9 +124,11 @@ file (`~/.bash_login`, `~/.profile`, and so on).
 For example:
 ```
 export RFC_CSS=$(cat <<EOF
+<style type="text/css">
 .area .annotation .reported {display: block; background-color: #F88;}
 .area .annotation .rejected {display: block; background-color: #F88;}
 .area .annotation .updated {background-color: #88F;}
+</style>
 EOF
 )
 ```
