@@ -18,7 +18,7 @@ def create_index(rfc_list: list, write_directory: str = ".", path: str = ".", in
 
     write_directory = util.correct_path(write_directory)
     print("\nCreating index.html...", end="")
-    css = read_html_fragments(["css.html"])
+    css = read_html_fragments("css.html", util.get_from_environment("CSS", None))
     try:
         with open(write_directory + "index.html", "w") as f:
             f.write(f'<html>\n<head>\n<meta charset="UTF-8">\n{css}</head>\n<body>\n{index_text}')
@@ -62,7 +62,7 @@ def create_index(rfc_list: list, write_directory: str = ".", path: str = ".", in
                     f.write(f'<td class="timestamp">{s}</td>')
                 f.write("</tr>\n")
             f.write("</tbody></table>\n")
-            scripts = read_html_fragments(["index-scripts.html"])
+            scripts = read_html_fragments("index-scripts.html", util.get_from_environment("INDEX_SCRIPTS", None))
             if scripts is not None:
                 f.write(f"{scripts}\n")
             f.write("</body></html>")
@@ -93,24 +93,17 @@ def rewrite_anchor(line: str, rfc_list: list) -> str:
     return line
 
 
-def read_html_fragments(files: Optional[list] = None) -> str:
+def read_html_fragments(file: str, extra: Optional[str]) -> str:
     ret = ""
-    if files is None:
-        files = ["css.html", "scripts.html"]
-    for file in files:
-        # noinspection PyBroadException
-        try:
-            with open(file, "r") as f:
-                content = f.read()
-                ret = content if ret is None else f"{ret}\n{content}"
-        except Exception:
-            print(f"\nError: can't read {file} file! Output will be broken.", file=sys.stderr)
-
-    extra_css = util.get_from_environment("CSS", None)
-    if extra_css is not None and len(extra_css) > 0:
-        ret += '\n<style type="text/css">'
-        ret += extra_css
-        ret += '</style>\n'
+    # noinspection PyBroadException
+    try:
+        with open(file, "r") as f:
+            content = f.read()
+            ret = content if ret is None else f"{ret}\n{content}"
+            if extra is not None and len(extra) > 0:
+                ret += "\n" + extra + "\n"
+    except Exception:
+        print(f"\nError: can't read {file} file! Output will be broken.", file=sys.stderr)
     return ret
 
 
@@ -148,7 +141,7 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
     rfcs_last_updated = {}
     read_directory = util.correct_path(read_directory)
     write_directory = util.correct_path(write_directory)
-    css = read_html_fragments()
+    css = read_html_fragments("css.html", util.get_from_environment("CSS", None))
     print(f"Converting {len(rfc_list)} RFC text documents. Writing output to '{write_directory}':")
     for rfc in rfc_list:
         rfc: str = rfc.lower().strip()
@@ -277,7 +270,11 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                     if not skip_line_end:
                         f.write("\n")
 
-                f.write(f'</div></pre><div class="annotation">{annotation_text}</div></div>\n\n</body></html>\n')
+                f.write(f'</div></pre><div class="annotation">{annotation_text}</div></div>\n')
+                scripts = read_html_fragments("scripts.html", util.get_from_environment("SCRIPTS", None))
+                if scripts is not None:
+                    f.write(f"{scripts}\n")
+                f.write('\n</body></html>\n')
                 if len(remarks_sections) > 0:
                     print(f"Error: {len(remarks_sections)} sections NOT FOUND (", end="", file=sys.stderr)
                     first = True
