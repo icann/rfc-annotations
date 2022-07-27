@@ -161,7 +161,10 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                         if t in annotations.special_annotation_types():
                             rfc_class += " " + t
                 f.write(f'<html>\n<head><meta charset="UTF-8">\n{css}</head>\n')
-                f.write(f'<body>\n<div class="area">\n<pre class="rfc"><div class="{rfc_class}">')
+                f.write('<body>\n')
+                f.write('<button class="floating" onclick="hideRFC()" id="hideBtn">Hide RFC</button>\n')
+                f.write('<button class="floating" onclick="showRFC()" id="showBtn" hidden="hidden">Show RFC</button>\n')
+                f.write(f'<div class="area">\n<pre class="rfc"><div class="{rfc_class}">')
                 line_nr = 0
                 annotation_text = ""
                 for line in htmlize_rfcs.markup(open(read_filename).read()).splitlines():
