@@ -17,6 +17,7 @@ All lines that start with `#` and a letter are used for metadata. Those currentl
 * `#C <Caption>` specifies the caption that appears at the top of the annotation when displayed in an RFC
 * `#D <Date>` specifies the date of the annotation
 * `#L <LineNumber>` specifies the referenced line of the RFC
+(this should be used only for RFCs prior than 8650, otherwise the line numbers may be unstable)
 * `#S <Section>`  specifies the referenced section of the RFC
 * `#T <Type>`  specifies the type of the annotation; this should only be set by the tool itself when creating annotations
 

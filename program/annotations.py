@@ -97,6 +97,15 @@ def get_annotation_from_file(path: str, errata_list: list, patches: dict, rfc_li
                     entry["date"] = s
                 elif tag == "L":
                     entry["section"] = "line-" + s
+                    # check whether the line reference may be unstable
+                    try:
+                        line_nr = int(s)
+                        rfc_nr = int(os.path.basename(path).split(".")[0][3:])
+                        if rfc_nr >= 8650 and line_nr > 1:
+                            print(f"   Warning: File {path} contains reference to line#{s}. "
+                                  "Line references for RFC8650 and newer may be unstable.", file=sys.stderr)
+                    except ValueError:
+                        pass
                 elif tag == "S":
                     entry["section"] = "global" if s == "99" or s.lower() == "none" else s.lower().strip()
                 elif tag == "T":
