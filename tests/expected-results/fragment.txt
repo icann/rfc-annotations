@@ -1,0 +1,1 @@
+[{"section": "fragment-this is a text fragment", "submitter_name": "John Doe", "caption": "Fragment Example", "notes": ["<pre>", "This annotation should be placed close to the referenced text fragment.", "\n</pre>"]}]

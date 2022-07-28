@@ -72,7 +72,7 @@ def get_annotation_from_file(path: str, errata_list: list, patches: dict, rfc_li
             if line.strip() == "####################":
                 # a new annotation entry starts here
                 if is_plain_text:
-                    notes.append("\n</pre>")
+                    notes.append("</pre>")
                 else:
                     notes = htmlfilter.filter_html(notes, path=path)
                 entry["notes"] = notes
@@ -95,6 +95,8 @@ def get_annotation_from_file(path: str, errata_list: list, patches: dict, rfc_li
                     entry["caption"] = s
                 elif tag == "D":
                     entry["date"] = s
+                elif tag == "F":
+                    entry["section"] = "fragment-" + s
                 elif tag == "L":
                     entry["section"] = "line-" + s
                     # check whether the line reference may be unstable
@@ -121,7 +123,7 @@ def get_annotation_from_file(path: str, errata_list: list, patches: dict, rfc_li
                     pos = None if search_result is None else search_result.span()[0]
                     if pos is None or pos > 0:
                         is_plain_text = True
-                        notes.append("<pre>\n")
+                        notes.append("<pre>")
                 if is_plain_text:
                     line = util.replace_links_in_text(line, True)
                 line = util.rewrite_rfc_anchor(line, rfc_list)
@@ -305,6 +307,8 @@ def create_from_errata(rfc_list: list, annotation_directory: str, errata_list: O
                         entry = f"{entry}".lower()
                         if entry.startswith("line-"):
                             f.write(f"#L {entry[5:]}\n")
+                        elif entry.startswith("fragment-"):
+                            f.write(f"#F {entry[9:]}\n")
                         else:
                             f.write(f"#S {entry}\n")
                     if "errata_type_code" in erratum:

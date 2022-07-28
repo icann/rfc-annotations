@@ -136,6 +136,33 @@ def get_remark_sections(remark_list: list) -> list:
     return ret
 
 
+def find_remark_fragments(remark_list: list, lines: list) -> list:
+    ret = []
+    for remark in remark_list:
+        if "section" in remark:
+            target: str = remark["section"]
+            if target.startswith("fragment-"):
+                target = target[9:]
+                found = False
+                # find the target in the lines
+                for nr, line in enumerate(lines):
+                    line = line.replace("|", "")    # remove generated comment characters contained in newer RFCs
+                    if target in line:
+                        remark["section"] = f"line-{nr+1}"
+                        found = True
+                        break
+                if not found and len(target) > 1:
+                    # try to find the string by combining two lines
+                    for nr, line in enumerate(lines):
+
+                        combined = lines[nr - 1].replace("|", "") + " " + line.replace("|", "").strip()
+                        if nr > 0 and target in combined:
+                            remark["section"] = f"line-{nr}"
+                            break
+        ret.append(remark)
+    return ret
+
+
 def create_files(rfc_list: list, errata_list: list, patches: dict, read_directory: str = ".",
                  annotation_directory: str = None, write_directory: str = ".") -> dict:
     rfcs_last_updated = {}
@@ -149,9 +176,7 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
         read_filename = read_directory + rfc + ".txt"
         write_filename = write_directory + rfc + ".html"
         remarks = annotations.get_annotations(rfc, annotation_directory, errata_list, patches, rfc_list)
-        remarks_sections = get_remark_sections(remarks)
-        print(f"Writing {rfc}.html adding {str(len(remarks)).rjust(2)} annotations "
-              f"in {str(len(remarks_sections)).rjust(2)} sections...", end="")
+        print(f"Writing {rfc}.html adding {str(len(remarks)).rjust(2)} annotations...", end="")
         try:
             with open(write_filename, "w") as f:
                 rfc_class = "rfc"
@@ -167,7 +192,10 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                 f.write(f'<div class="area">\n<pre class="rfc"><div class="{rfc_class}">')
                 line_nr = 0
                 annotation_text = ""
-                for line in htmlize_rfcs.markup(open(read_filename).read()).splitlines():
+                lines = htmlize_rfcs.markup(open(read_filename).read()).splitlines()
+                remarks = find_remark_fragments(remarks, lines)
+                remarks_sections = get_remark_sections(remarks)
+                for line in lines:
                     # cut leading and trailing <pre> elements
                     if line.endswith("</pre>"):
                         line = line[:-6]
