@@ -307,7 +307,7 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                     f.write(f"{scripts}\n")
                 f.write('\n</body></html>\n')
                 if len(remarks_sections) > 0:
-                    print(f"Error: {len(remarks_sections)} sections NOT FOUND (", end="", file=sys.stderr)
+                    print(f"Error: annotations for {rfc.upper()} have {len(remarks_sections)} INVALID sections (", end="", file=sys.stderr)
                     first = True
                     for section in remarks_sections:
                         if first:

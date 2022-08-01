@@ -120,7 +120,37 @@ class MyHTMLParser(HTMLParser):
             self.removed += data
 
 
-def replace_between(s: str, section_start: str, section_end: str, replacements: dict) -> str:
+
+def replace_between(s: str, section_start: str, section_end: str, replacements: dict,
+                    preserve_attrs: bool = False) -> str:
+
+    def filter_section(area: str) -> str:
+        if len(area) == 0:
+            return ""
+
+        close_tag = "&amp;gt;"
+        for key, replacement in replacements.items():
+            if preserve_attrs:
+                # add special closing tag handling here preserving all attributes!
+                to_be_handled = area
+                area = ""
+                while key in to_be_handled:
+                    tag_start = to_be_handled.index(key)
+                    split = to_be_handled[tag_start + len(key):]
+                    if close_tag in split:
+                        tag_end = split.index(close_tag)
+                        attributes = split[0:tag_end]
+                        area += to_be_handled[0:tag_start]
+                        if len(attributes) == 0 or attributes.startswith(" "):
+                            area += replacement + attributes + ">"
+                        else:
+                            area += key + attributes + close_tag
+                        to_be_handled = split[tag_end + 8:]
+                area += to_be_handled
+            else:
+                area = area.replace(key, replacement)
+        return area
+
     ret = s
     if section_start in s:
         start = s.index(section_start) + len(section_start)
@@ -128,13 +158,11 @@ def replace_between(s: str, section_start: str, section_end: str, replacements: 
         s = s[start:]
         if section_end in s:
             end = s.index(section_end)
-            section = s[0:end]
-            for key, replacement in replacements.items():
-                section = section.replace(key, replacement)
-            ret = ret + section + section_end
+            ret = ret + filter_section(s[0:end]) + section_end
             end = end + len(section_end)
             if end < len(s):
-                ret = ret + replace_between(s[end:], section_start, section_end, replacements)
+                ret = ret + replace_between(s[end:], section_start, section_end, replacements,
+                                            preserve_attrs=preserve_attrs)
         else:
             ret = ret + s
     return ret
@@ -171,8 +199,8 @@ def filter_html(lines: [str], file: Optional[str] = None, path: str = None) -> [
     # fix the opening and closing tags for allowed html element names inside the <pre>-sections
     if "allowed" in html_restrictions:
         for tag in html_restrictions["allowed"]:
-            s = replace_between(s, "<pre>", "</pre>", {f"&amp;lt;{tag}&amp;gt;": f"<{tag}>",
-                                                       f"&amp;lt;/{tag}&amp;gt;": f"</{tag}>"})
+            s = replace_between(s, "<pre>", "</pre>", {f"&amp;lt;{tag}": f"<{tag}", f"&amp;lt;/{tag}": f"</{tag}"},
+                                preserve_attrs=True)
 
     parser.feed(s)
     result = parser.result
