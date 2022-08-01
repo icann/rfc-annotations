@@ -72,10 +72,17 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
             groups = search_result.groups()
             if groups is not None:
                 rfc_nr = search_result.group()[5:-2]
-                target = f"./rfc{rfc_nr}" if rfc_list is not None and rfc_nr in rfc_list\
+                target = f"./rfc{rfc_nr}" if rfc_list is not None and rfc_nr in rfc_list \
                     else f"https://datatracker.ietf.org/doc/rfc{rfc_nr}/"
                 line = line.replace(f"@@RFC{rfc_nr}@@", f'<a target="_blank" href="{target}.html">RFC{rfc_nr}</a>')
     return line
+
+
+def rewrite_rfc_anchors(lines: [str], rfc_list: Optional[list]) -> [str]:
+    ret = []
+    for line in lines:
+        ret.append(rewrite_rfc_anchor(line, rfc_list))
+    return ret
 
 
 def means_false(s: str) -> bool:
