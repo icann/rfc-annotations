@@ -74,7 +74,7 @@ def get_annotation_from_file(path: str, errata_list: list, patches: dict, rfc_li
                 if is_plain_text:
                     notes.append("</pre>")
                 else:
-                    notes = htmlfilter.filter_html(notes, path=path)
+                    notes = util.rewrite_rfc_anchors(htmlfilter.filter_html(notes, path=path), rfc_list)
                 entry["notes"] = notes
                 ret.append(check_errata_status(entry))
                 notes = []
