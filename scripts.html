@@ -1,4 +1,6 @@
 <script>
+window.addEventListener('hashchange', showRFC);
+
 function clicked(element) {
     // attempt to select text?
     var selObj = window.getSelection();
@@ -7,6 +9,7 @@ function clicked(element) {
 
     var source = event.target || event.srcElement;
     if (source.tagName == "A") return;
+
     element = element.getElementsByClassName("notes")[0];
     if (!element) return;
     if (element.hasAttribute("hidden"))
@@ -18,14 +21,16 @@ function clicked(element) {
 function hideRFC() {
     const tags = document.querySelectorAll("pre .rfc");
     Array.from(tags).forEach(tag => {tag.style.display = "none";});
-    document.getElementById("hideBtn").setAttribute("hidden", "hidden")
-    document.getElementById("showBtn").removeAttribute("hidden")
+    document.getElementById("hideBtn").setAttribute("hidden", "hidden");
+    document.getElementById("showBtn").removeAttribute("hidden");
+    window.location.hash = "";
 }
 
 function showRFC() {
     const tags = document.querySelectorAll("pre .rfc");
     Array.from(tags).forEach(tag => {tag.style.display = "block";});
-    document.getElementById("showBtn").setAttribute("hidden", "hidden")
-    document.getElementById("hideBtn").removeAttribute("hidden")
+    document.getElementById("showBtn").setAttribute("hidden", "hidden");
+    document.getElementById("hideBtn").removeAttribute("hidden");
+    window.location.hash = window.location.hash;
 }
 </script>
