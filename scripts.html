@@ -8,7 +8,10 @@ function clicked(element) {
     if (selText != "") return;
 
     var source = event.target || event.srcElement;
-    if (source.tagName == "A") return;
+    if (source.tagName == "A") {
+      showRFC();
+      return;
+    }
 
     element = element.getElementsByClassName("notes")[0];
     if (!element) return;
