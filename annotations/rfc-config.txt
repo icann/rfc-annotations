@@ -11,3 +11,4 @@
 #   would ever want.
 
 https://github.com/icann/icann-annotations.git	from-icann
+https://github.com/hardaker/dns-rfc-annotations.git	wes-hardaker
