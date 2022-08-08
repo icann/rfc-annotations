@@ -22,7 +22,7 @@ def create_index(rfc_list: list, write_directory: str = ".", path: str = ".", in
     scripts = read_html_fragments("index-scripts.html", util.get_from_environment("INDEX_SCRIPTS", None))
     try:
         with open(write_directory + "index.html", "w") as f:
-            f.write('<html>\n<head>\n<meta charset="UTF-8">\n')
+            f.write('<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8"><title>Overview</title>\n')
             if css is not None:
                 f.write(f'{css}\n')
             if scripts is not None:
@@ -171,6 +171,7 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
     read_directory = util.correct_path(read_directory)
     write_directory = util.correct_path(write_directory)
     css = read_html_fragments("css.html", util.get_from_environment("CSS", None))
+    scripts = read_html_fragments("scripts.html", util.get_from_environment("SCRIPTS", None))
     print(f"Converting {len(rfc_list)} RFC text documents. Writing output to '{write_directory}':")
     for rfc in rfc_list:
         rfc: str = rfc.lower().strip()
@@ -187,11 +188,16 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                         t = r["type"]
                         if t in annotations.special_annotation_types():
                             rfc_class += " " + t
-                f.write(f'<html>\n<head><meta charset="UTF-8">\n{css}</head>\n')
+                f.write(f'<!DOCTYPE html>\n<html lang="en">\n<head><meta charset="UTF-8"><title>RFC{rfc}</title>')
+                if css is not None:
+                    f.write(f'\n{css}')
+                if scripts is not None:
+                    f.write(f'{scripts}\n')
+                f.write('</head>\n')
                 f.write('<body>\n')
                 f.write('<button class="floating" onclick="hideRFC()" id="hideBtn">Hide RFC</button>\n')
                 f.write('<button class="floating" onclick="showRFC()" id="showBtn" hidden="hidden">Show RFC</button>\n')
-                f.write(f'<div class="area">\n<pre class="rfc"><div class="{rfc_class}">')
+                f.write(f'<div class="area">\n<pre class="rfc"><span class="{rfc_class}">')
                 line_nr = 0
                 annotation_text = ""
                 lines = htmlize_rfcs.markup(open(read_filename).read()).splitlines()
@@ -236,8 +242,8 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                                     title = rem["submitter_name"] if "submitter_name" in rem else "Unknown Author"
 
                                     if not remarks_present:
-                                        f.write(f'</div></pre>\n<div class="annotation">{annotation_text}</div></div>'
-                                                f'\n\n<div class="area">\n<pre class="rfc"><div class="{rfc_class}">')
+                                        f.write(f'</span></pre>\n<div class="annotation">{annotation_text}</div></div>'
+                                                f'\n\n<div class="area">\n<pre class="rfc"><span class="{rfc_class}">')
                                         remarks_present = True
                                         annotation_text = ""
 
@@ -289,24 +295,21 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                                                        f'</div>'
                                     if "outdated" in rem:
                                         annotation_text += '<span class="info">based on outdated version</span>'
-                                    annotation_text += f'<span class="notes">'
+                                    annotation_text += f'<div class="notes">'
 
                                     if "notes" in rem and rem["notes"] is not None:
                                         if type(rem["notes"]) is list:
                                             for entry in rem["notes"]:
                                                 annotation_text += entry
 
-                                    annotation_text += "</span></div>"
+                                    annotation_text += "</div></div>"
                             if remark_written:
                                 remarks_sections.remove(section)
                     f.write(line)
                     if not skip_line_end:
                         f.write("\n")
 
-                f.write(f'</div></pre><div class="annotation">{annotation_text}</div></div>\n')
-                scripts = read_html_fragments("scripts.html", util.get_from_environment("SCRIPTS", None))
-                if scripts is not None:
-                    f.write(f"{scripts}\n")
+                f.write(f'</span></pre><div class="annotation">{annotation_text}</div></div>\n')
                 f.write('\n</body></html>\n')
                 if len(remarks_sections) > 0:
                     print(f"Error: annotations for {rfc.upper()} have {len(remarks_sections)} INVALID sections (", end="", file=sys.stderr)
