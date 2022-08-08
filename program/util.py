@@ -78,7 +78,7 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
             for item in parts:
                 if item.startswith("RFC"):
                     h = get_target(item[3:])
-                    conv = entry.replace(f"@@{dest}@@", f'<a target="_blank" href="{h}.html#{typ}-{s}">{dest}</a>')
+                    conv = entry.replace(f"@@{dest}@@", f"<a target='_blank' href='{h}.html#{typ}-{s}'>{dest}</a>")
                     return rewrite_rfc_anchor(conv, rfc_list)
         return entry
 
@@ -91,13 +91,13 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
             if target.startswith("RFC"):
                 nr = target[3:]
                 items = nr.split(":", maxsplit=2)
+                href_suffix = ""
                 if len(items) == 1:
                     href = get_target(nr)
-                    line = line.replace(f"@@RFC{nr}@@", f'<a target="_blank" href="{href}.html">RFC{nr}</a>')
                 else:
                     href = get_target(items[0])
-                    anchor = items[1]
-                    line = line.replace(f"@@RFC{nr}@@", f'<a target="_blank" href="{href}.html#{anchor}">RFC{nr}</a>')
+                    href_suffix = "#" + items[1]
+                line = line.replace(f"@@RFC{nr}@@", f"<a target='_blank' href='{href}.html{href_suffix}'>RFC{nr}</a>")
                 return rewrite_rfc_anchor(line, rfc_list)
             elif target.lower().startswith("section"):
                 return get_target_with_id(target, "section", line)
