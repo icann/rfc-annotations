@@ -81,6 +81,7 @@ For now, consider this an alpha release where significant features and interface
 7686
 7719
 7720
+7706
 7766
 7816
 7828
