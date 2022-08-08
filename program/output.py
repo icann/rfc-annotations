@@ -19,10 +19,16 @@ def create_index(rfc_list: list, write_directory: str = ".", path: str = ".", in
     write_directory = util.correct_path(write_directory)
     print("\nCreating index.html...", end="")
     css = read_html_fragments("css.html", util.get_from_environment("CSS", None))
+    scripts = read_html_fragments("index-scripts.html", util.get_from_environment("INDEX_SCRIPTS", None))
     try:
         with open(write_directory + "index.html", "w") as f:
-            f.write(f'<html>\n<head>\n<meta charset="UTF-8">\n{css}</head>\n<body>\n{index_text}')
-            f.write('<table class="index" id="rfcs">\n<thead><tr class="header">'
+            f.write('<html>\n<head>\n<meta charset="UTF-8">\n')
+            if css is not None:
+                f.write(f'{css}\n')
+            if scripts is not None:
+                f.write(f'{scripts}\n')
+            f.write(f'</head>\n\n<body onload="makeTableSortable(\'rfcs\')">\n{index_text}'
+                    '<table class="index" id="rfcs">\n<thead><tr class="header">'
                     '<th class="rfc" data-type="int">RFC</th>')
             if root is not None:
                 f.write('<th class="title">Title</th>'
@@ -61,11 +67,7 @@ def create_index(rfc_list: list, write_directory: str = ".", path: str = ".", in
                     s = rfcs_last_updated[rfc] if rfc in rfcs_last_updated else ""
                     f.write(f'<td class="timestamp">{s}</td>')
                 f.write("</tr>\n")
-            f.write("</tbody></table>\n")
-            scripts = read_html_fragments("index-scripts.html", util.get_from_environment("INDEX_SCRIPTS", None))
-            if scripts is not None:
-                f.write(f"{scripts}\n")
-            f.write("</body></html>")
+            f.write("</tbody></table>\n</body></html>")
             print(" Done.")
     except Exception as e:
         print(f"Error: can't create index.html: {e}.", file=sys.stderr)

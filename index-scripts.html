@@ -1,35 +1,40 @@
 <script>
-const table = document.getElementById('rfcs');
-const headers = table.querySelectorAll('th');
-[].forEach.call(headers, function (header, index) {
-    header.addEventListener('click', function () {
-        sortColumn(index);
+directions = []
+
+function makeTableSortable(tableId) {
+    const table = document.getElementById(tableId);
+    const headers = table.querySelectorAll('th');
+    [].forEach.call(headers, function (header, index) {
+        header.addEventListener('click', function () {
+            sortColumn(index);
+        });
     });
-});
-
-const directions = Array.from(headers).map(function (header) {
-    return 'asc';
-});
-
-const transform = function (index, content) {
-    const type = headers[index].getAttribute('data-type');
-    switch (type) {
-        case 'int':
-            return content.padStart(5, '0');
-        case 'month-year':
-            items = content.split(" ", 2);
-            if (items.length == 2) {
-                let i = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].indexOf(items[0]);
-                content = items[1] + "-" + i.toString(10).padStart(2, '0');
-            }
-            return content;
-        case 'string':
-        default:
-            return content;
-    }
-};
+    directions = Array.from(headers).map(function (header) {
+        return 'asc';
+    });
+}
 
 function sortColumn(index) {
+    const table = document.getElementById('rfcs');
+    const headers = table.querySelectorAll('th');
+    const transform = function (index, content) {
+        const type = headers[index].getAttribute('data-type');
+        switch (type) {
+            case 'int':
+                return content.padStart(5, '0');
+            case 'month-year':
+                items = content.split(" ", 2);
+                if (items.length == 2) {
+                    let i = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].indexOf(items[0]);
+                    content = items[1] + "-" + i.toString(10).padStart(2, '0');
+                }
+                return content;
+            case 'string':
+            default:
+                return content;
+        }
+    };
+
     const direction = directions[index] || 'asc';
     const multiplier = (direction === 'asc') ? 1 : -1;
     const tableBody = table.querySelector('tbody');
