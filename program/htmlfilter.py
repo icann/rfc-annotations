@@ -40,6 +40,7 @@ class MyHTMLParser(HTMLParser):
         self.uri_filter: [dict] = restrictions["uri-filter"] if "uri-filter" in restrictions else []
 
     def handle_starttag(self, tag, attrs):
+        current_attributes = {}
         self.tag_stack.append(tag)
         s = f"<{tag}"
         key: str
@@ -66,9 +67,12 @@ class MyHTMLParser(HTMLParser):
                                 ok = False
                 if ok:
                     s += f" {key}='{value}'"
+                    current_attributes[key] = value
             else:
                 print(f"Error: removing forbidden attribute {key} with value {value} in file {self.path}",
                       file=sys.stderr)
+        if tag == "a" and "target" not in current_attributes:
+            s += " target='_blank'"
         s += ">"
         if self.skip_until is None:
             ok = tag.lower() in self.allowed_tag_names
