@@ -115,6 +115,10 @@ RFCs; links to other RFCs lead to the RFC Editor's site.
 
 Annotations can be collapsed and expanded by clicking in the header line of the annotation.
 
+To view just the annotations in an RFC, click the "Hide RFC" button at the top right of the window.
+When the RFC is hidden, to show the RFC again and jump to the location of the annotation,
+click the location link at the left of the annotations's caption.
+
 Annotations are displayed with standard CSS. You can customize the CSS to change the way
 that annotations are displayed as described below.
 
