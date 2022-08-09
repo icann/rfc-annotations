@@ -179,6 +179,7 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
     for rfc in rfc_list:
         rfc: str = rfc.lower().strip()
         rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
+        rfc_nr = rfc[3:]
         read_filename = read_directory + rfc + ".txt"
         write_filename = write_directory + rfc + ".html"
         remarks = annotations.get_annotations(rfc, annotation_directory, errata_list, patches, rfc_list)
@@ -191,7 +192,7 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                         t = r["type"]
                         if t in annotations.special_annotation_types():
                             rfc_class += " " + t
-                f.write(f'<!DOCTYPE html>\n<html lang="en">\n<head><meta charset="UTF-8"><title>RFC{rfc}</title>')
+                f.write(f'<!DOCTYPE html>\n<html lang="en">\n<head><meta charset="UTF-8"><title>RFC {rfc_nr}</title>')
                 if css is not None:
                     f.write(f'\n{css}')
                 if scripts is not None:
