@@ -8,10 +8,10 @@ all: folders
 	python3 program/pull_updates.py
 	RFC_INDEX="YES" python3 program/main.py
 
-generated-html raw-originals raw-originals/drafts:
+generated-html local-config raw-originals raw-originals/drafts:
 	mkdir -p $@
 
-folders: generated-html raw-originals raw-originals/drafts
+folders: generated-html local-config raw-originals raw-originals/drafts
 
 annotations: folders
 	python3 program/pull_updates.py
@@ -28,6 +28,7 @@ docker-build:
 
 docker-annotations: docker-build folders
 	docker run --mount type=bind,src="$(DIR)/raw-originals",dst=/raw-originals \
+	   --mount type=bind,src="$(DIR)/local-config",dst=/local-config \
 	   --mount type=bind,src="$(DIR)/annotations",dst=/annotations \
 	   --mount type=bind,src="$(DIR)/generated-html",dst=/generated-html \
 	   -e RFC_FETCH_FILES="NO" \
@@ -35,6 +36,7 @@ docker-annotations: docker-build folders
 
 docker: docker-build folders
 	docker run --mount type=bind,src="$(DIR)/raw-originals",dst=/raw-originals \
+       --mount type=bind,src="$(DIR)/local-config",dst=/local-config \
 	   --mount type=bind,src="$(DIR)/annotations",dst=/annotations \
 	   --mount type=bind,src="$(DIR)/generated-html",dst=/generated-html \
 	   -e RFC_INDEX="YES" \

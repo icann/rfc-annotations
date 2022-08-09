@@ -4,3 +4,5 @@ generated-html
 raw-originals
 annotations/
 program/__pycache__
+local-config
+.DS_Store
