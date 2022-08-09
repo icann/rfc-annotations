@@ -73,7 +73,7 @@ def create_index(rfc_list: list, write_directory: str = ".", path: str = ".", in
         print(f"Error: can't create index.html: {e}.", file=sys.stderr)
 
 
-def rewrite_anchor(line: str, rfc_list: list) -> str:
+def rewrite_anchor(line: str, rfc_list: list, add_target: bool = True) -> str:
     anchor_target = '<a href="./rfc'
     if anchor_target in line:
         fragments = line.split(anchor_target)
@@ -91,7 +91,8 @@ def rewrite_anchor(line: str, rfc_list: list) -> str:
                 else:
                     line += '<a href="https://datatracker.ietf.org/doc/rfc' + rfc_nr + '/'
                 line += s
-        line = line.replace('<a ', '<a target="_blank" ')
+        if add_target:
+            line = line.replace('<a ', '<a target="_blank" ')
     return line
 
 
@@ -197,7 +198,7 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                 f.write('<body>\n')
                 f.write('<button class="floating" onclick="hideRFC()" id="hideBtn">Hide RFC</button>\n')
                 f.write('<button class="floating" onclick="showRFC()" id="showBtn" hidden="hidden">Show RFC</button>\n')
-                f.write(f'<div class="area">\n<pre class="rfc"><span class="{rfc_class}">')
+                f.write(f'<div class="area">\n<pre class="{rfc_class}"><span class="{rfc_class}">')
                 line_nr = 0
                 annotation_text = ""
                 lines = htmlize_rfcs.markup(open(read_filename).read()).splitlines()
@@ -213,13 +214,14 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                     skip_line_end = False
                     if line.startswith("<hr class='noprint'/>"):
                         line = line.replace("<pre class='newpage'>", "")
+                        line = line.replace("<hr class='noprint'/>", "<span class='pagebreak'></span>\n")
                         skip_line_end = True
                     else:
                         line_nr += 1
                         aid = "line-" + str(line_nr)
                         text = str(line_nr).rjust(5)
                         line = f'<a class="line" id="{aid}" href="#{aid}">{text}</a> {line}'
-                    line = rewrite_anchor(line, rfc_list)
+                    line = rewrite_anchor(line, rfc_list, False)
 
                     remarks_present = False
                     for section in remarks_sections:
@@ -240,10 +242,14 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                                             rfcs_last_updated[rfc] = date
                                     annotation_type = str(rem["type"]) if "type" in rem else None
                                     title = rem["submitter_name"] if "submitter_name" in rem else "Unknown Author"
+                                    author = rem["submitter_name"] if "submitter_name" in rem else None
+                                    if author is not None:
+                                        author = author.lower().replace("'", "").replace('"', '')
 
                                     if not remarks_present:
                                         f.write(f'</span></pre>\n<div class="annotation">{annotation_text}</div></div>'
-                                                f'\n\n<div class="area">\n<pre class="rfc"><span class="{rfc_class}">')
+                                                f'\n\n<div class="area">\n<pre class="{rfc_class}">'
+                                                f'<span class="{rfc_class}">')
                                         remarks_present = True
                                         annotation_text = ""
 
@@ -269,7 +275,7 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                                             entry_type += ' outdated'
                                         if "eclipsed" in rem:
                                             entry_type += ' eclipsed'
-                                        link_title = f'{rem["submitter_name"]} ({rem["type"]})'
+                                        link_title = f'{author} ({rem["type"]})'
                                         link = "https://www.rfc-editor.org/errata/eid" + erratum_id
                                         if caption is None:
                                             caption = ""
@@ -279,9 +285,8 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                                                   f'{caption}({prefix}Erratum #<a target="_blank" '\
                                                   f'title="{link_title}" href="{link}">{erratum_id}</a>){suffix}</span>'
 
-                                    if "submitter_name" in rem:
-                                        s = rem["submitter_name"]
-                                        entry_type += f' {s.lower().replace(" ", "_")}'
+                                    if author is not None:
+                                        entry_type += f' {author}'
 
                                     annotation_text += f'<div onclick="clicked(this)" class="{entry_type}">' \
                                                        '<div class="title"><span class="reference">'
@@ -312,7 +317,8 @@ def create_files(rfc_list: list, errata_list: list, patches: dict, read_director
                 f.write(f'</span></pre><div class="annotation">{annotation_text}</div></div>\n')
                 f.write('\n</body></html>\n')
                 if len(remarks_sections) > 0:
-                    print(f"Error: annotations for {rfc.upper()} have {len(remarks_sections)} INVALID sections (", end="", file=sys.stderr)
+                    print(f"Error: annotations for {rfc.upper()} have {len(remarks_sections)} INVALID sections (",
+                          end="", file=sys.stderr)
                     first = True
                     for section in remarks_sections:
                         if first:
