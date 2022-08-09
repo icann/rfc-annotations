@@ -23,9 +23,10 @@ def get_from_environment(name: str, default):
 
 def filtered_files(directory: str, prefix: str = "", suffix: str = "") -> list:
     ret = []
-    for file in os.listdir(directory):
-        if file.startswith(prefix) and file.endswith(suffix):
-            ret.append(file)
+    if os.path.exists(directory):
+        for file in os.listdir(directory):
+            if file.startswith(prefix) and file.endswith(suffix):
+                ret.append(file)
     return ret
 
 

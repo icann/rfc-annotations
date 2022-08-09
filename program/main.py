@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+from typing import Optional
 
 import annotations  # create_from_status, create_from_errata
 import drafts       # download_drafts
@@ -10,6 +11,24 @@ import rfcfile      # download_rfcs
 import util         # get_from_environment
 
 ''' Main creator for RFC annotations tools '''
+
+
+def process_rfc_list(rfc_list: [str], index: Optional[str], prefix: Optional[str] = None):
+    if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
+        rfcfile.download_rfcs(rfc_list, TXT_DIR)  # download desired RFC text files, if not already done
+
+    if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
+        # create additional annotation files
+        annotations.create_from_status(rfc_list, ANN_DIR_GENERATED, TXT_DIR, errata_list, patches)
+        annotations.create_from_errata(rfc_list, ANN_DIR_GENERATED, errata_list, patches)
+
+    # create html files
+    rfcs_last_updated = output.create_files(rfc_list, errata_list, patches, TXT_DIR, ANN_DIR, GEN_DIR)
+
+    # create index.html if necessary
+    if util.means_true(util.get_from_environment("INDEX", "NO")):
+        output.create_index(prefix, rfc_list, GEN_DIR, TXT_DIR, index, rfcs_last_updated)
+
 
 # check python version
 python_version = sys.version_info
@@ -31,37 +50,32 @@ for directory in [TXT_DIR, GEN_DIR, ANN_DIR, ANN_DIR_GENERATED]:
     if not os.path.exists(directory):
         os.mkdir(directory)
 
-# determine list of RFCs to use
-defaults = []
-index_text = ""
-with open("rfcs-to-use.txt", "r") as file:
-    for line in file.readlines():
-        if not line.startswith("#"):
-            if len(line) > 0 and line[0] in "0123456789":
-                defaults.append(line.strip())
-            else:
-                index_text += line
-INDEX_TEXT = util.get_from_environment("INDEX_TEXT", index_text)
-RFC_LIST = util.get_from_environment("LIST", defaults)
-if isinstance(RFC_LIST, str):
-    RFC_LIST = RFC_LIST.strip().replace(",", " ").split()
-
 if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
-    rfcfile.download_rfcs(RFC_LIST, TXT_DIR)  # download desired RFC text files, if not already done
     drafts.download_drafts(TXT_DIR)  # sync *all* internet draft files (in XML and TXT format)
 
 # read errata and patches
 errata_list = errata.read_errata(TXT_DIR)
 patches = errata.get_patches()
 
-if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
-    # create additional annotation files
-    annotations.create_from_status(RFC_LIST, ANN_DIR_GENERATED, TXT_DIR, errata_list, patches)
-    annotations.create_from_errata(RFC_LIST, ANN_DIR_GENERATED, errata_list, patches)
+# determine list of RFCs to use
+INDEX_TEXT = util.get_from_environment("INDEX_TEXT", "")
+RFC_LIST = util.get_from_environment("LIST", None)
+if isinstance(RFC_LIST, str):
+    RFC_LIST = RFC_LIST.strip().replace(",", " ").split()
 
-# create html files
-rfcs_last_updated = output.create_files(RFC_LIST, errata_list, patches, TXT_DIR, ANN_DIR, GEN_DIR)
-
-# create index.html if necessary
-if util.means_true(util.get_from_environment("INDEX", "NO")):
-    output.create_index(RFC_LIST, GEN_DIR, TXT_DIR, INDEX_TEXT, rfcs_last_updated)
+if isinstance(RFC_LIST, list) and len(RFC_LIST) > 0:
+    process_rfc_list(RFC_LIST, INDEX_TEXT)
+else:
+    for directory in [".", "default-config", "local-config"]:
+        for file_name in util.filtered_files(directory, "", "-rfcs.txt"):
+            defaults = []
+            index_text = ""
+            with open(os.path.join(directory, file_name), "r") as file:
+                for line in file.readlines():
+                    if not line.startswith("#"):
+                        if len(line) > 0 and line[0] in "0123456789":
+                            defaults.append(line.strip())
+                        else:
+                            index_text += line
+            if len(defaults) > 0:
+                process_rfc_list(defaults, INDEX_TEXT if len(INDEX_TEXT) > 0 else index_text, file_name[0:-9])

@@ -18,7 +18,8 @@ def special_annotation_types() -> List[str]:
     return ["obsoleted", "potentially_obsoleted", "updated", "potentially_updated", "has_errata"]
 
 
-def get_annotations(rfc: str, directories: str, errata_list: list, patches: dict, rfc_list: Optional[list]) -> list:
+def get_annotations(rfc: str, directories: str, errata_list: list, patches: Optional[dict],
+                    rfc_list: Optional[list]) -> list:
 
     def create_sort_key(d: dict) -> str:
         if "type" in d:
@@ -51,7 +52,8 @@ def get_annotations(rfc: str, directories: str, errata_list: list, patches: dict
     return ret
 
 
-def get_annotation_from_file(path: str, errata_list: list, patches: dict, rfc_list: Optional[list] = None) -> [dict]:
+def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dict],
+                             rfc_list: Optional[list] = None) -> [dict]:
 
     def check_errata_status(annotation: dict) -> dict:
         # check whether the current annotation is based on an outdated erratum version
@@ -139,7 +141,7 @@ def get_annotation_from_file(path: str, errata_list: list, patches: dict, rfc_li
     return ret
 
 
-def get_annotations_from_dir(rfc: str, directory: str, errata_list: list, patches: dict,
+def get_annotations_from_dir(rfc: str, directory: str, errata_list: list, patches: Optional[dict],
                              rfc_list: Optional[list] = None) -> list:
     ret = []
     # Do not fetch annotations if the directory is called ".git"

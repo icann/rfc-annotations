@@ -1,3 +1,4 @@
+import os.path
 import sys
 from typing import Optional
 
@@ -9,19 +10,20 @@ import util          # correct_path, get_from_environment
 ''' Create the new HTMLized RFCs for RFC annotations tools '''
 
 
-def create_index(rfc_list: list, write_directory: str = ".", path: str = ".", index_text: str = "",
-                 rfcs_last_updated: Optional[dict] = None):
+def create_index(prefix: Optional[str], rfc_list: list, write_directory: str = ".", path: str = ".",
+                 index_text: str = "", rfcs_last_updated: Optional[dict] = None):
     root = None
     response = rfcindex.read_xml_document(path)
     if response is not None:
         root = response.firstChild
 
     write_directory = util.correct_path(write_directory)
-    print("\nCreating index.html...", end="")
+    file_name = "index.html" if prefix is None else f"{prefix}-index.html"
+    print(f"\nCreating {file_name}...", end="")
     css = read_html_fragments("css.html", util.get_from_environment("CSS", None))
     scripts = read_html_fragments("index-scripts.html", util.get_from_environment("INDEX_SCRIPTS", None))
     try:
-        with open(write_directory + "index.html", "w") as f:
+        with open(os.path.join(write_directory, file_name), "w") as f:
             f.write('<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8"><title>Overview</title>\n')
             if css is not None:
                 f.write(f'{css}\n')
@@ -97,17 +99,17 @@ def rewrite_anchor(line: str, rfc_list: list, add_target: bool = True) -> str:
 
 
 def read_html_fragments(file: str, extra: Optional[str]) -> str:
-    ret = ""
-    # noinspection PyBroadException
-    try:
-        with open(file, "r") as f:
-            content = f.read()
-            ret = content if ret is None else f"{ret}\n{content}"
-            if extra is not None and len(extra) > 0:
-                ret += "\n" + extra + "\n"
-    except Exception:
-        print(f"\nError: can't read {file} file! Output will be broken.", file=sys.stderr)
-    return ret
+    for directory in ["local-config", "default-config"]:
+        file_name = os.path.join(directory, file)
+        if os.path.exists(file_name):
+            ret = None
+            with open(file_name, "r") as f:
+                content = f.read()
+                ret = content if ret is None else f"{ret}\n{content}"
+                if extra is not None and len(extra) > 0:
+                    ret += "\n" + extra + "\n"
+                return ret
+    return ""
 
 
 def get_remark_sections(remark_list: list) -> list:
@@ -166,7 +168,7 @@ def find_remark_fragments(remark_list: list, lines: list) -> list:
     return ret
 
 
-def create_files(rfc_list: list, errata_list: list, patches: dict, read_directory: str = ".",
+def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], read_directory: str = ".",
                  annotation_directory: str = None, write_directory: str = ".") -> dict:
     rfcs_last_updated = {}
     read_directory = util.correct_path(read_directory)

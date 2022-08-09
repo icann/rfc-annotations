@@ -44,42 +44,46 @@ def read_errata(path: str = ".", url: str = "https://www.rfc-editor.org/errata.j
     return None
 
 
-def filter_errata(rfc: str, errata_list: list, patches: dict) -> list:
+def filter_errata(rfc: str, errata_list: list, patches: Optional[dict]) -> list:
     if errata_list is None:
         return []
     result = []
     for errata in errata_list:
         doc_id = errata["doc-id"]
         if doc_id == rfc.upper():
-            if doc_id in patches:
-                eid = str(errata["errata_id"])
-                if eid in patches[doc_id]:
-                    for k, v in patches[doc_id][eid].items():
-                        errata[k] = v
+            if patches is not None:
+                if doc_id in patches:
+                    eid = str(errata["errata_id"])
+                    if eid in patches[doc_id]:
+                        for k, v in patches[doc_id][eid].items():
+                            errata[k] = v
             result.append(errata)
     return result
 
 
-def errata_checksum(eid: int, errata_list: list, patches: dict) -> Optional[str]:
+def errata_checksum(eid: int, errata_list: list, patches: Optional[dict]) -> Optional[str]:
     if errata_list is not None:
         for errata in errata_list:
             if eid == errata["errata_id"]:
                 doc_id = errata["doc-id"]
-                if doc_id in patches:
-                    if eid in patches[doc_id]:
-                        for k, v in patches[doc_id][eid].items():
-                            errata[k] = v
+                if patches is not None:
+                    if doc_id in patches:
+                        if eid in patches[doc_id]:
+                            for k, v in patches[doc_id][eid].items():
+                                errata[k] = v
                 return util.create_checksum(errata)
     return None
 
 
-def get_patches(path: str = "errata.patch"):
-    print("\nReading errata patch file... ", end="")
+def get_patches(path: str = "errata.patch") -> Optional[list]:
     total = 0
-    with open(path, "r") as f:
-        patches = json.loads(f.read())
-        total += len(patches)
-    print(f"Read {total} patches.")
+    patches = None
+    if os.path.exists(path):
+        print("\nReading errata patch file... ", end="")
+        with open(path, "r") as f:
+            patches = json.loads(f.read())
+            total += len(patches)
+        print(f"Read {total} patches.")
     return patches
 
 

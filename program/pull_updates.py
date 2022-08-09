@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ''' Program to get updates to annotations from rmote locations '''
-
+import os.path
 import subprocess, urllib.request
 from pathlib import Path
 
@@ -121,16 +121,20 @@ if __name__ == "__main__":
 		has_rsync = False
 
 	# Name of config file
-	config_name = "rfc-config.txt"
+	config_name = "annotation-sources.txt"
+	directories = ["local-config", "default-config"]
 	# Location of config file
-	config_location = Path(f"annotations/{config_name}")
-	if not config_location.exists():
-		exit(f"Could not find config file {str(config_location)}. Exiting.")
-	try:
-		config_content = config_location.open(mode="rt").read()
-	except:
-		exit(f"{str(config_location)} does not appear to be a text file. Exiting.")
+	for directory in directories:
+		config_location = os.path.join(directory, config_name)
+		if os.path.exists(config_location):
+			try:
+				config_content = Path(config_location).open(mode="rt").read()
+				process_config_content(config_content)
+				exit()
+			except UnicodeDecodeError:
+				exit(f"{config_location} does not appear to be a text file. Exiting.")
 
+	exit(f"Could not find config file {config_name} in {str(directories)}. Exiting.")
 	# Process the config content on the file from local
-	this_ret = process_config_content(config_content)
+
 
