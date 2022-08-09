@@ -66,16 +66,21 @@ if isinstance(RFC_LIST, str):
 if isinstance(RFC_LIST, list) and len(RFC_LIST) > 0:
     process_rfc_list(RFC_LIST, INDEX_TEXT)
 else:
-    for directory in [".", "default-config", "local-config"]:
+    filenames = []
+    for directory in ["local-config", "default-config"]:
         for file_name in util.filtered_files(directory, "", "-rfcs.txt"):
-            defaults = []
-            index_text = ""
-            with open(os.path.join(directory, file_name), "r") as file:
-                for line in file.readlines():
-                    if not line.startswith("#"):
-                        if len(line) > 0 and line[0] in "0123456789":
-                            defaults.append(line.strip())
-                        else:
-                            index_text += line
-            if len(defaults) > 0:
-                process_rfc_list(defaults, INDEX_TEXT if len(INDEX_TEXT) > 0 else index_text, file_name[0:-9])
+            if file_name in filenames:
+                print(f"RFC list {file_name} already handled. Ignoring file in {directory}.")
+            else:
+                filenames.append(file_name)
+                defaults = []
+                index_text = ""
+                with open(os.path.join(directory, file_name), "r") as file:
+                    for line in file.readlines():
+                        if not line.startswith("#"):
+                            if len(line) > 0 and line[0] in "0123456789":
+                                defaults.append(line.strip())
+                            else:
+                                index_text += line
+                if len(defaults) > 0:
+                    process_rfc_list(defaults, INDEX_TEXT if len(INDEX_TEXT) > 0 else index_text, file_name[0:-9])

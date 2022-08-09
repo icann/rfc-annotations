@@ -209,11 +209,16 @@ def filter_html(lines: [str], file: Optional[str] = None, path: str = None) -> [
     parser.feed(s)
     result = parser.result
     if len(parser.open_tags) > 0:
-        if show_warnings:
-            print(f"   Warning: Invalid HTML. Some tags are not closed properly: {parser.open_tags}. "
-                  f"Adding closing tags to {path}.", file=sys.stderr)
-        suffix = ""
+        filtered = []
         for tag in parser.open_tags:
-            suffix = f"</{tag}>{suffix}"
-        result += suffix
+            if tag != "p":
+                filtered.append(tag)
+        if len(filtered) > 0:
+            if show_warnings:
+                print(f"   Warning: Invalid HTML. Some tags are not closed properly: {filtered}. "
+                      f"Adding closing tags to {path}.", file=sys.stderr)
+            suffix = ""
+            for tag in filtered:
+                suffix = f"</{tag}>{suffix}"
+            result += suffix
     return [result]
