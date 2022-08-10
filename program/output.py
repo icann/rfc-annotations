@@ -170,6 +170,15 @@ def find_remark_fragments(remark_list: list, lines: list) -> list:
 
 def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], read_directory: str = ".",
                  annotation_directory: str = None, write_directory: str = ".") -> dict:
+
+    def create_unique_erratum_ref(eid: str) -> str:
+        if eid in erratum_references:
+            ret = erratum_references[eid] + 1
+        else:
+            ret = 0
+        erratum_references[eid] = ret
+        return "rfc.erratum." + eid + ("" if ret == 0 else f".{ret}")
+
     rfcs_last_updated = {}
     read_directory = util.correct_path(read_directory)
     write_directory = util.correct_path(write_directory)
@@ -207,6 +216,7 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                 lines = htmlize_rfcs.markup(open(read_filename).read()).splitlines()
                 remarks = find_remark_fragments(remarks, lines)
                 remarks_sections = get_remark_sections(remarks)
+                erratum_references = {}
                 for line in lines:
                     # cut leading and trailing <pre> elements
                     if line.endswith("</pre>"):
@@ -285,7 +295,7 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                                             caption = ""
                                         else:
                                             caption += " "
-                                        caption = f'<span id="rfc.erratum.{erratum_id}">' \
+                                        caption = f'<span id="' + create_unique_erratum_ref(erratum_id) + '">' \
                                                   f'{caption}({prefix}Erratum #<a target="_blank" '\
                                                   f'title="{link_title}" href="{link}">{erratum_id}</a>){suffix}</span>'
 
