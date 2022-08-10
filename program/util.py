@@ -68,9 +68,17 @@ def replace_links_in_text(line: str, replace_special_chars: bool) -> str:
 
 def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
 
-    def get_target(rfc: str) -> str:
-        return f"./rfc{rfc}" if rfc_list is not None and rfc in rfc_list \
-            else f"https://datatracker.ietf.org/doc/rfc{rfc}/"
+    def get_target(rfc: str, target_id: Optional[str] = None) -> str:
+        if rfc_list is not None and rfc in rfc_list:
+            if target_id is None:
+               return f"./rfc{rfc}.html"
+            else:
+                return f"./rfc{rfc}.html#{target_id}"
+        else:
+            if target_id is None:
+                return f"https://datatracker.ietf.org/doc/rfc{rfc}/"
+            else:
+                return f"https://datatracker.ietf.org/doc/html/rfc{rfc}.html#{target_id}"
 
     def get_target_with_id(dest: str, typ: str, entry: str) -> str:
         parts = dest[len(typ):].strip().split(" ")
@@ -78,8 +86,8 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
             s = parts[0]
             for item in parts:
                 if item.startswith("RFC"):
-                    h = get_target(item[3:])
-                    conv = entry.replace(f"@@{dest}@@", f"<a target='_blank' href='{h}.html#{typ}-{s}'>{dest}</a>")
+                    h = get_target(item[3:].strip(), typ + "-" + s)
+                    conv = entry.replace(f"@@{dest}@@", f"<a target='_blank' href='{h}'>{dest}</a>")
                     return rewrite_rfc_anchor(conv, rfc_list)
         return entry
 
@@ -88,17 +96,21 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
         split = line[start + 2:]
         if "@@" in split:
             end = split.index("@@")
-            target = split[0:end]
-            if target.startswith("RFC"):
+            target = split[0:end].strip()
+            nr = target[3:]
+            text = f"RFC{nr}"
+            if target.startswith("[") and target.endswith("]"):
+                target = target[1:-1]
                 nr = target[3:]
+                text = f"[RFC{nr}]"
+            pattern = f"@@{text}@@"
+            if target.startswith("RFC"):
                 items = nr.split(":", maxsplit=2)
-                href_suffix = ""
                 if len(items) == 1:
                     href = get_target(nr)
                 else:
-                    href = get_target(items[0])
-                    href_suffix = "#" + items[1]
-                line = line.replace(f"@@RFC{nr}@@", f"<a target='_blank' href='{href}.html{href_suffix}'>RFC{nr}</a>")
+                    href = get_target(items[0], items[1])
+                line = line.replace(pattern, f"<a target='_blank' href='{href}'>{text}</a>")
                 return rewrite_rfc_anchor(line, rfc_list)
             elif target.lower().startswith("section"):
                 return get_target_with_id(target, "section", line)

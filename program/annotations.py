@@ -48,7 +48,9 @@ def get_annotations(rfc: str, directories: str, errata_list: list, patches: Opti
     if len(edited_errata_ids) > 0 and len(candidates) > 0:
         for annotation in candidates:
             if annotation["errata_id"] in edited_errata_ids:
-                annotation["eclipsed"] = True
+                # we do not support eclipsed annotations anymore, there will be removed!
+                # annotation["eclipsed"] = True
+                ret.remove(annotation)
     return ret
 
 
