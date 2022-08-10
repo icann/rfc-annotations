@@ -276,8 +276,9 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                                             entry_type += f' {s.lower().replace(" ", "")}'
                                         if "outdated" in rem:
                                             entry_type += ' outdated'
-                                        if "eclipsed" in rem:
-                                            entry_type += ' eclipsed'
+                                        # eclipsed annotations are not supported anymore...
+                                        # if "eclipsed" in rem:
+                                        #     entry_type += ' eclipsed'
                                         link_title = f'{author} ({rem["type"]})'
                                         link = "https://www.rfc-editor.org/errata/eid" + erratum_id
                                         if caption is None:
