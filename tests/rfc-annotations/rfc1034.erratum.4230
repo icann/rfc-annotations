@@ -1,0 +1,19 @@
+#A Sun Congyou
+#S 4.3.3
+#L 1384
+#T Editorial
+#X errata_id:4230
+#X checksum:1330a23ea8a8020abdf1490c63f1e8e9
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+   - When the query name or a name between the wildcard domain and
+     the query name is know to exist.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+   - When the query name or a name between the wildcard domain and
+     the query name is know<ins>n</ins> to exist.
+</pre></div>

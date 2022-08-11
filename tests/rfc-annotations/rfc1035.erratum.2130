@@ -1,0 +1,41 @@
+#A Alexei A. Smekalkine
+#S 3.2.1
+#L 588
+#T Technical
+#X errata_id:2130
+#X checksum:2261f6fe4eae5c5a0b142cb2ea1f4113
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+TTL             a 32 bit signed integer that specifies the time interval
+                that the resource record may be cached before the source
+                of the information should again be consulted.  Zero
+                values are interpreted to mean that the RR can only be
+                used for the transaction in progress, and should not be
+                cached.  For example, SOA records are always distributed
+                with a zero TTL to prohibit caching.  Zero values can
+                also be used for extremely volatile data.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+TTL             a 32 bit <ins>un</ins>signed integer that specifies the time interval
+                that the resource record may be cached before the source
+                of the information should again be consulted.  Zero
+                values are interpreted to mean that the RR can only be
+                used for the transaction in progress, and should not be
+                cached.  For example, SOA records are always distributed
+                with a zero TTL to prohibit caching.  Zero values can
+                also be used for extremely volatile data.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Conflicting descriptions of the type of TTL field.
+<p/>
+<a href="#section-3.2.1">Section 3.2.1</a> says "a 32 bit signed integer" while <a href="#section-4.1.3">section 4.1.3</a> says "a
+32 bit unsigned integer".
+</div>
+

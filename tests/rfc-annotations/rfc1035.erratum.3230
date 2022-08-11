@@ -1,0 +1,17 @@
+#A Sam Bretheim
+#S 4.1.1
+#L 1443
+#T Editorial
+#X errata_id:3230
+#X checksum:38aabe06f2805dc357e5f59d838ff4f7
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+RA              Recursion Available - this be is set or cleared in a
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+RA              Recursion Available - this b<del>e</del><ins>it</ins> is set or cleared in a
+</pre></div>

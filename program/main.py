@@ -15,9 +15,8 @@ import util         # get_from_environment
 
 def process_rfc_list(rfc_list: [str], index: Optional[str], prefix: Optional[str] = None):
     if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
-        rfcfile.download_rfcs(rfc_list, TXT_DIR)  # download desired RFC text files, if not already done
-
-    if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
+        # download desired RFC text files, if not already done
+        rfcfile.download_rfcs(rfc_list, TXT_DIR)
         # create additional annotation files
         annotations.create_from_status(rfc_list, ANN_DIR_GENERATED, TXT_DIR, errata_list, patches)
         annotations.create_from_errata(rfc_list, ANN_DIR_GENERATED, errata_list, patches)

@@ -1,0 +1,16 @@
+#A Paul Hoffman
+#C RFC 8767 allows caching of records past their TTL
+#L 1582
+<p>
+The abstract of @@RFC8767@@ says:
+"This document defines a method (serve-stale) for recursive resolvers
+to use stale DNS data to avoid outages when authoritative nameservers
+cannot be reached to refresh expired data."
+The reason this updates RFC 1034 is that the definition of TTL in
+RFC 1035 says that the TTL is
+"a 32 bit unsigned integer that specifies the time
+interval (in seconds) that the resource record may be
+cached before it should be discarded".
+RFC 8767 softens that "should" and describes various scenarios when
+it is acceptable to serve stale data.
+</p>

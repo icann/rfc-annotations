@@ -1,0 +1,9 @@
+#A Paul Hoffman
+#C RFC 8482 allows for minimal responses for ANY queries
+#L 667
+<p>
+@@RFC8482@@ gives guidance on what the proper response to
+and query for type ANY would be.
+In particular, Section 7 of RFC 8482 updates the processing
+instructions in RFC 1035 for ANY queries.
+</p>

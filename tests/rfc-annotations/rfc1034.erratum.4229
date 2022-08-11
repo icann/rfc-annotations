@@ -1,0 +1,19 @@
+#A Sun Congyou
+#S 4.2.2
+#L 1128
+#T Editorial
+#X errata_id:4229
+#X checksum:6b52f0fbfb5720658f4e412b1e7b1aeb
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+[RFC-1033] catalogs available DNS software an discusses administration 
+procedures.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+[RFC-1033] catalogs available DNS software an<ins>d</ins> discusses administration 
+procedures.
+</pre></div>

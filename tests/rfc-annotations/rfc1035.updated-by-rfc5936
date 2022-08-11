@@ -1,0 +1,12 @@
+#A Paul Hoffman
+#C RFC 5936 re-specifies how AXFR works
+#L 1780
+<p>
+@@RFC5936@@ is a complete re-definition of AXFR. Its abstract says:
+"The definition of AXFR has proven insufficient in detail, thereby
+forcing implementations intended to be compliant to make assumptions,
+impeding interoperability.  Yet today we have a satisfactory set of
+implementations that do interoperate.  This document is a new
+definition of AXFR -- new in the sense that it records an accurate
+definition of an interoperable AXFR mechanism."
+</p>

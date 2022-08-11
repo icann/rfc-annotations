@@ -1,0 +1,30 @@
+#A Patrick Ni
+#S 7.1
+#L 2336
+#T Technical
+#X errata_id:6601
+#X checksum:effad9011153525031653f94dbc5b401
+#X errata_status_code:Verified
+#
+#
+<div class="original"><pre>
+This timestamp uses the
+absolute time format previously discussed for RR storage in
+zones and caches
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+This timestamp uses the
+absolute time format previously discussed for RR storage in
+<del>zones and </del>caches
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+In section <a href="#section-6.1.3">6.1.3. Time</a>, it says "while data in the zone stays with
+constant TTL ... The RRs in zones use relative times; the refresh timers
+and cache data use absolute times"
+</div>
+

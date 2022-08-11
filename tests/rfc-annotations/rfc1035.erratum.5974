@@ -1,0 +1,63 @@
+#A Xu Mingjie
+#S 3.4.2
+#T Editorial
+#X errata_id:5974
+#X checksum:58cd977ece9204dc380a6a8569476222
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+3.4.2. WKS RDATA format
+
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |                    ADDRESS                    |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |       PROTOCOL        |                       |
+    +--+--+--+--+--+--+--+--+                       |
+    |                                               |
+    /                   <&shy;BIT MAP>                   /
+    /                                               /
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+where:
+
+ADDRESS         An 32 bit Internet address
+
+PROTOCOL        An 8 bit IP protocol number
+
+<&shy;BIT MAP>       A variable length bit map.  The bit map must be a
+                multiple of 8 bits long
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+3.4.2. WKS RDATA format
+
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |                    ADDRESS                    |
+<ins>    |                                               |</ins>
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |       PROTOCOL        |                       |
+    +--+--+--+--+--+--+--+--+                       |
+    |                                               |
+    /                   <&shy;BIT MAP>                   /
+    /                                               /
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+where:
+
+ADDRESS         An 32 bit Internet address
+
+PROTOCOL        An 8 bit IP protocol number
+
+<&shy;BIT MAP>       A variable length bit map.  The bit map must be a
+                multiple of 8 bits long
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+There is an error in the ADDRESS field of WKS RDATA format. ADDRESS
+field should occupy two lines because it is 32 bit.
+</div>
+

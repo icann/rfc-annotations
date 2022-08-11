@@ -1,0 +1,33 @@
+#A Paul Hoffman
+#C RFC 2181 updates the use of the SOA record
+#L 816
+<p>
+Section 7.1 of @@RFC2181@@ says:
+<br>
+<pre>
+RFC1034, in section 3.7, indicates that the authority section of an
+authoritative answer may contain the SOA record for the zone from
+which the answer was obtained.  When discussing negative caching,
+RFC1034 section 4.3.4 refers to this technique but mentions the
+additional section of the response.  The former is correct, as is
+implied by the example shown in section 6.2.5 of RFC1034.  SOA
+records, if added, are to be placed in the authority section.
+</pre>
+</p>
+####################
+#A Paul Hoffman
+#C RFC 2181 updates the use of the SOA record
+#L 1420
+<p>
+Section 7.1 of @@RFC2181@@ says:
+<br>
+<pre>
+RFC1034, in section 3.7, indicates that the authority section of an
+authoritative answer may contain the SOA record for the zone from
+which the answer was obtained.  When discussing negative caching,
+RFC1034 section 4.3.4 refers to this technique but mentions the
+additional section of the response.  The former is correct, as is
+implied by the example shown in section 6.2.5 of RFC1034.  SOA
+records, if added, are to be placed in the authority section.
+</pre>
+</p>

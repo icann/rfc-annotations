@@ -1,0 +1,35 @@
+#A Mukund Sivaraman
+#S 4.3.3
+#L 1391
+#T Technical
+#X errata_id:5316
+#X checksum:e8b7cc34de7b5c4933a619e133d3d1c4
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+A * label appearing in a query name has no special effect, but can be
+used to test for wildcards in an authoritative zone; such a query is the
+only way to get a response containing RRs with an owner name with * in
+it.  The result of such a query should not be cached.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+A * label appearing in a query name has no special effect, but can be
+used to test for wildcards in an authoritative zone; such a query is the
+only way to get a response containing RRs with an owner name with * in
+it.  The result of such a query should not be <del>cached</del><ins>used to synthesize RRs</ins>.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+It is perfectly OK for an RR with a wildcard label '*' to be cached as
+long as it's not used to synthesize any RRs on a caching resolver. The
+DNS implementations BIND and Unbound both cache such RRsets with
+wildcard label in the owner name.
+<p/>
+WK (OpsAD): Please see thread <https://www.ietf.org/mail-archive/web/dnsop/current/msg22563.html> for additional information.
+</div>
+

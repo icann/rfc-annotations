@@ -1,0 +1,9 @@
+#A Paul Hoffman
+#C RFC 1982 has a better definition of serial number arithmetic
+#L 1023
+<p>@@RFC1982@@ clarifies how serial number arithmetic should be performed.
+The abstract says "The DNS has long relied upon serial number arithmetic,
+a concept which has never really been defined, certainly not in an
+IETF document, though which has been widely understood.  This memo
+supplies the missing definition."
+</p>
