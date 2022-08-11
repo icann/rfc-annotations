@@ -8,10 +8,10 @@ all: folders
 	python3 program/pull_updates.py
 	RFC_INDEX="YES" python3 program/main.py
 
-generated-html local-config raw-originals raw-originals/drafts:
+generated-html local-config raw-originals raw-originals/drafts annotations/_generated:
 	mkdir -p $@
 
-folders: generated-html local-config raw-originals raw-originals/drafts
+folders: generated-html local-config raw-originals raw-originals/drafts annotations/_generated
 
 annotations: folders
 	python3 program/pull_updates.py
