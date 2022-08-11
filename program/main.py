@@ -13,14 +13,14 @@ import util         # get_from_environment
 ''' Main creator for RFC annotations tools '''
 
 
-def process_rfc_list(rfc_list: [str], index: Optional[str], prefix: Optional[str] = None):
-    if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
-        # download desired RFC text files, if not already done
-        rfcfile.download_rfcs(rfc_list, TXT_DIR)
-        # create additional annotation files
-        annotations.create_from_status(rfc_list, ANN_DIR_GENERATED, TXT_DIR, errata_list, patches)
-        annotations.create_from_errata(rfc_list, ANN_DIR_GENERATED, errata_list, patches)
-
+def process_rfc_lists(rfc_lists: [[str]], index: Optional[list], prefix: Optional[str] = None):
+    rfcs_last_updated = None
+    for rfc_list in rfc_lists:
+        if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
+            rfcfile.download_rfcs(rfc_list, TXT_DIR)  # download desired RFC text files, if not already done
+            # create additional annotation files
+            annotations.create_from_status(rfc_list, ANN_DIR_GENERATED, TXT_DIR, errata_list, patches)
+            annotations.create_from_errata(rfc_list, ANN_DIR_GENERATED, errata_list, patches)
         # create html files
         rfcs_last_updated = output.create_files(rfc_list, errata_list, patches, TXT_DIR, ANN_DIR, GEN_DIR)
 
@@ -67,7 +67,7 @@ if isinstance(RFC_LIST, str):
     RFC_LIST = RFC_LIST.strip().replace(",", " ").split()
 
 if isinstance(RFC_LIST, list) and len(RFC_LIST) > 0:
-    process_rfc_list([RFC_LIST], [INDEX_TEXT])
+    process_rfc_lists([RFC_LIST], [INDEX_TEXT])
 else:
     filenames = []
     for directory in ["local-config", "default-config"]:
@@ -95,4 +95,4 @@ else:
                 index_text.append(current_index_text)
                 rfc_sections.append(rfcs)
                 if len(rfc_sections) > 0:
-                    process_rfc_list(rfc_sections, [INDEX_TEXT] if len(INDEX_TEXT) > 0 else index_text, file_name[0:-9])
+                    process_rfc_lists(rfc_sections, [INDEX_TEXT] if len(INDEX_TEXT) > 0 else index_text, file_name[0:-9])
