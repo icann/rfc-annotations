@@ -10,8 +10,8 @@ import util          # correct_path, get_from_environment
 ''' Create the new HTMLized RFCs for RFC annotations tools '''
 
 
-def create_index(prefix: Optional[str], rfc_list: list, write_directory: str = ".", path: str = ".",
-                 index_text: str = "", rfcs_last_updated: Optional[dict] = None):
+def create_index(prefix: Optional[str], sections: [tuple], write_directory: str = ".", path: str = ".",
+                 rfcs_last_updated: Optional[dict] = None):
     root = None
     response = rfcindex.read_xml_document(path)
     if response is not None:
@@ -24,52 +24,56 @@ def create_index(prefix: Optional[str], rfc_list: list, write_directory: str = "
     scripts = read_html_fragments("index-scripts.html", util.get_from_environment("INDEX_SCRIPTS", None))
     try:
         with open(os.path.join(write_directory, file_name), "w") as f:
-            f.write('<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8"><title>Overview</title>\n')
+            title = 'Overview' if prefix is None else f'Overview of {prefix.upper()}-related RFCs'
+            f.write(f'<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8"><title>{title}</title>\n')
             if css is not None:
                 f.write(f'{css}\n')
             if scripts is not None:
                 f.write(f'{scripts}\n')
-            f.write(f'</head>\n\n<body onload="makeTableSortable(\'rfcs\')">\n{index_text}'
-                    '<table class="index" id="rfcs">\n<thead><tr class="header">'
-                    '<th class="rfc" data-type="int">RFC</th>')
-            if root is not None:
-                f.write('<th class="title">Title</th>'
-                        '<th class="date" data-type="month-year">Date</th>'
-                        '<th class="status">Status</th>')
-            if rfcs_last_updated is not None:
-                f.write('<th class="timestamp">Latest Ann.</th>')
-            f.write("</tr></thead>\n<tbody>\n")
-            odd = True
-            for rfc in rfc_list:
-                rfc: str = rfc.lower().strip()
-                rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
-                node = None if root is None else rfcindex.fetch_element(root, "rfc-entry", rfc.upper())
-                f.write(f"<tr class='entry " + ("odd" if odd else "even") + "'>" +
-                        f"<td class='rfc'><a target='_blank' href='{rfc}.html'>{rfc[3:]}</a></td>")
-                odd = not odd
-                if node is not None:
-                    title = node.getElementsByTagName("title")[0].firstChild.data
-                    status = node.getElementsByTagName("current-status")[0].firstChild.data.title()
-                    month = node.getElementsByTagName("month")[0].firstChild.data
-                    year = node.getElementsByTagName("year")[0].firstChild.data
-                    date = f"{month} {year}".strip()
-                    node_list = node.getElementsByTagName("obsoleted-by")
-                    suffix = ""
-                    if len(node_list) > 0:
-                        for node in node_list[0].getElementsByTagName("doc-id"):
-                            rfc = node.firstChild.data
-                            suffix += "; Obsoleted by" if len(suffix) == 0 else ","
-                            text = f"{rfc[0:3]} {rfc[3:]}" if len(rfc) > 3 else rfc
-                            suffix += rewrite_anchor(f' <a href="./{rfc.lower()}">{text}</a>', rfc_list)
-                    status = f"{status}{suffix}"
-                    f.write(f"<td class='title'>{title}</td>"
-                            f"<td class='date'>{date}</td>"
-                            f"<td class='status'>{status}</td>")
+            f.write(f'</head>\n\n<body onload="makeTableSortable(\'table\', {len(sections)})">\n')
+            for nr, section in enumerate(sections):
+                rfc_list, index_text = section
+                f.write(f'{index_text}<table class="index" id="table{nr}">\n<thead><tr class="header">'
+                        '<th class="rfc" data-type="int">RFC</th>')
+                if root is not None:
+                    f.write('<th class="title">Title</th>'
+                            '<th class="date" data-type="month-year">Date</th>'
+                            '<th class="status">Status</th>')
                 if rfcs_last_updated is not None:
-                    s = rfcs_last_updated[rfc] if rfc in rfcs_last_updated else ""
-                    f.write(f'<td class="timestamp">{s}</td>')
-                f.write("</tr>\n")
-            f.write("</tbody></table>\n</body></html>")
+                    f.write('<th class="timestamp">Latest Ann.</th>')
+                f.write("</tr></thead>\n<tbody>\n")
+                odd = True
+                for rfc in rfc_list:
+                    rfc: str = rfc.lower().strip()
+                    rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
+                    node = None if root is None else rfcindex.fetch_element(root, "rfc-entry", rfc.upper())
+                    f.write(f"<tr class='entry " + ("odd" if odd else "even") + "'>" +
+                            f"<td class='rfc'><a target='_blank' href='{rfc}.html'>{rfc[3:]}</a></td>")
+                    odd = not odd
+                    if node is not None:
+                        title = node.getElementsByTagName("title")[0].firstChild.data
+                        status = node.getElementsByTagName("current-status")[0].firstChild.data.title()
+                        month = node.getElementsByTagName("month")[0].firstChild.data
+                        year = node.getElementsByTagName("year")[0].firstChild.data
+                        date = f"{month} {year}".strip()
+                        node_list = node.getElementsByTagName("obsoleted-by")
+                        suffix = ""
+                        if len(node_list) > 0:
+                            for node in node_list[0].getElementsByTagName("doc-id"):
+                                rfc = node.firstChild.data
+                                suffix += "; Obsoleted by" if len(suffix) == 0 else ","
+                                text = f"{rfc[0:3]} {rfc[3:]}" if len(rfc) > 3 else rfc
+                                suffix += rewrite_anchor(f' <a href="./{rfc.lower()}">{text}</a>', rfc_list)
+                        status = f"{status}{suffix}"
+                        f.write(f"<td class='title'>{title}</td>"
+                                f"<td class='date'>{date}</td>"
+                                f"<td class='status'>{status}</td>")
+                    if rfcs_last_updated is not None:
+                        s = rfcs_last_updated[rfc] if rfc in rfcs_last_updated else ""
+                        f.write(f'<td class="timestamp">{s}</td>')
+                    f.write("</tr>\n")
+                f.write("</tbody></table>\n")
+            f.write("</body></html>")
             print(" Done.")
     except Exception as e:
         print(f"Error: can't create index.html: {e}.", file=sys.stderr)

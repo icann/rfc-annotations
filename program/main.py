@@ -21,12 +21,16 @@ def process_rfc_list(rfc_list: [str], index: Optional[str], prefix: Optional[str
         annotations.create_from_status(rfc_list, ANN_DIR_GENERATED, TXT_DIR, errata_list, patches)
         annotations.create_from_errata(rfc_list, ANN_DIR_GENERATED, errata_list, patches)
 
-    # create html files
-    rfcs_last_updated = output.create_files(rfc_list, errata_list, patches, TXT_DIR, ANN_DIR, GEN_DIR)
+        # create html files
+        rfcs_last_updated = output.create_files(rfc_list, errata_list, patches, TXT_DIR, ANN_DIR, GEN_DIR)
 
     # create index.html if necessary
     if util.means_true(util.get_from_environment("INDEX", "NO")):
-        output.create_index(prefix, rfc_list, GEN_DIR, TXT_DIR, index, rfcs_last_updated)
+        sections = []
+        for i, rfc_list in enumerate(rfc_lists):
+            s = "" if index is None or len(index) <= i else index[i]
+            sections.append((rfc_list, s))
+        output.create_index(prefix, sections, GEN_DIR, TXT_DIR, rfcs_last_updated)
 
 
 # check python version
@@ -63,7 +67,7 @@ if isinstance(RFC_LIST, str):
     RFC_LIST = RFC_LIST.strip().replace(",", " ").split()
 
 if isinstance(RFC_LIST, list) and len(RFC_LIST) > 0:
-    process_rfc_list(RFC_LIST, INDEX_TEXT)
+    process_rfc_list([RFC_LIST], [INDEX_TEXT])
 else:
     filenames = []
     for directory in ["local-config", "default-config"]:
@@ -72,14 +76,23 @@ else:
                 print(f"RFC list {file_name} already handled. Ignoring file in {directory}.")
             else:
                 filenames.append(file_name)
-                defaults = []
-                index_text = ""
+                rfc_sections = []
+                rfcs = []
+                index_text = []
+                current_index_text = ""
                 with open(os.path.join(directory, file_name), "r") as file:
                     for line in file.readlines():
-                        if not line.startswith("#"):
+                        if line.strip() == "####################":
+                            index_text.append(current_index_text)
+                            rfc_sections.append(rfcs)
+                            rfcs = []
+                            current_index_text = ""
+                        elif not line.startswith("#"):
                             if len(line) > 0 and line[0] in "0123456789":
-                                defaults.append(line.strip())
+                                rfcs.append(line.strip())
                             else:
-                                index_text += line
-                if len(defaults) > 0:
-                    process_rfc_list(defaults, INDEX_TEXT if len(INDEX_TEXT) > 0 else index_text, file_name[0:-9])
+                                current_index_text += line
+                index_text.append(current_index_text)
+                rfc_sections.append(rfcs)
+                if len(rfc_sections) > 0:
+                    process_rfc_list(rfc_sections, [INDEX_TEXT] if len(INDEX_TEXT) > 0 else index_text, file_name[0:-9])

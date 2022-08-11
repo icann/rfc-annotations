@@ -1,21 +1,24 @@
 <script>
 directions = []
 
-function makeTableSortable(tableId) {
-    const table = document.getElementById(tableId);
-    const headers = table.querySelectorAll('th');
-    [].forEach.call(headers, function (header, index) {
-        header.addEventListener('click', function () {
-            sortColumn(index);
+function makeTableSortable(tablePrefix, count) {
+    for (let i = 0; i<count; i++) {
+        const tableId = tablePrefix + i;
+        const table = document.getElementById(tableId);
+        const headers = table.querySelectorAll('th');
+        [].forEach.call(headers, function (header, index) {
+            header.addEventListener('click', function () {
+                sortColumn(index, tableId);
+            });
         });
-    });
-    directions = Array.from(headers).map(function (header) {
-        return 'asc';
-    });
+        directions = Array.from(headers).map(function (header) {
+            return 'asc';
+        });
+    }
 }
 
-function sortColumn(index) {
-    const table = document.getElementById('rfcs');
+function sortColumn(index, tableId) {
+    const table = document.getElementById(tableId);
     const headers = table.querySelectorAll('th');
     const transform = function (index, content) {
         const type = headers[index].getAttribute('data-type');
