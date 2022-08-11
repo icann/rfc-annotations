@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><title>Overview</title>
+<meta charset="UTF-8"><title>Overview of TMP-related RFCs</title>
 <style>
 body {font-family:'Arial';}
 pre {margin-top:0px; margin-bottom:0px;}
@@ -51,21 +51,24 @@ ins {color: green;}
 <script>
 directions = []
 
-function makeTableSortable(tableId) {
-    const table = document.getElementById(tableId);
-    const headers = table.querySelectorAll('th');
-    [].forEach.call(headers, function (header, index) {
-        header.addEventListener('click', function () {
-            sortColumn(index);
+function makeTableSortable(tablePrefix, count) {
+    for (let i = 0; i<count; i++) {
+        const tableId = tablePrefix + i;
+        const table = document.getElementById(tableId);
+        const headers = table.querySelectorAll('th');
+        [].forEach.call(headers, function (header, index) {
+            header.addEventListener('click', function () {
+                sortColumn(index, tableId);
+            });
         });
-    });
-    directions = Array.from(headers).map(function (header) {
-        return 'asc';
-    });
+        directions = Array.from(headers).map(function (header) {
+            return 'asc';
+        });
+    }
 }
 
-function sortColumn(index) {
-    const table = document.getElementById('rfcs');
+function sortColumn(index, tableId) {
+    const table = document.getElementById(tableId);
     const headers = table.querySelectorAll('th');
     const transform = function (index, content) {
         const type = headers[index].getAttribute('data-type');
@@ -127,8 +130,8 @@ function sortColumn(index) {
 
 </head>
 
-<body onload="makeTableSortable('rfcs')">
-Test<table class="index" id="rfcs">
+<body onload="makeTableSortable('table', 1)">
+Test<table class="index" id="table0">
 <thead><tr class="header"><th class="rfc" data-type="int">RFC</th><th class="title">Title</th><th class="date" data-type="month-year">Date</th><th class="status">Status</th></tr></thead>
 <tbody>
 <tr class='entry odd'><td class='rfc'><a target='_blank' href='rfc1034.html'>1034</a></td><td class='title'>Domain names - concepts and facilities</td><td class='date'>November 1987</td><td class='status'>Internet Standard</td></tr>

@@ -42,7 +42,7 @@ def prepare_files() -> tuple:
 
 
 def test_index_creation():
-    output.create_index("tmp", RFC_LIST, GEN_DIR, TXT_DIR, "Test")
+    output.create_index("tmp", [(RFC_LIST, "Test")], GEN_DIR, TXT_DIR)
     compare_file("tmp-index.html", GEN_DIR, RESULT_DIR)
 
 
