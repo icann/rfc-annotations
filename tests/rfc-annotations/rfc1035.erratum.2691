@@ -1,0 +1,21 @@
+#A Hirochika Asai
+#S 4.1.4
+#L 1609
+#T Editorial
+#X errata_id:2691
+#X checksum:21ff642569cb79020012ea6fa6ee595d
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+In this scheme, an entire domain name or a list of labels at
+the end of a domain name is replaced with a pointer to a prior occurance
+of the same name.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+In this scheme, an entire domain name or a list of labels at
+the end of a domain name is replaced with a pointer to a prior occur<del>a</del><ins>re</ins>nce
+of the same name.
+</pre></div>

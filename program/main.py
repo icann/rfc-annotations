@@ -13,16 +13,13 @@ import util         # get_from_environment
 ''' Main creator for RFC annotations tools '''
 
 
-def process_rfc_list(rfc_lists: [[str]], index: Optional[list], prefix: Optional[str] = None):
-    rfcs_last_updated = None
-    for rfc_list in rfc_lists:
-        if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
-            rfcfile.download_rfcs(rfc_list, TXT_DIR)  # download desired RFC text files, if not already done
-
-        if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
-            # create additional annotation files
-            annotations.create_from_status(rfc_list, ANN_DIR_GENERATED, TXT_DIR, errata_list, patches)
-            annotations.create_from_errata(rfc_list, ANN_DIR_GENERATED, errata_list, patches)
+def process_rfc_list(rfc_list: [str], index: Optional[str], prefix: Optional[str] = None):
+    if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
+        # download desired RFC text files, if not already done
+        rfcfile.download_rfcs(rfc_list, TXT_DIR)
+        # create additional annotation files
+        annotations.create_from_status(rfc_list, ANN_DIR_GENERATED, TXT_DIR, errata_list, patches)
+        annotations.create_from_errata(rfc_list, ANN_DIR_GENERATED, errata_list, patches)
 
         # create html files
         rfcs_last_updated = output.create_files(rfc_list, errata_list, patches, TXT_DIR, ANN_DIR, GEN_DIR)

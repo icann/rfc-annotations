@@ -1,0 +1,25 @@
+#A Paul Hoffman
+#C RFC 8020 clarifies empty non-terminals and zone cuts
+#L 349
+<p>
+@@RFC8020@@ extensively describes how zone cuts are determined,
+particularly in the presence of empty non-terminals.
+It says "This document states clearly that when a DNS resolver receives a
+response with a response code of NXDOMAIN, it means that the domain
+name which is thus denied AND ALL THE NAMES UNDER IT do not exist."
+</p>
+<p>
+Section 3.1 of RFC 8020 says:
+<br>
+<pre>
+This document clarifies possible ambiguities in [RFC1034] that did
+not clearly distinguish Empty Non-Terminal (ENT) names ([RFC7719])
+from nonexistent names, and it refers to subsequent documents that
+do.  ENTs are nodes in the DNS that do not have resource record sets
+associated with them but have descendant nodes that do.  The correct
+response to ENTs is NODATA (i.e., a response code of NOERROR and an
+empty answer section).  Additional clarifying language on these
+points is provided in Section 7.16 of [RFC2136] and in Sections 2.2.2
+and 2.2.3 of [RFC4592].
+</pre>
+</p>

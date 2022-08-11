@@ -18,7 +18,7 @@ def special_annotation_types() -> List[str]:
     return ["obsoleted", "potentially_obsoleted", "updated", "potentially_updated", "has_errata"]
 
 
-def get_annotations(rfc: str, directories: str, errata_list: list, patches: Optional[dict],
+def get_annotations(rfc: str, directories: Optional[str], errata_list: list, patches: Optional[dict],
                     rfc_list: Optional[list]) -> list:
 
     def create_sort_key(d: dict) -> str:
@@ -32,8 +32,9 @@ def get_annotations(rfc: str, directories: str, errata_list: list, patches: Opti
         return "~"  # a key which will be added last
 
     ret = []
-    for directory in directories.split(","):
-        ret.extend(get_annotations_from_dir(rfc, directory.strip(), errata_list, patches, rfc_list))
+    if directories is not None:
+        for directory in directories.split(","):
+            ret.extend(get_annotations_from_dir(rfc, directory.strip(), errata_list, patches, rfc_list))
     ret = sorted(ret, key=lambda d: create_sort_key(d))
 
     # search for duplicate/edited errata_ids

@@ -1,0 +1,19 @@
+#A Paul Hoffman
+#C RFC 4034 changes what else can exist with a CNAME, namely RRSIG RRs
+#L 780
+<p>
+Section 3 of @@RFC4034@@ says:
+<br>
+<pre>
+Because every authoritative RRset in a zone must be protected by a
+digital signature, RRSIG RRs must be present for names containing a
+CNAME RR.  This is a change to the traditional DNS specification
+[RFC1034], which stated that if a CNAME is present for a name, it is
+the only type allowed at that name.  A RRSIG and NSEC (see Section 4)
+MUST exist for the same name as a CNAME resource record in a signed
+zone.
+</pre>
+</p>
+<p>
+Similar wording is found in Section 2.5 of @@RFC4035@@.
+</p>

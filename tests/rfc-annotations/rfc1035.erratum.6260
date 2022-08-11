@@ -1,0 +1,30 @@
+#A Merlin Büge
+#S 4.1.1
+#L 1398
+#T Editorial
+#X errata_id:6260
+#X checksum:2f3ad4876c9d1ff550c86d49faf754e5
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+ID              A 16 bit identifier assigned by the program that
+                generates any kind of query.  This identifier is copied
+                the corresponding reply and can be used by the requester
+                to match up replies to outstanding queries.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+ID              A 16 bit identifier assigned by the program that
+                generates any kind of query.  This identifier is copied
+                <ins>to</ins> the corresponding reply and can be used by the
+		requester to match up replies to outstanding queries.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+Alternative phrasing coule be "into the corresponding reply".
+</div>
+

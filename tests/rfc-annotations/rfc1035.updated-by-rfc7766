@@ -1,0 +1,25 @@
+#A Paul Hoffman
+#C RFC 7766 clarifies TCP reordering
+#L 1721
+<p>
+@@RFC7766@@ describes the implementation requirements for DNS over TCP.
+Section 7 of RFC 7766 says:
+<br>
+<pre>
+RFC 1035 is ambiguous on the question of whether TCP responses may be
+reordered -- the only relevant text is in Section 4.2.1, which
+relates to UDP:
+
+	 Queries or their responses may be reordered by the network, or by
+	 processing in name servers, so resolvers should not depend on them
+	 being returned in order.
+
+For the avoidance of future doubt, this requirement is clarified.
+Authoritative servers and recursive resolvers are RECOMMENDED to
+support the preparing of responses in parallel and sending them out
+of order, regardless of the transport protocol in use.  Stub and
+recursive resolvers MUST be able to process responses that arrive in
+a different order than that in which the requests were sent,
+regardless of the transport protocol in use.
+</pre>
+</p>

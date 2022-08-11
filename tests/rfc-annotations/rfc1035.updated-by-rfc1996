@@ -1,0 +1,15 @@
+#A Paul Hoffman
+#C RFC 1996 expands on the definition of the fields in the SOA
+#L 1017
+<p>
+@@RFC1996@@, which defines the DNS NOTIFY mechanism,
+extensively uses the SOA fields for determining when a
+zone is updated. It says:
+<br>
+<pre>
+1.3. This document intentionally gives more definition to the roles
+of "Master," "Slave" and "Stealth" servers, their enumeration in NS
+RRs, and the SOA MNAME field.  In that sense, this document can be
+considered an addendum to [RFC1035].
+</pre>
+</p>

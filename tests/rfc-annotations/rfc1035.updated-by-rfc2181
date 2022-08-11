@@ -1,0 +1,16 @@
+#A Paul Hoffman
+#C RFC 2181 and the TTLs on SOA records
+#L 588
+<p>
+Section 7.2 of @@RFC2181@@ says:
+<br>
+<pre>
+It may be observed that in section 3.2.1 of RFC1035, which defines
+the format of a Resource Record, that the definition of the TTL field
+contains a throw away line which states that the TTL of an SOA record
+should always be sent as zero to prevent caching.  This is mentioned
+nowhere else, and has not generally been implemented.
+Implementations should not assume that SOA records will have a TTL of
+zero, nor are they required to send SOA records with a TTL of zero.
+</pre>
+</p>

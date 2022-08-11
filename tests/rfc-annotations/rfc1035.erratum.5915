@@ -1,0 +1,37 @@
+#A Alexander Dupuy
+#S 6.2
+#L 2123
+#T Editorial
+#X errata_id:5915
+#X checksum:447c9a2c84debfb24c9c4d0f3f271393
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+When a response is so long that truncation is required, the truncation
+should start at the end of the response and work forward in the
+datagram.  Thus if there is any data for the authority section, the
+answer section is guaranteed to be unique.
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+When a response is so long that truncation is required, the truncation
+should start at the end of the response and work forward in the
+datagram.  Thus if there is any data for the authority section, the
+answer section is guaranteed to be <del>unique</del><ins>complete</ins>.
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+It's not clear what it might mean for an answer section to be unique.
+However, by following the algorithm described of removing RRs from the
+back to the front, if any RRs remain in the authority (or additional)
+section, the answer section is guaranteed to be complete.
+<p/>
+[ See thread at:
+<https://mailarchive.ietf.org/arch/msg/dnsop/L_yjf4eyDRlkIOqaWULf1HUK8f0/>
+]
+</div>
+

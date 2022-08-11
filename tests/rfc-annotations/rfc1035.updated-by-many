@@ -1,0 +1,10 @@
+#A Paul Hoffman
+#C Many RFCs say they update RFC 1035, but don't
+#L 1
+<p>
+Many of the RFCs that are listed as updating RFC 1035 actually just
+mention it, but don't actually update anything here.
+For example, many of them simply define new RRtypes, which is not really an update
+to RFC 1035, just to the IANA registry it created.
+The RFCs that do update RFC 1035 are listed throughout this document.
+</p>

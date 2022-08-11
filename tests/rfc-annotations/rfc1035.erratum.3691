@@ -1,0 +1,17 @@
+#A Sam Bretheim
+#S 5.1
+#L 1888
+#T Editorial
+#X errata_id:3691
+#X checksum:69c2ab09d3c28b242559d827cb9c6491
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+\DDD            where each D is a digit is the octet corresponding to
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+\DDD            where each D is a digit i<del>s</del><ins>n</ins> the octet corresponding to
+</pre></div>

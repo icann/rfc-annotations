@@ -1,0 +1,28 @@
+#A Merlin Büge
+#S 4.1.1
+#L 1406
+#T Editorial
+#X errata_id:6262
+#X checksum:d92660c19b9db3ffb4c3a92f4abd068d
+#X errata_status_code:Held for Document Update
+#
+#
+<div class="original"><pre>
+OPCODE          A four bit field that specifies kind of query in this
+                message.  This value is set by the originator of a query
+                and copied into the response.  The values are:
+</pre></div>
+#
+#
+<div class="correct">It should say:<pre>
+OPCODE          A four bit field that specifies <ins>the</ins> kind of query in
+                this message.  This value is set by the originator of a
+                query and copied into the response.  The values are:
+</pre></div>
+#
+#
+<hr/>
+<div class="note">
+[WK]: Added 'the' in 'specifies kind of query'...
+</div>
+

@@ -1,0 +1,18 @@
+#A Paul Hoffman
+#C RFC 2308 adds $TTL to the master file format 
+#L 1805
+<p>
+Section 4 of @@RFC2308@@ says:
+<br>
+<pre>
+The Master File format [RFC 1035 Section 5] is extended to include
+the following directive:
+
+$TTL <TTL> [comment]
+
+All resource records appearing after the directive, and which do not
+explicitly include a TTL value, have their TTL set to the TTL given
+in the $TTL directive.  SIG records without a explicit TTL get their
+TTL from the "original TTL" of the SIG record [RFC 2065 Section 4.5].
+</pre>
+</p>
