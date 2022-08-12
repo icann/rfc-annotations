@@ -14,16 +14,18 @@ import util         # filtered_files, correct_path, replace_links_in_text, rewri
 ''' Get and output the annotations for RFC annotations tools '''
 
 
-def special_annotation_types() -> List[str]:
+# defines the built-in annotation types and their order
+def built_in_annotation_types() -> List[str]:
     return ["obsoleted", "potentially_obsoleted", "updated", "potentially_updated", "has_errata"]
 
 
+# retrieves a filtered and sorted list of annotations based on errata for the specified RFC
 def get_annotations(rfc: str, directories: Optional[str], errata_list: list, patches: Optional[dict],
                     rfc_list: Optional[list]) -> list:
 
     def create_sort_key(d: dict) -> str:
         if "type" in d:
-            order = special_annotation_types()
+            order = built_in_annotation_types()
             s = d["type"]
             if s in order:
                 return str(order.index(s))
@@ -32,9 +34,12 @@ def get_annotations(rfc: str, directories: Optional[str], errata_list: list, pat
         return "~"  # a key which will be added last
 
     ret = []
+    # search for annotations in the specified directories
     if directories is not None:
         for directory in directories.split(","):
-            ret.extend(get_annotations_from_dir(rfc, directory.strip(), errata_list, patches, rfc_list))
+            ret.extend(__get_annotations_from_dir(rfc, directory.strip(), errata_list, patches, rfc_list))
+
+    # sort the annotations
     ret = sorted(ret, key=lambda d: create_sort_key(d))
 
     # search for duplicate/edited errata_ids
@@ -46,6 +51,8 @@ def get_annotations(rfc: str, directories: Optional[str], errata_list: list, pat
                 edited_errata_ids.append(annotation["errata_id"])
             else:
                 candidates.append(annotation)
+
+    # handle eclipsed errata
     if len(edited_errata_ids) > 0 and len(candidates) > 0:
         for annotation in candidates:
             if annotation["errata_id"] in edited_errata_ids:
@@ -55,6 +62,7 @@ def get_annotations(rfc: str, directories: Optional[str], errata_list: list, pat
     return ret
 
 
+# converts an annotation text file into an array of dictionaries storing the annotation details
 def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dict],
                              rfc_list: Optional[list] = None) -> [dict]:
 
@@ -144,8 +152,9 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
     return ret
 
 
-def get_annotations_from_dir(rfc: str, directory: str, errata_list: list, patches: Optional[dict],
-                             rfc_list: Optional[list] = None) -> list:
+# fetches recursively all annotation files for the desired RFC in the directory (and it's children)
+def __get_annotations_from_dir(rfc: str, directory: str, errata_list: list, patches: Optional[dict],
+                               rfc_list: Optional[list] = None) -> list:
     ret = []
     # Do not fetch annotations if the directory is called ".git"
     if os.path.basename(directory) == ".git":
@@ -165,16 +174,18 @@ def get_annotations_from_dir(rfc: str, directory: str, errata_list: list, patche
         print(f" Found {current}.")
         for subdir in os.scandir(directory):
             if subdir.is_dir():
-                ret.extend(get_annotations_from_dir(rfc, subdir.path, errata_list, patches, rfc_list))
+                ret.extend(__get_annotations_from_dir(rfc, subdir.path, errata_list, patches, rfc_list))
     except FileNotFoundError:
         print(f"\n   Error: Directory '{directory}' does not exist.", file=sys.stderr)
         pass
     return ret
 
 
-def create_status_annotations(rfc_nr: str, rfc_list: list, root: Element, draft_index: Optional[dict],
-                              errata_list: Optional[list] = None, patches=None,
-                              draft_status: Optional[dict] = None) -> list:
+# returns status information (like obsoleted, updated etc.) for a single RFC (based on the information of
+# https://www.rfc-editor.org/rfc-index.xml). This information is used for the generation of annotation files.
+def __create_status_annotations(rfc_nr: str, rfc_list: list, root: Element, draft_index: Optional[dict],
+                                errata_list: Optional[list] = None, patches=None,
+                                draft_status: Optional[dict] = None) -> list:
 
     def create_entry(caption: str, prefix: str, entries: list, line: int, entry_type: str = "") -> tuple:
         s: str = ""
@@ -211,7 +222,7 @@ def create_status_annotations(rfc_nr: str, rfc_list: list, root: Element, draft_
     rfc_nr = rfc_nr.upper()
     if not rfc_nr.startswith("RFC"):
         rfc_nr = f"RFC{rfc_nr}"
-    node = rfcindex.fetch_element(root, "rfc-entry", rfc_nr)
+    node = rfcindex.fetch_element(root, rfc_nr)
     if node is None:
         print(f"{rfc_nr} not found in index:-(", file=sys.stderr)
     else:
@@ -246,6 +257,8 @@ def create_status_annotations(rfc_nr: str, rfc_list: list, root: Element, draft_
     return ret
 
 
+# creates annotation files containing the status of the RFCs (based on the information of
+# https://www.rfc-editor.org/rfc-index.xml)
 def create_from_status(rfc_list: list, annotation_directory: str, read_directory: str = ".",
                        errata_list: Optional[list] = None, patches=None):
     read_directory = util.correct_path(read_directory)
@@ -262,8 +275,8 @@ def create_from_status(rfc_list: list, annotation_directory: str, read_directory
     for rfc in rfc_list:
         rfc: str = rfc.lower().strip()
         rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
-        for caption, notes, line in create_status_annotations(rfc, rfc_list, root, draft_index, errata_list, patches,
-                                                              draft_status):
+        for caption, notes, line in __create_status_annotations(rfc, rfc_list, root, draft_index, errata_list, patches,
+                                                                draft_status):
             annotation_type = caption.replace(' ', '_').lower()
             local_name = f"{rfc}.{annotation_type}"
             fn = os.path.join(annotation_directory, local_name)
@@ -279,6 +292,7 @@ def create_from_status(rfc_list: list, annotation_directory: str, read_directory
     print(".\n" if has_skipped_files else "Done.")
 
 
+# create annotation files based on the errata stored (https://www.rfc-editor.org/errata.json) for the desired RFCs.
 def create_from_errata(rfc_list: list, annotation_directory: str, errata_list: Optional[list] = None, patches=None):
 
     def patch_urls(text: str) -> str:

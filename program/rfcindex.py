@@ -7,6 +7,7 @@ from typing import Union, Optional
 ''' Create the RFC index for RFC annotations tools '''
 
 
+# returns a cached version of https://www.rfc-editor.org/rfc-index.xml. Will be automatically created if absent.
 def read_xml_document(path: str = ".", url: str = "https://www.rfc-editor.org/rfc-index.xml") -> Optional[Document]:
     file_path = os.path.join(path, "rfc-index.xml")
     xml_content = None
@@ -26,7 +27,8 @@ def read_xml_document(path: str = ".", url: str = "https://www.rfc-editor.org/rf
                 with open(file_path, "wb") as f:
                     f.write(xml_content)
             else:
-                print(f"\n   Error: got unexpected fetching response data of type {type(xml_content)}.", file=sys.stderr)
+                print(f"\n   Error: got unexpected fetching response data of type {type(xml_content)}.",
+                      file=sys.stderr)
         except Exception as e:
             print(f"\n   Error: returned with error: {e}.", file=sys.stderr)
     else:
@@ -43,7 +45,8 @@ def read_xml_document(path: str = ".", url: str = "https://www.rfc-editor.org/rf
     return None
 
 
-def fetch_element(parent: Union[Element, Document], element: str, value: str, attribute: str = "doc-id") \
+# returns the details of a node (usually a 'rfc-entry' node defined by its RFC number)
+def fetch_element(parent: Union[Element, Document], value: str, element: str = "rfc-entry", attribute: str = "doc-id") \
         -> Optional[Element]:
     for candidate in parent.getElementsByTagName(element):
         for child in candidate.childNodes:
@@ -52,6 +55,7 @@ def fetch_element(parent: Union[Element, Document], element: str, value: str, at
     return None
 
 
+# returns a list of RFCs which are connected (eg. by "updated-by" or "obsoleted-by") to a given RFC
 def referenced_document_ids(node: Element, verb: str) -> list:
     ret: list = []
     for child in node.getElementsByTagName(verb):

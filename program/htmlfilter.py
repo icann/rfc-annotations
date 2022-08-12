@@ -12,7 +12,8 @@ import util         # replace_links_in_text, means_true, get_from_environment
 html_restrictions: Optional[dict] = None
 
 
-class MyHTMLParser(HTMLParser):
+# event based implementation of an HTMLParser filtering forbidden elements and attributes.
+class __MyHTMLParser(HTMLParser):
 
     def __init__(self, restrictions: dict, path: str):
         super().__init__()
@@ -124,9 +125,9 @@ class MyHTMLParser(HTMLParser):
             self.removed += data
 
 
-
-def replace_between(s: str, section_start: str, section_end: str, replacements: dict,
-                    preserve_attrs: bool = False) -> str:
+# helper method for (un-)escaping angle brackets in <pre>-sections
+def __replace_between(s: str, section_start: str, section_end: str, replacements: dict,
+                      preserve_attrs: bool = False) -> str:
 
     def filter_section(area: str) -> str:
         if len(area) == 0:
@@ -165,13 +166,16 @@ def replace_between(s: str, section_start: str, section_end: str, replacements: 
             ret = ret + filter_section(s[0:end]) + section_end
             end = end + len(section_end)
             if end < len(s):
-                ret = ret + replace_between(s[end:], section_start, section_end, replacements,
-                                            preserve_attrs=preserve_attrs)
+                ret = ret + __replace_between(s[end:], section_start, section_end, replacements,
+                                              preserve_attrs=preserve_attrs)
         else:
             ret = ret + s
     return ret
 
 
+# filters the html fragments stored in an annotation file. It ensures that the restrictions stored in the
+# html-restrictions.json (white and black list of element and child names and attributes) are fulfilled and
+# proper (x)html is used.
 def filter_html(lines: [str], file: Optional[str] = None, path: str = None) -> [str]:
     show_warnings = util.means_true(util.get_from_environment("HTML_WARNINGS", "0"))
     s = ""
@@ -192,19 +196,19 @@ def filter_html(lines: [str], file: Optional[str] = None, path: str = None) -> [
 
     if html_restrictions is None:
         return s
-    parser = MyHTMLParser(html_restrictions, path)
+    parser = __MyHTMLParser(html_restrictions, path)
     for tag in ["br", "hr"]:
         s = s.replace(f"<{tag}>", f"<{tag}/>").replace(f"</{tag}>", "")
 
     # replaces all < and > characters inside a <pre></pre> section with an escaped version so that the html parser
     # does not try to handle these as html tags
-    s = replace_between(s, "<pre>", "</pre>", {"<": "&amp;lt;", ">": "&amp;gt;"})
+    s = __replace_between(s, "<pre>", "</pre>", {"<": "&amp;lt;", ">": "&amp;gt;"})
 
     # fix the opening and closing tags for allowed html element names inside the <pre>-sections
     if "allowed" in html_restrictions:
         for tag in html_restrictions["allowed"]:
-            s = replace_between(s, "<pre>", "</pre>", {f"&amp;lt;{tag}": f"<{tag}", f"&amp;lt;/{tag}": f"</{tag}"},
-                                preserve_attrs=True)
+            s = __replace_between(s, "<pre>", "</pre>", {f"&amp;lt;{tag}": f"<{tag}", f"&amp;lt;/{tag}": f"</{tag}"},
+                                  preserve_attrs=True)
 
     parser.feed(s)
     result = parser.result
