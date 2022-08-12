@@ -16,7 +16,7 @@ import util         # get_from_environment
 # handles one (or a couple of) RFC lists: fetches all data and produces the html output
 def process_rfc_lists(rfc_lists: [([str], str)], index_prefix: Optional[str] = None):
     all_rfcs = []
-    for rfc_list,s in rfc_lists:
+    for rfc_list, s in rfc_lists:
         all_rfcs.extend(rfc_list)
 
     if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
@@ -32,6 +32,36 @@ def process_rfc_lists(rfc_lists: [([str], str)], index_prefix: Optional[str] = N
     # create index.html if necessary
     if util.means_true(util.get_from_environment("INDEX", "NO")):
         output.create_index(index_prefix, rfc_lists, GEN_DIR, TXT_DIR, rfcs_last_updated)
+
+
+def scan_for_rfc_list(dir_name: str):
+    print(f"scanning {dir_name}")
+    if not os.path.exists(os.path.join(dir_name, ".ignore")):
+        for file_name in util.filtered_files(dir_name, "", "-rfcs.txt"):
+            if file_name in filenames:
+                print(f"RFC list {file_name} already handled. Ignoring file in {dir_name}.")
+            else:
+                filenames.append(file_name)
+                rfc_sections = []
+                rfcs = []
+                current_index_text = ""
+                with open(os.path.join(dir_name, file_name), "r") as file:
+                    for line in file.readlines():
+                        if line.strip() == "####################":
+                            rfc_sections.append((rfcs, current_index_text))
+                            rfcs = []
+                            current_index_text = ""
+                        elif not line.startswith("#"):
+                            if len(line) > 0 and line[0] in "0123456789":
+                                rfcs.append(line.strip())
+                            else:
+                                current_index_text += line
+                rfc_sections.append((rfcs, current_index_text))
+                if len(rfc_sections) > 0:
+                    process_rfc_lists(rfc_sections, file_name[0:-9])
+        for subdir in os.scandir(dir_name):
+            if subdir.is_dir() and os.path.basename(subdir.path) != ".git":
+                scan_for_rfc_list(subdir.path)
 
 
 # check python version
@@ -72,26 +102,5 @@ if isinstance(RFC_LIST, list) and len(RFC_LIST) > 0:
 else:
     # collect and handle the desired collections of RFC lists
     filenames = []
-    for directory in ["local-config", "default-config"]:
-        for file_name in util.filtered_files(directory, "", "-rfcs.txt"):
-            if file_name in filenames:
-                print(f"RFC list {file_name} already handled. Ignoring file in {directory}.")
-            else:
-                filenames.append(file_name)
-                rfc_sections = []
-                rfcs = []
-                current_index_text = ""
-                with open(os.path.join(directory, file_name), "r") as file:
-                    for line in file.readlines():
-                        if line.strip() == "####################":
-                            rfc_sections.append((rfcs, current_index_text))
-                            rfcs = []
-                            current_index_text = ""
-                        elif not line.startswith("#"):
-                            if len(line) > 0 and line[0] in "0123456789":
-                                rfcs.append(line.strip())
-                            else:
-                                current_index_text += line
-                rfc_sections.append((rfcs, current_index_text))
-                if len(rfc_sections) > 0:
-                    process_rfc_lists(rfc_sections, file_name[0:-9])
+    for directory in ["local-config", "default-config", "annotations"]:
+        scan_for_rfc_list(directory)
