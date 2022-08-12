@@ -3,7 +3,6 @@ import hashlib
 import re
 from typing import Optional
 
-
 ''' Utility functions for RFC annotations tools '''
 
 
@@ -67,7 +66,6 @@ def replace_links_in_text(line: str, replace_special_chars: bool) -> str:
 
 
 def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
-
     def get_target(rfc: str, target_id: Optional[str] = None) -> str:
         if rfc_list is not None and rfc in rfc_list:
             if target_id is None:
@@ -80,42 +78,46 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
             else:
                 return f"https://datatracker.ietf.org/doc/html/rfc{rfc}.html#{target_id}"
 
-    def get_target_with_id(dest: str, typ: str, entry: str) -> str:
-        parts = dest[len(typ):].strip().split(" ")
-        if len(parts) > 1:
-            s = parts[0]
-            for item in parts:
-                if item.startswith("RFC"):
-                    h = get_target(item[3:].strip(), typ + "-" + s)
-                    conv = entry.replace(f"@@{dest}@@", f"<a target='_blank' href='{h}'>{dest}</a>")
-                    return rewrite_rfc_anchor(conv, rfc_list)
-        return entry
+    def get_reference_type(entity: str) -> str:
+        return "section" if entity.lower() == "appendix" else entity.lower()
+
+    def create_anchor(href_target: str, text: str, suffix: str = "", prefix: str = "") -> str:
+        return f"{prefix}<a target='_blank' href='{href_target}'>{text}</a>{suffix}"
 
     if "@@" in line:
         start = line.index("@@")
         split = line[start + 2:]
         if "@@" in split:
             end = split.index("@@")
-            target = split[0:end].strip()
-            nr = target[3:]
-            text = f"RFC{nr}"
-            if target.startswith("[") and target.endswith("]"):
-                target = target[1:-1]
-                nr = target[3:]
-                text = f"[RFC{nr}]"
-            pattern = f"@@{text}@@"
-            if target.startswith("RFC"):
-                items = nr.split(":", maxsplit=2)
-                if len(items) == 1:
-                    href = get_target(nr)
+            target_text = split[0:end].strip()
+
+            # find RFC number (and line or section reference) inside {target_text}
+            replacement = None
+            result = re.split("((Section|Appendix|Line)\s*([0-9A-Z.]+))(\s*(of|in)\s*\[?)(RFC\s*([0-9]+))(]?)",
+                              target_text, flags=re.IGNORECASE)
+            if len(result) > 8:
+                target_rfc = result[7]
+                target_section = get_reference_type(result[2]) + "-" + result[3]
+                a1 = create_anchor(get_target(target_rfc, target_section), result[1], result[4])
+                a2 = create_anchor(get_target(target_rfc), result[6], result[8])
+                replacement = f"{a1}{a2}"
+            else:
+                result = re.split("(\[?)(RFC\s*([0-9]+))(]?,\s*)((Section|Appendix|Line)\s*([0-9A-Z.]+))", target_text,
+                                  flags=re.IGNORECASE)
+                if len(result) > 7:
+                    target_rfc = result[3]
+                    target_section = get_reference_type(result[6]) + "-" + result[7]
+                    a1 = create_anchor(get_target(target_rfc), result[2], result[4], result[1])
+                    a2 = create_anchor(get_target(target_rfc, target_section), result[5])
+                    replacement = f"{a1}{a2}"
                 else:
-                    href = get_target(items[0], items[1])
-                line = line.replace(pattern, f"<a target='_blank' href='{href}'>{text}</a>")
+                    result = re.split("(\[?)(RFC\s*([0-9]+))(]?)", target_text, flags=re.IGNORECASE)
+                    if len(result) > 4:
+                        target_rfc = result[3]
+                        replacement = create_anchor(get_target(target_rfc), result[2], result[4], result[1])
+            if replacement is not None:
+                line = line.replace(f"@@{target_text}@@", replacement)
                 return rewrite_rfc_anchor(line, rfc_list)
-            elif target.lower().startswith("section"):
-                return get_target_with_id(target, "section", line)
-            elif target.lower().startswith("line"):
-                return get_target_with_id(target, "line", line)
         return line[0:start + 2] + rewrite_rfc_anchor(split, rfc_list)
     return line
 
