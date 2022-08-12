@@ -10,6 +10,7 @@ import util          # correct_path, get_from_environment
 ''' Create the new HTMLized RFCs for RFC annotations tools '''
 
 
+# creates an index html page containing details and links to the given RFCs
 def create_index(prefix: Optional[str], sections: [tuple], write_directory: str = ".", path: str = ".",
                  rfcs_last_updated: Optional[dict] = None):
     root = None
@@ -20,8 +21,8 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
     write_directory = util.correct_path(write_directory)
     file_name = "index.html" if prefix is None else f"{prefix}-index.html"
     print(f"\nCreating {file_name}...", end="")
-    css = read_html_fragments("css.html", util.get_from_environment("CSS", None))
-    scripts = read_html_fragments("index-scripts.html", util.get_from_environment("INDEX_SCRIPTS", None))
+    css = __read_html_fragments("css.html", util.get_from_environment("CSS", None))
+    scripts = __read_html_fragments("index-scripts.html", util.get_from_environment("INDEX_SCRIPTS", None))
     try:
         with open(os.path.join(write_directory, file_name), "w") as f:
             title = 'Overview' if prefix is None else f'Overview of {prefix.upper()}-related RFCs'
@@ -46,7 +47,7 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
                 for rfc in rfc_list:
                     rfc: str = rfc.lower().strip()
                     rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
-                    node = None if root is None else rfcindex.fetch_element(root, "rfc-entry", rfc.upper())
+                    node = None if root is None else rfcindex.fetch_element(root, rfc.upper())
                     f.write(f"<tr class='entry " + ("odd" if odd else "even") + "'>" +
                             f"<td class='rfc'><a target='_blank' href='{rfc}.html'>{rfc[3:]}</a></td>")
                     odd = not odd
@@ -63,7 +64,7 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
                                 rfc = node.firstChild.data
                                 suffix += "; Obsoleted by" if len(suffix) == 0 else ","
                                 text = f"{rfc[0:3]} {rfc[3:]}" if len(rfc) > 3 else rfc
-                                suffix += rewrite_anchor(f' <a href="./{rfc.lower()}">{text}</a>', rfc_list)
+                                suffix += __rewrite_anchor(f' <a href="./{rfc.lower()}">{text}</a>', rfc_list)
                         status = f"{status}{suffix}"
                         f.write(f"<td class='title'>{title}</td>"
                                 f"<td class='date'>{date}</td>"
@@ -79,7 +80,7 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
         print(f"Error: can't create index.html: {e}.", file=sys.stderr)
 
 
-def rewrite_anchor(line: str, rfc_list: list, add_target: bool = True) -> str:
+def __rewrite_anchor(line: str, rfc_list: list, add_target: bool = True) -> str:
     anchor_target = '<a href="./rfc'
     if anchor_target in line:
         fragments = line.split(anchor_target)
@@ -102,7 +103,8 @@ def rewrite_anchor(line: str, rfc_list: list, add_target: bool = True) -> str:
     return line
 
 
-def read_html_fragments(file: str, extra: Optional[str]) -> str:
+# searches for a given filename in the different config directories and returns the first found version, if present
+def __read_html_fragments(file: str, extra: Optional[str]) -> str:
     for directory in ["local-config", "default-config"]:
         file_name = os.path.join(directory, file)
         if os.path.exists(file_name):
@@ -116,7 +118,8 @@ def read_html_fragments(file: str, extra: Optional[str]) -> str:
     return ""
 
 
-def get_remark_sections(remark_list: list) -> list:
+# iterates all annotations and unifies the different 'section' references
+def __normalize_annotation_references(remark_list: list) -> list:
     ret = []
     for remark in remark_list:
         if "section" in remark:
@@ -145,7 +148,9 @@ def get_remark_sections(remark_list: list) -> list:
     return ret
 
 
-def find_remark_fragments(remark_list: list, lines: list) -> list:
+# searches for annotations with a 'fragment-' section reference and tries to determine the current line containing
+# the desired text fragment.
+def __handle_annotations_with_fragment_references(remark_list: list, lines: list) -> list:
     ret = []
     for remark in remark_list:
         if "section" in remark:
@@ -163,7 +168,6 @@ def find_remark_fragments(remark_list: list, lines: list) -> list:
                 if not found and len(target) > 1:
                     # try to find the string by combining two lines
                     for nr, line in enumerate(lines):
-
                         combined = lines[nr - 1].replace("|", "") + " " + line.replace("|", "").strip()
                         if nr > 0 and target in combined:
                             remark["section"] = f"line-{nr}"
@@ -172,6 +176,7 @@ def find_remark_fragments(remark_list: list, lines: list) -> list:
     return ret
 
 
+# creates annotated html files for a given list of RFCs.
 def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], read_directory: str = ".",
                  annotation_directory: str = None, write_directory: str = ".") -> dict:
 
@@ -186,8 +191,8 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
     rfcs_last_updated = {}
     read_directory = util.correct_path(read_directory)
     write_directory = util.correct_path(write_directory)
-    css = read_html_fragments("css.html", util.get_from_environment("CSS", None))
-    scripts = read_html_fragments("scripts.html", util.get_from_environment("SCRIPTS", None))
+    css = __read_html_fragments("css.html", util.get_from_environment("CSS", None))
+    scripts = __read_html_fragments("scripts.html", util.get_from_environment("SCRIPTS", None))
     print(f"Converting {len(rfc_list)} RFC text documents. Writing output to '{write_directory}':")
     for rfc in rfc_list:
         rfc: str = rfc.lower().strip()
@@ -203,7 +208,7 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                 for r in remarks:
                     if "type" in r:
                         t = r["type"]
-                        if t in annotations.special_annotation_types():
+                        if t in annotations.built_in_annotation_types():
                             rfc_class += " " + t
                 f.write(f'<!DOCTYPE html>\n<html lang="en">\n<head><meta charset="UTF-8"><title>RFC {rfc_nr}</title>')
                 if css is not None:
@@ -218,8 +223,8 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                 line_nr = 0
                 annotation_text = ""
                 lines = htmlize_rfcs.markup(open(read_filename).read()).splitlines()
-                remarks = find_remark_fragments(remarks, lines)
-                remarks_sections = get_remark_sections(remarks)
+                remarks = __handle_annotations_with_fragment_references(remarks, lines)
+                remarks_sections = __normalize_annotation_references(remarks)
                 erratum_references = {}
                 for line in lines:
                     # cut leading and trailing <pre> elements
@@ -238,7 +243,7 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                         aid = "line-" + str(line_nr)
                         text = str(line_nr).rjust(5)
                         line = f'<a class="line" id="{aid}" href="#{aid}">{text}</a> {line}'
-                    line = rewrite_anchor(line, rfc_list, False)
+                    line = __rewrite_anchor(line, rfc_list, False)
 
                     remarks_present = False
                     for section in remarks_sections:
@@ -273,7 +278,7 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                                     if erratum_id is None:
                                         entry_type = "entry"
                                         if annotation_type is not None:
-                                            if annotation_type in annotations.special_annotation_types():
+                                            if annotation_type in annotations.built_in_annotation_types():
                                                 entry_type = f"status {annotation_type.replace('_', '')}"
                                             else:
                                                 entry_type += f" {annotation_type}"

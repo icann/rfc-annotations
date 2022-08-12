@@ -71,7 +71,7 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
     def get_target(rfc: str, target_id: Optional[str] = None) -> str:
         if rfc_list is not None and rfc in rfc_list:
             if target_id is None:
-               return f"./rfc{rfc}.html"
+                return f"./rfc{rfc}.html"
             else:
                 return f"./rfc{rfc}.html#{target_id}"
         else:

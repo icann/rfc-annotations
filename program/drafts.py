@@ -6,7 +6,7 @@ from typing import Optional
 from urllib.request import urlopen
 from xml.dom.minidom import Document, parseString, Element
 
-from util import filtered_files
+import util  # filtered_files
 
 ''' Read and process Internet Drafts for RFC annotations tools '''
 
@@ -14,6 +14,7 @@ from util import filtered_files
 INDEX_FILE = "draft-index.json"
 
 
+# ensures an up-to-date state of the locally stored internet-drafts. Needs to call rsync.
 def download_drafts(target_dir: str = ".") -> Optional[dict]:
     drafts_dir = os.path.join(target_dir, "drafts")
     print("\nCalculating number of drafts to be fetched... ", end="")
@@ -36,18 +37,22 @@ def download_drafts(target_dir: str = ".") -> Optional[dict]:
         print(f"Retrieving {nr} changes with rsync.")
     subprocess.run(f'rsync -avz {rsync_filter} rsync.ietf.org::internet-drafts {drafts_dir}', shell=True)
     print("Finished rsync.")
-    return create_index(target_dir)
+    return __create_index(target_dir)
 
 
+# returns (and creates automatically if not present) a local index file containing the current state of the
+# downloaded drafts.
 def get_draft_index(directory: str) -> Optional[dict]:
     try:
         with open(os.path.join(directory, INDEX_FILE), "r") as f:
             return json.loads(f.read())
     except Exception as e:
         print(f"   Error? {e} loading {INDEX_FILE}. Will create index again...", file=sys.stderr)
-    return create_index(directory)
+    return __create_index(directory)
 
 
+# returns a dictionary containing status information for all drafts, will be automatically created, if absent
+# and stored in the file system
 def get_draft_status(directory: str, url: str = "https://www.ietf.org/id/all_id.txt") -> Optional[dict]:
     drafts_dir = os.path.join(directory, "drafts")
     file_path = os.path.join(drafts_dir, "status.json")
@@ -78,7 +83,8 @@ def get_draft_status(directory: str, url: str = "https://www.ietf.org/id/all_id.
     return document
 
 
-def create_index(directory: str) -> Optional[dict]:
+# recreates the index file used for faster access of draft details
+def __create_index(directory: str) -> Optional[dict]:
 
     def add_to_list(d: dict, name: str, s: str):
         if len(s.strip()) > 0:
@@ -101,7 +107,7 @@ def create_index(directory: str) -> Optional[dict]:
     drafts_dir = os.path.join(directory, "drafts")
     print("Creating index for drafts in xml format... ", end="")
     try:
-        for file in filtered_files(drafts_dir, "draft-", ".xml"):
+        for file in util.filtered_files(drafts_dir, "draft-", ".xml"):
             with open(os.path.join(drafts_dir, file), "rb") as f:
                 xml_content = f.read()
                 document = parseString(xml_content)
@@ -119,7 +125,7 @@ def create_index(directory: str) -> Optional[dict]:
 
     print("Creating index for drafts in txt format... ", end="")
     try:
-        for file in filtered_files(drafts_dir, "draft-", ".txt"):
+        for file in util.filtered_files(drafts_dir, "draft-", ".txt"):
             if not file[:-4] in handled:
                 with open(os.path.join(drafts_dir, file), "r") as f:
                     for line in f.readlines(2048):

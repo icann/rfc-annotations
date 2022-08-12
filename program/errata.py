@@ -9,6 +9,7 @@ import util  # correct_path, create_checksum
 ''' Create errata for RFC annotations tools '''
 
 
+# returns a cached version of https://www.rfc-editor.org/errata.json (will be created if absent)
 def read_errata(path: str = ".", url: str = "https://www.rfc-editor.org/errata.json") -> Optional[list]:
     file_path = os.path.join(path, "errata.json")
     document = None
@@ -44,6 +45,7 @@ def read_errata(path: str = ".", url: str = "https://www.rfc-editor.org/errata.j
     return None
 
 
+# returns all errata for a specific RFC
 def filter_errata(rfc: str, errata_list: list, patches: Optional[dict]) -> list:
     if errata_list is None:
         return []
@@ -61,6 +63,8 @@ def filter_errata(rfc: str, errata_list: list, patches: Optional[dict]) -> list:
     return result
 
 
+# calculates a checksum for a given erratum. This will be used to determine if a manually created erratum
+# annotation file is based on the same version of the very erratum.
 def errata_checksum(eid: int, errata_list: list, patches: Optional[dict]) -> Optional[str]:
     if errata_list is not None:
         for errata in errata_list:
@@ -75,29 +79,21 @@ def errata_checksum(eid: int, errata_list: list, patches: Optional[dict]) -> Opt
     return None
 
 
-def get_patches(path: str = "errata.patch") -> Optional[list]:
+# returns an object of errata patches (if present in the filesystem).
+# This will be used to fix obvious wrong data in errata data.
+# If no errata.patch is used it can be necessary to eclipse the original erratum annotation file
+# with a manually fixed version.
+def get_patches(file_name: Optional[str] = "errata.patch") -> Optional[list]:
     total = 0
     patches = None
-    if os.path.exists(path):
-        print("\nReading errata patch file... ", end="")
-        with open(path, "r") as f:
-            patches = json.loads(f.read())
-            total += len(patches)
-        print(f"Read {total} patches.")
+    if file_name is not None:
+        for directory in ["local-config", "default-config"]:
+            path = os.path.join(directory, file_name)
+            if os.path.exists(path):
+                print("\nReading errata patch file... ", end="")
+                with open(path, "r") as f:
+                    patches = json.loads(f.read())
+                    total += len(patches)
+                print(f"Read {total} patches.")
+                return patches
     return patches
-
-
-def write_errata(rfc_list: list, errata_list: list, patches, directory: str = "."):
-    if errata_list is None:
-        return
-    directory = util.correct_path(directory)
-    print(f"\nWriting errata for {len(rfc_list)} RFC documents to '{directory}':")
-    for rfc in rfc_list:
-        rfc: str = rfc.lower().strip()
-        rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
-        filename = directory + rfc + ".err"
-        print(f"Calculating {rfc.ljust(7)} errata...", end='')
-        with open(filename, "w") as f:
-            result = filter_errata(rfc, errata_list, patches)
-            f.write(json.dumps(result))
-            print(f"wrote {len(result)} errata entries.")

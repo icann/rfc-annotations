@@ -7,6 +7,7 @@ from util import correct_path
 ''' Download the RFC files for RFC annotations tools '''
 
 
+# downloads the textual representation (https://www.rfc-editor.org/rfc/*.txt) of the given RFCs
 def download_rfcs(rfc_list: list, directory: str = "."):
     directory = correct_path(directory)
     print(f"\nDownloading {len(rfc_list)} RFC documents to '{directory}':")
@@ -30,6 +31,7 @@ def download_rfcs(rfc_list: list, directory: str = "."):
                     with open(filename, "wb") as f:
                         f.write(content)
                 else:
-                    print(f"\n   Error: got unexpected fetching response data of type {type(content)}.", file=sys.stderr)
+                    print(f"\n   Error: got unexpected fetching response data of type {type(content)}.",
+                          file=sys.stderr)
             except Exception as e:
                 print(f"\n   Error: can't download text file for {rfc}: {e}.", file=sys.stderr)
