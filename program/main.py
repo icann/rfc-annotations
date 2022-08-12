@@ -15,16 +15,20 @@ import util         # get_from_environment
 
 # handles one (or a couple of) RFC lists: fetches all data and produces the html output
 def process_rfc_lists(rfc_lists: [([str], str)], index_prefix: Optional[str] = None):
-    rfcs_last_updated = {}
-    for rfc_list, s in rfc_lists:
-        if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
-            # download desired RFC text files, if not already done
-            rfcfile.download_rfcs(rfc_list, TXT_DIR)
-            # create additional annotation files
-            annotations.create_from_status(rfc_list, ANN_DIR_GENERATED, TXT_DIR, errata_list, patches)
-            annotations.create_from_errata(rfc_list, ANN_DIR_GENERATED, errata_list, patches)
-        # create html files
-        rfcs_last_updated.update(output.create_files(rfc_list, errata_list, patches, TXT_DIR, ANN_DIR, GEN_DIR))
+    all_rfcs = []
+    for rfc_list,s in rfc_lists:
+        all_rfcs.extend(rfc_list)
+
+    if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
+        # download desired RFC text files, if not already done
+        rfcfile.download_rfcs(all_rfcs, TXT_DIR)
+        # create additional annotation files
+        annotations.create_from_status(all_rfcs, ANN_DIR_GENERATED, TXT_DIR, errata_list, patches)
+        annotations.create_from_errata(all_rfcs, ANN_DIR_GENERATED, errata_list, patches)
+
+    # create html files
+    rfcs_last_updated = output.create_files(all_rfcs, errata_list, patches, TXT_DIR, ANN_DIR, GEN_DIR)
+
     # create index.html if necessary
     if util.means_true(util.get_from_environment("INDEX", "NO")):
         output.create_index(index_prefix, rfc_lists, GEN_DIR, TXT_DIR, rfcs_last_updated)
