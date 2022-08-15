@@ -8,7 +8,7 @@ import drafts       # download_drafts
 import errata       # read_errata, get_patches
 import output       # create_index, create_files
 import rfcfile      # download_rfcs
-import util         # get_from_environment
+import util         # get_from_environment, config_directories
 
 ''' Main creator for RFC annotations tools '''
 
@@ -16,7 +16,7 @@ import util         # get_from_environment
 # handles one (or a couple of) RFC lists: fetches all data and produces the html output
 def process_rfc_lists(rfc_lists: [([str], str)], index_prefix: Optional[str] = None):
     all_rfcs = []
-    for rfc_list,s in rfc_lists:
+    for rfc_list, s in rfc_lists:
         all_rfcs.extend(rfc_list)
 
     if util.means_true(util.get_from_environment("FETCH_FILES", "YES")):
@@ -72,7 +72,7 @@ if isinstance(RFC_LIST, list) and len(RFC_LIST) > 0:
 else:
     # collect and handle the desired collections of RFC lists
     filenames = []
-    for directory in ["local-config", "default-config"]:
+    for directory in util.config_directories():
         for file_name in util.filtered_files(directory, "", "-rfcs.txt"):
             if file_name in filenames:
                 print(f"RFC list {file_name} already handled. Ignoring file in {directory}.")

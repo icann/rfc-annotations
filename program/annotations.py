@@ -9,7 +9,7 @@ import drafts       # get_draft_index, get_draft_status
 import errata       # filter_errata, errata_checksum
 import htmlfilter   # filter_html
 import rfcindex     # read_xml_document, fetch_element, referenced_document_ids
-import util         # filtered_files, correct_path, replace_links_in_text, rewrite_rfc_anchor
+import util         # filtered_files, correct_path, replace_links_in_text, rewrite_rfc_anchor, create_anchor
 
 ''' Get and output the annotations for RFC annotations tools '''
 
@@ -212,9 +212,9 @@ def __create_status_annotations(rfc_nr: str, rfc_list: list, root: Element, draf
                 target = entry if count == 0 else f"https://www.rfc-editor.org/errata/eid{entry}"
                 entry = "errata" if count == 0 else f"#{entry}"
             else:
-                target = f"rfc{rfc}.html" if rfc in rfc_list else f"https://datatracker.ietf.org/doc/rfc{rfc}/"
+                target = util.get_rfc_target(rfc, rfc_list)
                 entry = f"RFC{rfc}"
-            s += f'<a target="_blank" href="{target}">{entry}</a>'
+            s += util.create_anchor(target, entry)
             count += 1
         return caption, f"{prefix}{s}", line
 
