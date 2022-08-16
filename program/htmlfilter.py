@@ -72,7 +72,7 @@ class __MyHTMLParser(HTMLParser):
             else:
                 print(f"Error: removing forbidden attribute {key} with value {value} in file {self.path}",
                       file=sys.stderr)
-        if tag == "a" and "target" not in current_attributes:
+        if tag == "a" and "target" not in current_attributes and not current_attributes["href"].startswith("#"):
             s += " target='_blank'"
         s += ">"
         if self.skip_until is None:
