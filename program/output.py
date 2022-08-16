@@ -5,7 +5,7 @@ from typing import Optional
 import annotations   # get_annotations, special_annotation_types
 import htmlize_rfcs  # markup
 import rfcindex      # read_xml_document, fetch_element
-import util          # correct_path, get_from_environment
+import util          # correct_path, get_from_environment, config_directories
 
 ''' Create the new HTMLized RFCs for RFC annotations tools '''
 
@@ -64,7 +64,7 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
                                 rfc = node.firstChild.data
                                 suffix += "; Obsoleted by" if len(suffix) == 0 else ","
                                 text = f"{rfc[0:3]} {rfc[3:]}" if len(rfc) > 3 else rfc
-                                suffix += __rewrite_anchor(f' <a href="./{rfc.lower()}">{text}</a>', rfc_list)
+                                suffix += __rewrite_anchor(util.create_anchor(rfc.lower(), text), rfc_list)
                         status = f"{status}{suffix}"
                         f.write(f"<td class='title'>{title}</td>"
                                 f"<td class='date'>{date}</td>"
@@ -80,7 +80,7 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
         print(f"Error: can't create index.html: {e}.", file=sys.stderr)
 
 
-def __rewrite_anchor(line: str, rfc_list: list, add_target: bool = True) -> str:
+def __rewrite_anchor(line: str, rfc_list: list) -> str:
     anchor_target = '<a href="./rfc'
     if anchor_target in line:
         fragments = line.split(anchor_target)
@@ -98,14 +98,12 @@ def __rewrite_anchor(line: str, rfc_list: list, add_target: bool = True) -> str:
                 else:
                     line += '<a href="https://datatracker.ietf.org/doc/rfc' + rfc_nr + '/'
                 line += s
-        if add_target:
-            line = line.replace('<a ', '<a target="_blank" ')
     return line
 
 
 # searches for a given filename in the different config directories and returns the first found version, if present
 def __read_html_fragments(file: str, extra: Optional[str]) -> str:
-    for directory in ["local-config", "default-config"]:
+    for directory in util.config_directories():
         file_name = os.path.join(directory, file)
         if os.path.exists(file_name):
             ret = None
@@ -188,6 +186,87 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
         erratum_references[eid] = ret
         return "rfc.erratum." + eid + ("" if ret == 0 else f".{ret}")
 
+    def write_annotation(remarks_present: bool, annotation_text: str) -> (bool, str):
+        erratum_id = str(rem["errata_id"]) if "errata_id" in rem else None
+        caption = str(rem["caption"]) if "caption" in rem else None
+        date = str(rem["date"]) if "date" in rem else ""
+        if len(date) > 0:
+            if rfc in rfcs_last_updated:
+                old_entry = rfcs_last_updated[rfc]
+                if old_entry < date:
+                    rfcs_last_updated[rfc] = date
+            else:
+                rfcs_last_updated[rfc] = date
+        annotation_type = str(rem["type"]) if "type" in rem else None
+        title = rem["submitter_name"] if "submitter_name" in rem else "Unknown Author"
+        author = rem["submitter_name"] if "submitter_name" in rem else None
+        if author is not None:
+            author = author.lower().replace("'", "").replace('"', '')
+
+        if not remarks_present:
+            f.write(f'</span></pre>\n<div class="annotation">{annotation_text}</div></div>'
+                    f'\n\n<div class="area">\n<pre class="{rfc_class}">'
+                    f'<span class="{rfc_class}">')
+            remarks_present = True
+            annotation_text = ""
+
+        if erratum_id is None:
+            entry_type = "entry"
+            if annotation_type is not None:
+                if annotation_type in annotations.built_in_annotation_types():
+                    entry_type = f"status {annotation_type.replace('_', '')}"
+                else:
+                    entry_type += f" {annotation_type}"
+        else:
+            entry_type = "err"
+            prefix = ""
+            suffix = ""
+            if annotation_type is not None:
+                prefix = f'{annotation_type} '
+                entry_type += f' {annotation_type.lower()}'
+            if "errata_status_code" in rem:
+                s = rem["errata_status_code"]
+                suffix = f' [{s}]'
+                entry_type += f' {s.lower().replace(" ", "")}'
+            if "outdated" in rem:
+                entry_type += ' outdated'
+            # eclipsed annotations are not supported anymore...
+            # if "eclipsed" in rem:
+            #     entry_type += ' eclipsed'
+            link_title = f'{author} ({rem["type"]})'
+            link = "https://www.rfc-editor.org/errata/eid" + erratum_id
+            if caption is None:
+                caption = ""
+            else:
+                caption += " "
+            caption = f'<span id="' + create_unique_erratum_ref(erratum_id) + f'">{caption}({prefix}Erratum #'\
+                      f'<a target="_blank" title="{link_title}" href="{link}">{erratum_id}</a>){suffix}</span>'
+
+        if author is not None:
+            entry_type += f' {author}'
+
+        annotation_text += f'<div onclick="clicked(this)" class="{entry_type}">' \
+                           '<div class="title"><span class="reference">'
+        if section == "global":
+            annotation_text += '<a href="">GLOBAL</a> '
+        else:
+            annotation_text += f'<a href="#{section}">{section}</a> '
+        annotation_text += f'{title}</span>' \
+                           f'<span class="caption">{caption}</span>' \
+                           f'<span class="timestamp">{date}</span>' \
+                           f'</div>'
+        if "outdated" in rem:
+            annotation_text += '<span class="info">based on outdated version</span>'
+        annotation_text += f'<div class="notes">'
+
+        if "notes" in rem and rem["notes"] is not None:
+            if type(rem["notes"]) is list:
+                for entry in rem["notes"]:
+                    annotation_text += entry
+
+        annotation_text += "</div></div>"
+        return remarks_present, annotation_text
+
     rfcs_last_updated = {}
     read_directory = util.correct_path(read_directory)
     write_directory = util.correct_path(write_directory)
@@ -221,7 +300,7 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                 f.write('<button class="floating" onclick="showRFC()" id="showBtn" hidden="hidden">Show RFC</button>\n')
                 f.write(f'<div class="area">\n<pre class="{rfc_class}"><span class="{rfc_class}">')
                 line_nr = 0
-                annotation_text = ""
+                annotation = ""
                 lines = htmlize_rfcs.markup(open(read_filename).read()).splitlines()
                 remarks = __handle_annotations_with_fragment_references(remarks, lines)
                 remarks_sections = __normalize_annotation_references(remarks)
@@ -243,113 +322,45 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                         aid = "line-" + str(line_nr)
                         text = str(line_nr).rjust(5)
                         line = f'<a class="line" id="{aid}" href="#{aid}">{text}</a> {line}'
-                    line = __rewrite_anchor(line, rfc_list, False)
+                    line = __rewrite_anchor(line, rfc_list)
 
-                    remarks_present = False
+                    rem_present = False
                     for section in remarks_sections:
                         if section == "global" or (f'id="{section}"' in line):
                             remark_written = False
                             for rem in remarks:
                                 if section in rem["section"]:
                                     remark_written = True
-                                    erratum_id = str(rem["errata_id"]) if "errata_id" in rem else None
-                                    caption = str(rem["caption"]) if "caption" in rem else None
-                                    date = str(rem["date"]) if "date" in rem else ""
-                                    if len(date) > 0:
-                                        if rfc in rfcs_last_updated:
-                                            old_entry = rfcs_last_updated[rfc]
-                                            if old_entry < date:
-                                                rfcs_last_updated[rfc] = date
-                                        else:
-                                            rfcs_last_updated[rfc] = date
-                                    annotation_type = str(rem["type"]) if "type" in rem else None
-                                    title = rem["submitter_name"] if "submitter_name" in rem else "Unknown Author"
-                                    author = rem["submitter_name"] if "submitter_name" in rem else None
-                                    if author is not None:
-                                        author = author.lower().replace("'", "").replace('"', '')
-
-                                    if not remarks_present:
-                                        f.write(f'</span></pre>\n<div class="annotation">{annotation_text}</div></div>'
-                                                f'\n\n<div class="area">\n<pre class="{rfc_class}">'
-                                                f'<span class="{rfc_class}">')
-                                        remarks_present = True
-                                        annotation_text = ""
-
-                                    if erratum_id is None:
-                                        entry_type = "entry"
-                                        if annotation_type is not None:
-                                            if annotation_type in annotations.built_in_annotation_types():
-                                                entry_type = f"status {annotation_type.replace('_', '')}"
-                                            else:
-                                                entry_type += f" {annotation_type}"
-                                    else:
-                                        entry_type = "err"
-                                        prefix = ""
-                                        suffix = ""
-                                        if annotation_type is not None:
-                                            prefix = f'{annotation_type} '
-                                            entry_type += f' {annotation_type.lower()}'
-                                        if "errata_status_code" in rem:
-                                            s = rem["errata_status_code"]
-                                            suffix = f' [{s}]'
-                                            entry_type += f' {s.lower().replace(" ", "")}'
-                                        if "outdated" in rem:
-                                            entry_type += ' outdated'
-                                        # eclipsed annotations are not supported anymore...
-                                        # if "eclipsed" in rem:
-                                        #     entry_type += ' eclipsed'
-                                        link_title = f'{author} ({rem["type"]})'
-                                        link = "https://www.rfc-editor.org/errata/eid" + erratum_id
-                                        if caption is None:
-                                            caption = ""
-                                        else:
-                                            caption += " "
-                                        caption = f'<span id="' + create_unique_erratum_ref(erratum_id) + '">' \
-                                                  f'{caption}({prefix}Erratum #<a target="_blank" '\
-                                                  f'title="{link_title}" href="{link}">{erratum_id}</a>){suffix}</span>'
-
-                                    if author is not None:
-                                        entry_type += f' {author}'
-
-                                    annotation_text += f'<div onclick="clicked(this)" class="{entry_type}">' \
-                                                       '<div class="title"><span class="reference">'
-                                    if section == "global":
-                                        annotation_text += '<a href="">GLOBAL</a> '
-                                    else:
-                                        annotation_text += f'<a href="#{section}">{section}</a> '
-                                    annotation_text += f'{title}</span>' \
-                                                       f'<span class="caption">{caption}</span>' \
-                                                       f'<span class="timestamp">{date}</span>' \
-                                                       f'</div>'
-                                    if "outdated" in rem:
-                                        annotation_text += '<span class="info">based on outdated version</span>'
-                                    annotation_text += f'<div class="notes">'
-
-                                    if "notes" in rem and rem["notes"] is not None:
-                                        if type(rem["notes"]) is list:
-                                            for entry in rem["notes"]:
-                                                annotation_text += entry
-
-                                    annotation_text += "</div></div>"
+                                    rem_present, annotation = write_annotation(rem_present, annotation)
                             if remark_written:
                                 remarks_sections.remove(section)
                     f.write(line)
                     if not skip_line_end:
                         f.write("\n")
 
-                f.write(f'</span></pre><div class="annotation">{annotation_text}</div></div>\n')
-                f.write('\n</body></html>\n')
+                # check whether we do have unhandled annotations
                 if len(remarks_sections) > 0:
-                    print(f"Error: annotations for {rfc.upper()} have {len(remarks_sections)} INVALID sections (",
-                          end="", file=sys.stderr)
-                    first = True
+                    error = None
                     for section in remarks_sections:
-                        if first:
-                            first = False
-                        else:
-                            print(", ", end="", file=sys.stderr)
-                        print(f"'{section}'", end="", file=sys.stderr)
-                    print(")! ", file=sys.stderr)
+                        files = None
+                        for rem in remarks:
+                            if section in rem["section"]:
+                                rem_present, annotation = write_annotation(rem_present, annotation)
+                                # do not add a warning for rejected errata
+                                if "errata_id" not in rem or rem["errata_status_code"] != "Rejected":
+                                    files = rem["path"] if files is None else files + ", " + rem["path"]
+                        if files is not None:
+                            if error is None:
+                                error = f"Warning: annotations for {rfc.upper()} have {len(remarks_sections)} INVALID "\
+                                        f"document references {remarks_sections}: "
+                            else:
+                                error += ", "
+                            error += f"'{section}' referenced in {files}"
+                    if error is not None:
+                        print(f"{error}. These annotations will appear at the end of the document!", file=sys.stderr)
+
+                f.write(f'</span></pre><div class="annotation">{annotation}</div></div>\n')
+                f.write('\n</body></html>\n')
                 print(" Done.")
         except Exception as e:
             print(f"Error: can't read {read_filename}: {e}.", file=sys.stderr)

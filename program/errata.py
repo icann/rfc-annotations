@@ -4,7 +4,7 @@ import sys
 from typing import Optional
 from urllib.request import urlopen
 
-import util  # correct_path, create_checksum
+import util  # correct_path, create_checksum, config_directories
 
 ''' Create errata for RFC annotations tools '''
 
@@ -87,7 +87,7 @@ def get_patches(file_name: Optional[str] = "errata.patch") -> Optional[list]:
     total = 0
     patches = None
     if file_name is not None:
-        for directory in ["local-config", "default-config"]:
+        for directory in util.config_directories():
             path = os.path.join(directory, file_name)
             if os.path.exists(path):
                 print("\nReading errata patch file... ", end="")

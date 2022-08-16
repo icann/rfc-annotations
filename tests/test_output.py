@@ -33,6 +33,7 @@ def compare_file(file_name: str, gen_dir: str, expected_dir: str):
 
 
 def prepare_files() -> tuple:
+    util._running_in_test = True
     rfcfile.download_rfcs(RFC_LIST, TXT_DIR)
     errata_list = errata.read_errata(TXT_DIR)
     patches = errata.get_patches()
@@ -42,6 +43,7 @@ def prepare_files() -> tuple:
 
 
 def test_index_creation():
+    util._running_in_test = True
     output.create_index("tmp", [(RFC_LIST, "Test")], GEN_DIR, TXT_DIR)
     compare_file("tmp-index.html", GEN_DIR, RESULT_DIR)
 

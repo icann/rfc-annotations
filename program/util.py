@@ -5,6 +5,8 @@ from typing import Optional
 
 ''' Utility functions for RFC annotations tools '''
 
+_running_in_test = False
+
 
 def correct_path(directory: str) -> str:
     if directory is None or len(directory) == 0:
@@ -39,6 +41,10 @@ def create_checksum(d: dict) -> str:
     return hashlib.md5(bytes(s, "utf-8")).hexdigest()
 
 
+def create_anchor(href_target: str, text: str, suffix: str = "", prefix: str = "") -> str:
+    return f"{prefix}<a target='_blank' href='{href_target}'>{text}</a>{suffix}"
+
+
 def replace_links_in_text(line: str, replace_special_chars: bool) -> str:
     start = "<"
     end = ">"
@@ -61,28 +67,26 @@ def replace_links_in_text(line: str, replace_special_chars: bool) -> str:
                         href = href[0:href.index(end)]
                         stop = False
                     search_fragment = f"{start}{href}{end}"
-                    line = line.replace(search_fragment, f'<a target="_blank" href="{href}">{href}</a>')
+                    line = line.replace(search_fragment, create_anchor(href, href))
     return line
 
 
-def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
-    def get_target(rfc: str, target_id: Optional[str] = None) -> str:
-        if rfc_list is not None and rfc in rfc_list:
-            if target_id is None:
-                return f"./rfc{rfc}.html"
-            else:
-                return f"./rfc{rfc}.html#{target_id}"
+def get_rfc_target(rfc: str, rfc_list: Optional[list] = None, target_id: Optional[str] = None) -> str:
+    if rfc_list is not None and rfc in rfc_list:
+        if target_id is None:
+            return f"./rfc{rfc}.html"
         else:
-            if target_id is None:
-                return f"https://datatracker.ietf.org/doc/rfc{rfc}/"
-            else:
-                return f"https://datatracker.ietf.org/doc/html/rfc{rfc}.html#{target_id}"
+            return f"./rfc{rfc}.html#{target_id}"
+    else:
+        if target_id is None:
+            return f"https://datatracker.ietf.org/doc/rfc{rfc}/"
+        else:
+            return f"https://datatracker.ietf.org/doc/html/rfc{rfc}.html#{target_id}"
 
+
+def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
     def get_reference_type(entity: str) -> str:
         return "section" if entity.lower() == "appendix" else entity.lower()
-
-    def create_anchor(href_target: str, text: str, suffix: str = "", prefix: str = "") -> str:
-        return f"{prefix}<a target='_blank' href='{href_target}'>{text}</a>{suffix}"
 
     if "@@" in line:
         start = line.index("@@")
@@ -98,8 +102,8 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
             if len(result) > 8:
                 target_rfc = result[7]
                 target_section = get_reference_type(result[2]) + "-" + result[3]
-                a1 = create_anchor(get_target(target_rfc, target_section), result[1], result[4])
-                a2 = create_anchor(get_target(target_rfc), result[6], result[8])
+                a1 = create_anchor(get_rfc_target(target_rfc, rfc_list, target_section), result[1], result[4])
+                a2 = create_anchor(get_rfc_target(target_rfc, rfc_list), result[6], result[8])
                 replacement = f"{a1}{a2}"
             else:
                 result = re.split("(\[?)(RFC\s*([0-9]+))(]?,\s*)((Section|Appendix|Line)\s*([0-9A-Z.]+))", target_text,
@@ -107,14 +111,15 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
                 if len(result) > 7:
                     target_rfc = result[3]
                     target_section = get_reference_type(result[6]) + "-" + result[7]
-                    a1 = create_anchor(get_target(target_rfc), result[2], result[4], result[1])
-                    a2 = create_anchor(get_target(target_rfc, target_section), result[5])
+                    a1 = create_anchor(get_rfc_target(target_rfc, rfc_list), result[2], result[4], result[1])
+                    a2 = create_anchor(get_rfc_target(target_rfc, rfc_list, target_section), result[5])
                     replacement = f"{a1}{a2}"
                 else:
                     result = re.split("(\[?)(RFC\s*([0-9]+))(]?)", target_text, flags=re.IGNORECASE)
                     if len(result) > 4:
                         target_rfc = result[3]
-                        replacement = create_anchor(get_target(target_rfc), result[2], result[4], result[1])
+                        replacement = create_anchor(get_rfc_target(target_rfc, rfc_list),
+                                                    result[2], result[4], result[1])
             if replacement is not None:
                 line = line.replace(f"@@{target_text}@@", replacement)
                 return rewrite_rfc_anchor(line, rfc_list)
@@ -135,3 +140,7 @@ def means_false(s: str) -> bool:
 
 def means_true(s: str) -> bool:
     return not means_false(s)
+
+
+def config_directories() -> [str]:
+    return ["default-config"] if _running_in_test else ["local-config", "default-config"]

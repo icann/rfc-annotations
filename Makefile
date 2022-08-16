@@ -18,7 +18,7 @@ annotations: folders
 	RFC_FETCH_FILES="NO" python3 program/main.py
 
 test: tests folders
-	pytest -v -W "ignore:::htmlize_rfcs"
+	rm -rf .pytest_cache && pytest -v -W "ignore:::htmlize_rfcs" -W "ignore::DeprecationWarning:util"
 
 docker-build:
 	@if [ -z '$(CURRENT_IMAGE)' ] ; \
@@ -53,5 +53,5 @@ docker-remove:
 	fi
 
 clean: docker-remove
-	rm -rf generated-html && rm -rf raw-originals && rm -rf annotations/_generated && \
-	rm -rf .pytest_cache && rm -rf tests/.pytest_cache
+	rm -rf generated-html && rm -rf raw-originals && rm -rf annotations/_generated && rm -rf .pytest_cache \
+	rm -rf program/__pycache__
