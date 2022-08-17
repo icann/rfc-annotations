@@ -49,7 +49,7 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
                     rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
                     node = None if root is None else rfcindex.fetch_element(root, rfc.upper())
                     f.write(f"<tr class='entry " + ("odd" if odd else "even") + "'>" +
-                            f"<td class='rfc'><a target='_blank' href='{rfc}.html'>{rfc[3:]}</a></td>")
+                            util.create_anchor(rfc + ".html", rfc[3:], "</td>", "<td class='rfc'>"))
                     odd = not odd
                     if node is not None:
                         title = node.getElementsByTagName("title")[0].firstChild.data
@@ -239,8 +239,8 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                 caption = ""
             else:
                 caption += " "
-            caption = f'<span id="' + create_unique_erratum_ref(erratum_id) + f'">{caption}({prefix}Erratum #'\
-                      f'<a target="_blank" title="{link_title}" href="{link}">{erratum_id}</a>){suffix}</span>'
+            caption = f'<span id="' + create_unique_erratum_ref(erratum_id) + f'">{caption}({prefix}Erratum #' + \
+                      util.create_anchor(link, erratum_id, ")" + suffix + "</span>", "", {"title": link_title})
 
         if author is not None:
             entry_type += f' {author}'
