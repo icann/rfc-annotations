@@ -105,6 +105,7 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
             fmt1 = r"(?P<sectionstring>(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))(?P<fill1>\s*(of|in)\s*\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>\]?)"
             fmt2 = r"(?P<fill1>\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>\]?,\s*)(?P<sectionstring>(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))"
             fmt3 = r"(?P<fill1>\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>]?)"
+            fmt4 = r"(?P<sectionstring>(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))"
 
             replacement = None
             match = re.search(fmt1, target_text, flags=re.IGNORECASE)
@@ -128,6 +129,13 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
                         target_rfc = match.group("docno")
                         replacement = create_anchor(get_rfc_target(target_rfc, rfc_list),
                                                     match.group("docstring"), match.group("fill2"), match.group("fill1"))
+                    else:
+                        match = re.search(fmt4, target_text, flags=re.IGNORECASE)
+                        if match is not None:
+                            target_section = get_reference_type(match.group("sectiontype")) + "-" + match.group("sectionno")
+                            contents = match.group("sectionstring")
+                            replacement = f"<a href='#{target_section}'>{contents}</a>"
+
             if replacement is not None:
                 line = line.replace(f"@@{target_text}@@", replacement)
                 return rewrite_rfc_anchor(line, rfc_list)
