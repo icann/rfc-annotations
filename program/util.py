@@ -102,30 +102,32 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
             target_text = split[0:end].strip()
 
             # find RFC number (and line or section reference) inside {target_text}
+            fmt1 = r"(?P<sectionstring>(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))(?P<fill1>\s*(of|in)\s*\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>\]?)"
+            fmt2 = r"(?P<fill1>\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>\]?,\s*)(?P<sectionstring>(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))"
+            fmt3 = r"(?P<fill1>\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>]?)"
+
             replacement = None
-            result = re.split("((Section|Appendix|Line)\s*([0-9A-Z.]+))(\s*(of|in)\s*\[?)(RFC\s*([0-9]+))(]?)",
-                              target_text, flags=re.IGNORECASE)
-            if len(result) > 8:
-                target_rfc = result[7]
-                target_section = get_reference_type(result[2]) + "-" + result[3]
-                a1 = create_anchor(get_rfc_target(target_rfc, rfc_list, target_section), result[1], result[4])
-                a2 = create_anchor(get_rfc_target(target_rfc, rfc_list), result[6], result[8])
+            match = re.search(fmt1, target_text, flags=re.IGNORECASE)
+            if match is not None:
+                target_rfc = match.group("docno")
+                target_section = get_reference_type(match.group("sectiontype")) + "-" + match.group("sectionno")
+                a1 = create_anchor(get_rfc_target(target_rfc, rfc_list, target_section), match.group("sectionstring"), match.group("fill1"))
+                a2 = create_anchor(get_rfc_target(target_rfc, rfc_list), match.group("docstring"), match.group("fill2"))
                 replacement = f"{a1}{a2}"
             else:
-                result = re.split("(\[?)(RFC\s*([0-9]+))(]?,\s*)((Section|Appendix|Line)\s*([0-9A-Z.]+))", target_text,
-                                  flags=re.IGNORECASE)
-                if len(result) > 7:
-                    target_rfc = result[3]
-                    target_section = get_reference_type(result[6]) + "-" + result[7]
-                    a1 = create_anchor(get_rfc_target(target_rfc, rfc_list), result[2], result[4], result[1])
-                    a2 = create_anchor(get_rfc_target(target_rfc, rfc_list, target_section), result[5])
-                    replacement = f"{a1}{a2}"
+                match = re.search(fmt2, target_text, flags=re.IGNORECASE)
+                if match is not None:
+                    target_rfc = match.group("docno")
+                    target_section = get_reference_type(match.group("sectiontype")) + "-" + match.group("sectionno")
+                    a1 = create_anchor(get_rfc_target(target_rfc, rfc_list, target_section), match.group("sectionstring"), match.group("fill2"))
+                    a2 = create_anchor(get_rfc_target(target_rfc, rfc_list), match.group("docstring"), match.group("fill1"))
+                    replacement = f"{a2}{a1}"
                 else:
-                    result = re.split("(\[?)(RFC\s*([0-9]+))(]?)", target_text, flags=re.IGNORECASE)
-                    if len(result) > 4:
-                        target_rfc = result[3]
+                    match = re.search(fmt3, target_text, flags=re.IGNORECASE)
+                    if match is not None:
+                        target_rfc = match.group("docno")
                         replacement = create_anchor(get_rfc_target(target_rfc, rfc_list),
-                                                    result[2], result[4], result[1])
+                                                    match.group("docstring"), match.group("fill2"), match.group("fill1"))
             if replacement is not None:
                 line = line.replace(f"@@{target_text}@@", replacement)
                 return rewrite_rfc_anchor(line, rfc_list)
