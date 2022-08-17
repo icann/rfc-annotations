@@ -18,7 +18,7 @@ annotations: folders
 	RFC_FETCH_FILES="NO" python3 program/main.py
 
 test: tests folders
-	rm -rf .pytest_cache && pytest -v -W "ignore:::htmlize_rfcs" -W "ignore::DeprecationWarning:util"
+	PYTHONWARNINGS="ignore" pytest -v
 
 docker-build:
 	@if [ -z '$(CURRENT_IMAGE)' ] ; \

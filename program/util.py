@@ -41,8 +41,14 @@ def create_checksum(d: dict) -> str:
     return hashlib.md5(bytes(s, "utf-8")).hexdigest()
 
 
-def create_anchor(href_target: str, text: str, suffix: str = "", prefix: str = "") -> str:
-    return f"{prefix}<a target='_blank' href='{href_target}'>{text}</a>{suffix}"
+def create_anchor(href_target: str, text: str, suffix: str = "", prefix: str = "", attributes: Optional[dict] = None) \
+        -> str:
+    extra = "" if href_target.startswith("#") else "target='_blank' "
+    if attributes is not None:
+        for name, val in attributes.items():
+            if name != "target":
+                extra += f"{name}='{val}' "
+    return f"{prefix}<a {extra}href='{href_target}'>{text}</a>{suffix}"
 
 
 def replace_links_in_text(line: str, replace_special_chars: bool) -> str:
