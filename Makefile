@@ -1,6 +1,6 @@
 DIR=$(shell pwd)
-CONTAINERNAME=dns-python
-IMAGENAME=greenbytes/dns-python
+CONTAINERNAME=rfc-annotations
+IMAGENAME=icann/rfc-annotations
 CURRENT_CONTAINER=$(shell docker ps -aq --filter name=${CONTAINERNAME})
 CURRENT_IMAGE=$(shell docker image list --filter reference=${IMAGENAME} -q)
 
