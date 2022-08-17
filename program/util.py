@@ -97,7 +97,7 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
 
             # find RFC number (and line or section reference) inside {target_text}
             replacement = None
-            result = re.split("((Section|Appendix|Line)\s*([0-9A-Z.]+))(\s*(of|in)\s*\[?)(RFC\s*([0-9]+))(]?)",
+            result = re.split(r"((Section|Appendix|Line)\s*([0-9A-Z.]+))(\s*(of|in)\s*\[?)(RFC\s*([0-9]+))(]?)",
                               target_text, flags=re.IGNORECASE)
             if len(result) > 8:
                 target_rfc = result[7]
@@ -106,7 +106,7 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
                 a2 = create_anchor(get_rfc_target(target_rfc, rfc_list), result[6], result[8])
                 replacement = f"{a1}{a2}"
             else:
-                result = re.split("(\[?)(RFC\s*([0-9]+))(]?,\s*)((Section|Appendix|Line)\s*([0-9A-Z.]+))", target_text,
+                result = re.split(r"(\[?)(RFC\s*([0-9]+))(]?,\s*)((Section|Appendix|Line)\s*([0-9A-Z.]+))", target_text,
                                   flags=re.IGNORECASE)
                 if len(result) > 7:
                     target_rfc = result[3]
@@ -115,7 +115,7 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
                     a2 = create_anchor(get_rfc_target(target_rfc, rfc_list, target_section), result[5])
                     replacement = f"{a1}{a2}"
                 else:
-                    result = re.split("(\[?)(RFC\s*([0-9]+))(]?)", target_text, flags=re.IGNORECASE)
+                    result = re.split(r"(\[?)(RFC\s*([0-9]+))(]?)", target_text, flags=re.IGNORECASE)
                     if len(result) > 4:
                         target_rfc = result[3]
                         replacement = create_anchor(get_rfc_target(target_rfc, rfc_list),
