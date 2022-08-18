@@ -141,7 +141,7 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
                             target_section = get_reference_type(match.group("sectiontype")) + "-" + \
                                              match.group("sectionno")
                             contents = match.group("sectionstring")
-                            replacement = f"<a href='#{target_section}'>{contents}</a>"
+                            replacement = create_anchor("#" + target_section, contents)
 
             if replacement is not None:
                 line = line.replace(f"@@{target_text}@@", replacement)
