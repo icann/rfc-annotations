@@ -8,6 +8,10 @@ from typing import Optional
 _running_in_test = False
 
 
+def is_valid_date_string(s: str) -> bool:
+    return len(s) == 10 and re.match(r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])", s) is not None
+
+
 def correct_path(directory: str) -> str:
     if directory is None or len(directory) == 0:
         directory = "."
