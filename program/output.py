@@ -64,7 +64,7 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
                                 rfc = node.firstChild.data
                                 suffix += "; Obsoleted by" if len(suffix) == 0 else ","
                                 text = f"{rfc[0:3]} {rfc[3:]}" if len(rfc) > 3 else rfc
-                                suffix += __rewrite_anchor(util.create_anchor(rfc.lower(), text), rfc_list)
+                                suffix += __rewrite_anchor(util.create_anchor(rfc.lower(), text, "", " "), rfc_list)
                         status = f"{status}{suffix}"
                         f.write(f"<td class='title'>{title}</td>"
                                 f"<td class='date'>{date}</td>"
