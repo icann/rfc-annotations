@@ -71,6 +71,18 @@ you can refer to that annotation in other annotations using the `id`.
 ## References to RFCs
 
 Annotations will often refer to RFCs, some of which will be be the processed RFCs, others that will be external.
-You can reference RFCs as `@@RFC<Number>@@`, and the annotation creator will turn this into a local reference if possible,
+You can reference RFCs using a "@@" notation, and the annotation creator will turn this into a local reference if possible,
 or a reference to the RFC at the RFC Editor's site if it is not an annotated RFC.
 This can be used in both HTML-formatted and plain text annotations.
+
+Example for accepted pattern outside the current document:
+~~~
+@@RFC 1023@@
+@@[RFC1023]@@
+@@Section 1.2 of RFC 1023@@
+~~~
+
+Example for accepted pattern inside the current document:
+~~~
+@@Section 4@@
+~~~
