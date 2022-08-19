@@ -1,10 +1,9 @@
 import json
 import os
-import sys
 from typing import Optional
 from urllib.request import urlopen
 
-import util  # correct_path, create_checksum, config_directories
+import util  # correct_path, create_checksum, config_directories, debug, info, error
 
 ''' Create errata for RFC annotations tools '''
 
@@ -21,27 +20,28 @@ def read_errata(path: str = ".", url: str = "https://www.rfc-editor.org/errata.j
         pass
 
     if document is None:
-        print(f"\nFetching errata from source of truth {url}... ", end='')
+        util.info(f"\nFetching errata from source of truth {url}... ", end='')
         try:
             json_content = urlopen(url).read()
+            util.info("Done")
             if type(json_content) is bytes:
-                print(f"Retrieved {len(json_content)} bytes of data. Parsing...", end='')
+                util.debug(f"Retrieved {len(json_content)} bytes of data. Parsing... ", end='')
                 with open(file_path, "wb") as f:
                     f.write(json_content)
                     document = json.loads(json_content)
             else:
-                print(f"\n   Error: got unexpected fetching response data of type {type(json_content)}.",
-                      file=sys.stderr)
+                util.error(f"got unexpected fetching response data of type {type(json_content)}.")
         except Exception as e:
-            print(f"\n   Error: returned with error: {e}.", file=sys.stderr)
+            util.error(f"returned with error: {e}.")
     else:
-        print("\nParsing cached errata.json...", end='')
+        util.debug("\nParsing cached errata.json...", end='')
 
     if type(document) is list:
-        print(f" Finished. Got {len(document)} entries.")
+        util.debug(f" Finished. Got {len(document)} entries.")
         return document
     else:
-        print(f"\n   Error: got unexpected parsing response type {type(document)}.", file=sys.stderr)
+        util.debug("")
+        util.error(f"got unexpected parsing response type {type(document)}.")
     return None
 
 
@@ -90,10 +90,10 @@ def get_patches(file_name: Optional[str] = "errata.patch") -> Optional[list]:
         for directory in util.config_directories():
             path = os.path.join(directory, file_name)
             if os.path.exists(path):
-                print("\nReading errata patch file... ", end="")
+                util.debug("\nReading errata patch file... ", end="")
                 with open(path, "r") as f:
                     patches = json.loads(f.read())
                     total += len(patches)
-                print(f"Read {total} patches.")
+                util.debug(f"Read {total} patches.")
                 return patches
     return patches

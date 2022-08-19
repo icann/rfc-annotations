@@ -1,11 +1,30 @@
 import os
 import hashlib
 import re
+import sys
 from typing import Optional
 
 ''' Utility functions for RFC annotations tools '''
 
 _running_in_test = False
+verbose_output = False
+
+
+def debug(s: str, end='\n'):
+    if verbose_output:
+        print(s, end=end)
+
+
+def info(s: str, end='\n'):
+    print(s, end=end)
+
+
+def warn(s: str):
+    print(f"\n   Warning: {s}", file=sys.stderr)
+
+
+def error(s: str):
+    print(f"\n   Error: {s}", file=sys.stderr)
 
 
 def correct_path(directory: str) -> str:

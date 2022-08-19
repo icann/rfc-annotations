@@ -8,7 +8,7 @@ import drafts       # download_drafts
 import errata       # read_errata, get_patches
 import output       # create_index, create_files
 import rfcfile      # download_rfcs
-import util         # get_from_environment, config_directories
+import util         # get_from_environment, means_true, config_directories, info, error, verbose_output
 
 ''' Main creator for RFC annotations tools '''
 
@@ -37,8 +37,11 @@ def process_rfc_lists(rfc_lists: [([str], str)], index_prefix: Optional[str] = N
 # check python version
 python_version = sys.version_info
 if python_version[0] < 3 or (python_version[0] == 3 and python_version[1] < 7):
-    print(f"Error: the minimum python version is 3.7.\n\nYou're running: {sys.version}", file=sys.stderr)
+    util.error(f"the minimum python version is 3.7.\n\nYou're running: {sys.version}")
     exit(-1)
+
+# set desired verbose mode
+util.verbose_output = util.means_true(util.get_from_environment("VERBOSE", "NO"))
 
 # determine and create directories
 TXT_DIR = util.get_from_environment("TXT_DIR", "raw-originals")
@@ -75,8 +78,9 @@ else:
     for directory in util.config_directories():
         for file_name in util.filtered_files(directory, "", "-rfcs.txt"):
             if file_name in filenames:
-                print(f"RFC list {file_name} already handled. Ignoring file in {directory}.")
+                util.info(f"RFC list {file_name} already handled. Ignoring file in {directory}.")
             else:
+                util.info(f"\nCreating output for {file_name}...")
                 filenames.append(file_name)
                 rfc_sections = []
                 rfcs = []

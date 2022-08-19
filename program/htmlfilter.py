@@ -1,10 +1,9 @@
 import json
-import sys
 import os
 from html.parser import HTMLParser
 from typing import Optional
 
-import util         # replace_links_in_text, means_true, get_from_environment
+import util         # replace_links_in_text, means_true, get_from_environment, warn, error
 
 
 ''' Parse HTML for RFC annotations tools '''
@@ -59,19 +58,18 @@ class __MyHTMLParser(HTMLParser):
                             scheme = value.split(":")[0]
                             if "allowed-schemes" in entry and len(entry["allowed-schemes"]) > 0:
                                 if scheme.lower() not in entry["allowed-schemes"]:
-                                    print(f"Error: scheme {scheme} is not allowed for attribute {key} in element {tag}"
-                                          f" in file {self.path}", file=sys.stderr)
+                                    util.error(f"scheme {scheme} is not allowed for attribute {key} in element {tag}"
+                                               f" in file {self.path}")
                                     ok = False
                             else:
-                                print(f"Error: no schemes allowed for attribute {key}={value} in element {tag}"
-                                      f" in file {self.path}", file=sys.stderr)
+                                util.error(f"no schemes allowed for attribute {key}={value} in element {tag}"
+                                           f" in file {self.path}")
                                 ok = False
                 if ok:
                     s += f" {key}='{value}'"
                     current_attributes[key] = value
             else:
-                print(f"Error: removing forbidden attribute {key} with value {value} in file {self.path}",
-                      file=sys.stderr)
+                util.error(f"removing forbidden attribute {key} with value {value} in file {self.path}")
         if tag == "a" and "target" not in current_attributes and not current_attributes["href"].startswith("#"):
             s += " target='_blank'"
         s += ">"
@@ -93,11 +91,11 @@ class __MyHTMLParser(HTMLParser):
 
     def handle_endtag(self, tag):
         if len(self.tag_stack) == 0:
-            print(f"   Error: Got end tag {tag} without any opened tags in file {self.path}", file=sys.stderr)
+            util.error(f"Got end tag {tag} without any opened tags in file {self.path}")
         else:
             expected = self.tag_stack[len(self.tag_stack) - 1]
             if expected != tag:
-                print(f"   Error: Got end tag {tag} but did expect {expected} in file {self.path}", file=sys.stderr)
+                util.error(f"Got end tag {tag} but did expect {expected} in file {self.path}")
             else:
                 self.tag_stack = self.tag_stack[:-1]
 
@@ -114,8 +112,8 @@ class __MyHTMLParser(HTMLParser):
             self.removed += s
             if tag == self.skip_until:
                 self.skip_until = None
-                print(f"Error: stripped '{self.removed}' due to invalid start tag: {tag} in hierarchy {self.open_tags}"
-                      f" in file {self.path}", file=sys.stderr)
+                util.error(f"stripped '{self.removed}' due to invalid start tag: {tag} in hierarchy {self.open_tags}"
+                           f" in file {self.path}")
                 self.removed = ""
 
     def handle_data(self, data):
@@ -192,7 +190,7 @@ def filter_html(lines: [str], file: Optional[str] = None, path: str = None) -> [
                 html_restrictions = json.loads(f.read())
         except Exception:
             if show_warnings:
-                print(f"Can't read {file} file! Output will be unfiltered!", file=sys.stderr)
+                util.warn(f"Can't read {file} file! Output will be unfiltered!")
 
     if html_restrictions is None:
         return s
@@ -219,8 +217,8 @@ def filter_html(lines: [str], file: Optional[str] = None, path: str = None) -> [
                 filtered.append(tag)
         if len(filtered) > 0:
             if show_warnings:
-                print(f"   Warning: Invalid HTML. Some tags are not closed properly: {filtered}. "
-                      f"Adding closing tags to {path}.", file=sys.stderr)
+                util.warn(f"Invalid HTML. Some tags are not closed properly: {filtered}. "
+                          f"Adding closing tags to {path}.")
             suffix = ""
             for tag in filtered:
                 suffix = f"</{tag}>{suffix}"

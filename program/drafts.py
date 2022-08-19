@@ -1,12 +1,11 @@
 import json
 import os
 import subprocess
-import sys
 from typing import Optional
 from urllib.request import urlopen
 from xml.dom.minidom import Document, parseString, Element
 
-import util  # filtered_files
+import util  # filtered_files, debug, info, error
 
 ''' Read and process Internet Drafts for RFC annotations tools '''
 
@@ -17,7 +16,7 @@ INDEX_FILE = "draft-index.json"
 # ensures an up-to-date state of the locally stored internet-drafts. Needs to call rsync.
 def download_drafts(target_dir: str = ".") -> Optional[dict]:
     drafts_dir = os.path.join(target_dir, "drafts")
-    print("\nCalculating number of drafts to be fetched... ", end="")
+    util.info("\nCalculating number of drafts to be fetched... ", end="")
     rsync_filter = '--include="draft*.xml" --include="draft-*.txt" --exclude="*" --delete'
     lines = subprocess.check_output(f'rsync -an --stats {rsync_filter} rsync.ietf.org::internet-drafts {drafts_dir}',
                                     shell=True).decode("utf-8").split("\n")
@@ -29,14 +28,14 @@ def download_drafts(target_dir: str = ".") -> Optional[dict]:
                 nr = 0
             nr += int(line.split(": ")[1].split("(")[0].replace(",", "").replace(".", ""))
     if nr == 0:
-        print("Already up to date")
+        util.info("Already up to date")
         return get_draft_index(target_dir)
     if nr < 0:
-        print("Retrieving unknown number of changes with rsync.")
+        util.info("Retrieving unknown number of changes with rsync.")
     else:
-        print(f"Retrieving {nr} changes with rsync.")
+        util.info(f"Retrieving {nr} changes with rsync.")
     subprocess.run(f'rsync -avz {rsync_filter} rsync.ietf.org::internet-drafts {drafts_dir}', shell=True)
-    print("Finished rsync.")
+    util.info("Finished rsync.")
     return __create_index(target_dir)
 
 
@@ -47,7 +46,7 @@ def get_draft_index(directory: str) -> Optional[dict]:
         with open(os.path.join(directory, INDEX_FILE), "r") as f:
             return json.loads(f.read())
     except Exception as e:
-        print(f"   Error? {e} loading {INDEX_FILE}. Will create index again...", file=sys.stderr)
+        util.error(f"{e} loading {INDEX_FILE}. Will create index again...")
     return __create_index(directory)
 
 
@@ -65,10 +64,10 @@ def get_draft_status(directory: str, url: str = "https://www.ietf.org/id/all_id.
         pass
 
     if document is None:
-        print(f"\nFetching draft status from source of truth {url}... ", end='')
+        util.info(f"\nFetching draft status from source of truth {url}... ", end='')
         try:
             text_content = urlopen(url).read().decode('utf-8')
-            print(f"Retrieved {len(text_content)} chars of data. Parsing and converting...", end='')
+            util.info(f"Retrieved {len(text_content)} chars of data. Parsing and converting...", end='')
             document = {}
             for entry in text_content.split("\n"):
                 items = entry.rstrip().split("\t", maxsplit=2)
@@ -76,10 +75,11 @@ def get_draft_status(directory: str, url: str = "https://www.ietf.org/id/all_id.
                     document[items[0]] = items[2]
             with open(file_path, "w") as f:
                 f.write(json.dumps(document))
+            util.info(" Done.")
         except Exception as e:
-            print(f"\n   Error: returned with error: {e}.", file=sys.stderr)
+            util.error(f"returned with error: {e}.")
     else:
-        print("\nParsing cached status.json...", end='')
+        util.debug("\nUsing cached status.json.")
     return document
 
 
@@ -105,7 +105,7 @@ def __create_index(directory: str) -> Optional[dict]:
     updated_by = {}
     handled = []
     drafts_dir = os.path.join(directory, "drafts")
-    print("Creating index for drafts in xml format... ", end="")
+    util.debug("Creating index for drafts in xml format... ", end="")
     try:
         for file in util.filtered_files(drafts_dir, "draft-", ".xml"):
             with open(os.path.join(drafts_dir, file), "rb") as f:
@@ -119,11 +119,11 @@ def __create_index(directory: str) -> Optional[dict]:
                         handled.append(draft_name)
                         add_element_to_list(obsoleted_by, draft_name, "obsoletes", root[0])
                         add_element_to_list(updated_by, draft_name, "updates", root[0])
+        util.debug("Done.")
     except Exception as e:
-        print(f"\n   Error reading xml in {drafts_dir}: {e}", file=sys.stderr)
-    print("Done.")
+        util.error(f"reading xml in {drafts_dir}: {e}")
 
-    print("Creating index for drafts in txt format... ", end="")
+    util.debug("Creating index for drafts in txt format... ", end="")
     try:
         for file in util.filtered_files(drafts_dir, "draft-", ".txt"):
             if not file[:-4] in handled:
@@ -133,9 +133,10 @@ def __create_index(directory: str) -> Optional[dict]:
                             add_to_list(updated_by, file[:-4], line[8:].split("  ")[0].split("(")[0].strip())
                         if line.startswith("Obsoletes: "):
                             add_to_list(obsoleted_by, file[:-4], line[11:].split("  ")[0].split("(")[0].strip())
+        util.debug("Done.")
     except Exception as e:
-        print(f"\n   Error reading text in {drafts_dir}: {e}", file=sys.stderr)
-    print("Done.\n")
+        util.error(f"reading text in {drafts_dir}: {e}")
+
     result = {"obsoleted": obsoleted_by, "updated": updated_by}
     with open(os.path.join(directory, INDEX_FILE), "w") as f:
         f.write(json.dumps(result))

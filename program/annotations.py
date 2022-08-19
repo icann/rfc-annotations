@@ -1,5 +1,4 @@
 import os
-import sys
 import re
 import textwrap
 from typing import Optional, List
@@ -117,8 +116,8 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
                         line_nr = int(s)
                         rfc_nr = int(os.path.basename(path).split(".")[0][3:])
                         if rfc_nr >= 8650 and line_nr > 1:
-                            print(f"   Warning: File {path} contains reference to line#{s}. "
-                                  "Line references for RFC8650 and newer may be unstable.", file=sys.stderr)
+                            util.warn(f"File {path} contains reference to line#{s}. "
+                                      "Line references for RFC8650 and newer may be unstable.")
                     except ValueError:
                         pass
                 elif tag == "S":
@@ -148,7 +147,7 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
         if len(notes) > 0:
             ret.append(check_errata_status(entry))
         else:
-            print(f"\n   Error: {path} has invalid format.", file=sys.stderr)
+            util.error(f"{path} has invalid format.")
     return ret
 
 
@@ -163,7 +162,6 @@ def __get_annotations_from_dir(rfc: str, directory: str, errata_list: list, patc
     if os.path.exists(os.path.join(directory, ".ignore")):
         return ret
     # Normal processing
-    print(f"Fetching annotations for {rfc} in '{directory}'... ", end="")
     current = 0
     try:
         for file in util.filtered_files(directory, rfc + "."):
@@ -171,12 +169,13 @@ def __get_annotations_from_dir(rfc: str, directory: str, errata_list: list, patc
             annotations_in_dir = get_annotation_from_file(path, errata_list, patches, rfc_list)
             ret.extend(annotations_in_dir)
             current += len(annotations_in_dir)
-        print(f" Found {current}.")
+        if current > 0:
+            util.debug(f"Found {str(current).rjust(2)} annotations {directory}. ")
         for subdir in os.scandir(directory):
             if subdir.is_dir():
                 ret.extend(__get_annotations_from_dir(rfc, subdir.path, errata_list, patches, rfc_list))
     except FileNotFoundError:
-        print(f"\n   Error: Directory '{directory}' does not exist.", file=sys.stderr)
+        util.error(f"Directory '{directory}' does not exist.")
         pass
     return ret
 
@@ -224,7 +223,7 @@ def __create_status_annotations(rfc_nr: str, rfc_list: list, root: Element, draf
         rfc_nr = f"RFC{rfc_nr}"
     node = rfcindex.fetch_element(root, rfc_nr)
     if node is None:
-        print(f"{rfc_nr} not found in index:-(", file=sys.stderr)
+        util.error(f"{rfc_nr} not found in index:-(")
     else:
         obsoleted_by = rfcindex.referenced_document_ids(node, "obsoleted-by")
         if len(obsoleted_by) > 0:
@@ -264,13 +263,13 @@ def create_from_status(rfc_list: list, annotation_directory: str, read_directory
     read_directory = util.correct_path(read_directory)
     response = rfcindex.read_xml_document(read_directory)
     if response is None:
-        print("   Error: can't read RFC index")
+        util.error("can't read RFC index")
         return
     draft_index = drafts.get_draft_index(read_directory)
     draft_status = drafts.get_draft_status(read_directory)
 
     root: Optional[Element] = response.firstChild
-    print("Creating status annotations... ", end="")
+    util.info("Creating status annotations... ", end="")
     has_skipped_files = False
     for rfc in rfc_list:
         rfc: str = rfc.lower().strip()
@@ -282,14 +281,16 @@ def create_from_status(rfc_list: list, annotation_directory: str, read_directory
             fn = os.path.join(annotation_directory, local_name)
             if os.path.exists(fn):
                 if has_skipped_files:
-                    print(f", {local_name}", end="")
+                    util.debug(f", {local_name}", end="")
                 else:
-                    print(f"\n   Files exist and will be skipped: {local_name}", end="")
+                    util.debug(f"\n   Files exist and will be skipped: {local_name}", end="")
                     has_skipped_files = True
             else:
                 with open(fn, "w") as f:
                     f.write(f"#A\n#C {caption}\n#T {annotation_type}\n#\n#\n<div>{notes}</div>\n\n")
-    print(".\n" if has_skipped_files else "Done.")
+    if has_skipped_files:
+        util.debug("")
+    util.info("Done.")
 
 
 # create annotation files based on the errata stored (https://www.rfc-editor.org/errata.json) for the desired RFCs.
@@ -298,7 +299,7 @@ def create_from_errata(rfc_list: list, annotation_directory: str, errata_list: O
     def patch_urls(text: str) -> str:
         return text.replace("<", "<&shy;")
 
-    print("Creating errata annotations... ", end="")
+    util.info("Creating errata annotations... ", end="")
     has_skipped_files = False
     for rfc in rfc_list:
         rfc: str = rfc.lower().strip()
@@ -310,9 +311,9 @@ def create_from_errata(rfc_list: list, annotation_directory: str, errata_list: O
             fn = os.path.join(annotation_directory, local_name)
             if os.path.exists(fn):
                 if has_skipped_files:
-                    print(f", {local_name}", end="")
+                    util.debug(f", {local_name}", end="")
                 else:
-                    print(f"\n   Files exist and will be skipped: {local_name}", end="")
+                    util.debug(f"\n   Files exist and will be skipped: {local_name}", end="")
                     has_skipped_files = True
             else:
                 with open(fn, "w") as f:
@@ -360,4 +361,6 @@ def create_from_errata(rfc_list: list, annotation_directory: str, errata_list: O
                                     note_line = util.replace_links_in_text(note_line, True)
                                     f.write(f"\n{note_line.strip()}")
                             f.write('\n</pre></div>\n\n')
-    print(".\n" if has_skipped_files else "Done.")
+    if has_skipped_files:
+        util.debug("")
+    util.info("Done.")
