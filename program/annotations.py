@@ -106,7 +106,11 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
                 elif tag == "C":
                     entry["caption"] = s
                 elif tag == "D":
-                    entry["date"] = s
+                    if util.is_valid_date_string(s):
+                        entry["date"] = s
+                    else:
+                        print(f"   Warning: File {path} contains invalid formatted date: {s}. Must use YYYY-MM-DD.",
+                              file=sys.stderr)
                 elif tag == "F":
                     entry["section"] = "fragment-" + s
                 elif tag == "L":
