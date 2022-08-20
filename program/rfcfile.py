@@ -1,16 +1,15 @@
 import os
-import sys
 from urllib.request import urlopen
 
-from util import correct_path
+import util  # correct_path, debug, info, error
 
 ''' Download the RFC files for RFC annotations tools '''
 
 
 # downloads the textual representation (https://www.rfc-editor.org/rfc/*.txt) of the given RFCs
 def download_rfcs(rfc_list: list, directory: str = "."):
-    directory = correct_path(directory)
-    print(f"\nDownloading {len(rfc_list)} RFC documents to '{directory}':")
+    directory = util.correct_path(directory)
+    util.info(f"Scanning for {len(rfc_list)} RFC documents in '{directory}':")
     for rfc in rfc_list:
         rfc: str = rfc.lower().strip()
         rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
@@ -21,17 +20,18 @@ def download_rfcs(rfc_list: list, directory: str = "."):
         except FileNotFoundError:
             pass
         if file_size > 0:
-            print(f"Local file  {rfc.ljust(7)} with {str(file_size).rjust(6)} bytes seems ok.")
+            util.debug(f"Local file  {rfc.ljust(7)} with {str(file_size).rjust(6)} bytes seems ok.")
         else:
-            print(f"Downloading {rfc.ljust(7)}... ", end='')
+            util.info(f"Downloading {rfc.ljust(7)}... ", end='')
             try:
                 content = urlopen(f"https://www.rfc-editor.org/rfc/{rfc}.txt").read()
                 if type(content) is bytes:
-                    print(f"Retrieved {str(len(content)).rjust(6)} bytes of data.")
+                    util.info(f"Retrieved {str(len(content)).rjust(6)} bytes of data.")
                     with open(filename, "wb") as f:
                         f.write(content)
                 else:
-                    print(f"\n   Error: got unexpected fetching response data of type {type(content)}.",
-                          file=sys.stderr)
+                    util.info("")
+                    util.error(f"got unexpected fetching response data of type {type(content)}.")
             except Exception as e:
-                print(f"\n   Error: can't download text file for {rfc}: {e}.", file=sys.stderr)
+                util.error(f"can't download text file for {rfc}: {e}.")
+    util.info(f"All RFC documents handled.")

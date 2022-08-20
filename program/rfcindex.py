@@ -1,8 +1,9 @@
 import os
-import sys
 from xml.dom.minidom import Element, Node, Document, parseString
 from urllib.request import urlopen
 from typing import Union, Optional
+
+import util  # debug, info, error
 
 ''' Create the RFC index for RFC annotations tools '''
 
@@ -19,29 +20,31 @@ def read_xml_document(path: str = ".", url: str = "https://www.rfc-editor.org/rf
         pass
 
     if xml_content is None:
-        print(f"\nFetching data from source of truth {url}... ", end='')
+        util.info(f"\nFetching data from source of truth {url}... ", end='')
         try:
             xml_content = urlopen(url).read()
             if type(xml_content) is bytes:
-                print(f"Retrieved {len(xml_content)} bytes of data. Parsing... ", end='')
+                util.info(f"Retrieved {len(xml_content)} bytes of data. Parsing... ", end='')
                 with open(file_path, "wb") as f:
                     f.write(xml_content)
             else:
-                print(f"\n   Error: got unexpected fetching response data of type {type(xml_content)}.",
-                      file=sys.stderr)
+                util.info("")
+                util.error(f"got unexpected fetching response data of type {type(xml_content)}.")
         except Exception as e:
-            print(f"\n   Error: returned with error: {e}.", file=sys.stderr)
+            util.error(f"returned with error: {e}.")
     else:
-        print("\nParsing cached rfc-index... ", end='')
+        util.debug("\nParsing cached rfc-index... ", end='')
 
-    document = parseString(xml_content)
-    if type(document) is Document:
-        doc: Document = document
-        root: Node = doc.firstChild
-        print(f"Got {len(root.childNodes)} entries.\n")
-        return doc
-    else:
-        print(f"\n   Error: got unexpected parsing response type {type(document)}.", file=sys.stderr)
+    if xml_content is not None:
+        document = parseString(xml_content)
+        if type(document) is Document:
+            doc: Document = document
+            root: Node = doc.firstChild
+            util.debug(f"Got {len(root.childNodes)} entries.\n")
+            return doc
+        else:
+            util.debug("")
+            util.error(f"got unexpected parsing response type {type(document)}.")
     return None
 
 

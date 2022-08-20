@@ -1,11 +1,10 @@
 import os.path
-import sys
 from typing import Optional
 
 import annotations   # get_annotations, special_annotation_types
 import htmlize_rfcs  # markup
 import rfcindex      # read_xml_document, fetch_element
-import util          # correct_path, get_from_environment, config_directories
+import util          # correct_path, get_from_environment, config_directories, create_anchor, debug, info, error
 
 ''' Create the new HTMLized RFCs for RFC annotations tools '''
 
@@ -20,7 +19,7 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
 
     write_directory = util.correct_path(write_directory)
     file_name = "index.html" if prefix is None else f"{prefix}-index.html"
-    print(f"\nCreating {file_name}...", end="")
+    util.info(f"Creating {file_name}...", end="")
     css = __read_html_fragments("css.html", util.get_from_environment("CSS", None))
     scripts = __read_html_fragments("index-scripts.html", util.get_from_environment("INDEX_SCRIPTS", None))
     try:
@@ -75,9 +74,9 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
                     f.write("</tr>\n")
                 f.write("</tbody></table>\n")
             f.write("</body></html>")
-            print(" Done.")
+            util.info(" Done.")
     except Exception as e:
-        print(f"Error: can't create index.html: {e}.", file=sys.stderr)
+        util.error(f"can't create index.html: {e}.")
 
 
 def __rewrite_anchor(line: str, rfc_list: list) -> str:
@@ -272,15 +271,20 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
     write_directory = util.correct_path(write_directory)
     css = __read_html_fragments("css.html", util.get_from_environment("CSS", None))
     scripts = __read_html_fragments("scripts.html", util.get_from_environment("SCRIPTS", None))
-    print(f"Converting {len(rfc_list)} RFC text documents. Writing output to '{write_directory}':")
+    util.info(f"Converting {len(rfc_list)} RFC text documents. Writing output to '{write_directory}'.")
+    if not util.verbose_output:
+        util.info("Did write:", end="")
     for rfc in rfc_list:
         rfc: str = rfc.lower().strip()
         rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
         rfc_nr = rfc[3:]
         read_filename = read_directory + rfc + ".txt"
         write_filename = write_directory + rfc + ".html"
+        if util.verbose_output:
+            util.debug(f"Writing {rfc}.html")
+        else:
+            util.info(f" {rfc}.html", end="")
         remarks = annotations.get_annotations(rfc, annotation_directory, errata_list, patches, rfc_list)
-        print(f"Writing {rfc}.html adding {str(len(remarks)).rjust(2)} annotations...", end="")
         try:
             with open(write_filename, "w") as f:
                 rfc_class = "rfc"
@@ -351,17 +355,18 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                                     files = rem["path"] if files is None else files + ", " + rem["path"]
                         if files is not None:
                             if error is None:
-                                error = f"Warning: annotations for {rfc.upper()} have {len(remarks_sections)} INVALID "\
+                                error = f"annotations for {rfc.upper()} have {len(remarks_sections)} INVALID "\
                                         f"document references {remarks_sections}: "
                             else:
                                 error += ", "
                             error += f"'{section}' referenced in {files}"
                     if error is not None:
-                        print(f"{error}. These annotations will appear at the end of the document!", file=sys.stderr)
+                        util.warn(f"{error}. These annotations will appear at the end of the document!\n")
 
                 f.write(f'</span></pre><div class="annotation">{annotation}</div></div>\n')
                 f.write('\n</body></html>\n')
-                print(" Done.")
         except Exception as e:
-            print(f"Error: can't read {read_filename}: {e}.", file=sys.stderr)
+            util.error(f"can't read {read_filename}: {e}.")
+    if not util.verbose_output:
+        util.info(". Done.")
     return rfcs_last_updated

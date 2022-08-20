@@ -6,7 +6,7 @@ CURRENT_IMAGE=$(shell docker image list --filter reference=${IMAGENAME} -q)
 
 all: folders
 	python3 program/pull_updates.py
-	RFC_INDEX="YES" python3 program/main.py
+	RFC_INDEX="YES" python3 -u program/main.py
 
 generated-html local-config raw-originals raw-originals/drafts annotations/_generated:
 	mkdir -p $@
@@ -15,7 +15,7 @@ folders: generated-html local-config raw-originals raw-originals/drafts annotati
 
 annotations: folders
 	python3 program/pull_updates.py
-	RFC_FETCH_FILES="NO" python3 program/main.py
+	RFC_FETCH_FILES="NO" python3 -u program/main.py
 
 test: tests folders
 	PYTHONWARNINGS="ignore" pytest -v

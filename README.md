@@ -143,6 +143,8 @@ Generating this file can sometimes be slow, so setting `RFC_INDEX=NO`
 can speed up the overall building process.
 - `RFC_HTML_WARNINGS` set to `YES` tells the annotation collector to display warnings about HTML
 fix-ups that it is automatically applying.
+- `RFC_VERBOSE` set to `YES` produces more output to the console 
+which may be helpful if issues occur.
 
 ### Personal CSS and Javascript
 
