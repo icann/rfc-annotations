@@ -18,7 +18,7 @@ annotations: folders
 	RFC_FETCH_FILES="NO" python3 -u program/main.py
 
 test: tests folders
-	PYTHONWARNINGS="ignore" pytest -vv
+	PYTHONWARNINGS="ignore" pytest -v
 
 docker-build:
 	@if [ -z '$(CURRENT_IMAGE)' ] ; \
