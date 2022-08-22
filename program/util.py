@@ -127,7 +127,7 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
             # find RFC number (and line or section reference) inside {target_text}
             fmt1 = r"(?P<sectionstring>(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))"\
                    "(?P<fill1>\s*(of|in)\s*\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>\]?)"
-            fmt2 = r"(?P<fill1>\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>\]?,\s*)(?P<sectionstring>"\
+            fmt2 = r"(?P<fill1>\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>\]?,?\s*)(?P<sectionstring>"\
                    "(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))"
             fmt3 = r"(?P<fill1>\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>]?)"
             fmt4 = r"(?P<sectionstring>(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))"
@@ -147,9 +147,9 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
                     target_rfc = match.group("docno")
                     target_section = get_reference_type(match.group("sectiontype")) + "-" + match.group("sectionno")
                     a1 = create_anchor(get_rfc_target(target_rfc, rfc_list, target_section),
-                                       match.group("sectionstring"), match.group("fill2"))
+                                       match.group("sectionstring") )
                     a2 = create_anchor(get_rfc_target(target_rfc, rfc_list), match.group("docstring"),
-                                       match.group("fill1"))
+                                       match.group("fill2"), match.group("fill1"))
                     replacement = f"{a2}{a1}"
                 else:
                     match = re.search(fmt3, target_text, flags=re.IGNORECASE)
