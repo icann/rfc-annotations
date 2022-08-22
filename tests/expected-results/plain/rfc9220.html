@@ -1,53 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html">
 <head><meta charset="UTF-8"><title>RFC 9220</title>
 <style>
     /* some "global" declarations, please do not modify */
+    html {font-size:8px;}
     pre {margin-top:0px; margin-bottom:0px;}
-    .area {display:flex; flex-wrap:nowrap;}
-    .area .rfc {width:80ch;}
-    .area .rfc .pagebreak {position: absolute; background-color:#eee; width: 80ch; border: 1px dashed #000; margin-top: 0.5em;}
-    .floating {position: fixed; top: 2px; right: 2px;}
+    .area {display:flex; flex-wrap:nowrap; overflow: auto;}
+    .area .rfc {overflow:auto; flex-grow:0; flex-shrink:0;}
+    .area .rfc .pagebreak {position:absolute; background-color:#eee; width:79ch; border:1px dashed #000; margin-top:0.5rem;}
+    .floating {position:fixed; top:2px; right:2px;}
 
     /* font, color, background and other attributes which may be changed */
     body {font-family:'Arial';}
 
     /* index page only */
-    .index .header {background-color: #222; color: #fff; font-weight: bold;}
-    .index .odd {background-color: #e0e0e0;}
-    .index .even {background-color: #e8e8e8;}
+    .index .header {background-color:#222; color:#fff; font-weight:bold;}
+    .index .odd {background-color:#e0e0e0;}
+    .index .even {background-color:#e8e8e8;}
     .index tr.entry {font-family:'Arial Narrow';}
-    .index tr.entry .rfc {font-family: 'Courier New'; font-weight: bold;}
-    .index tr.entry .timestamp {text-align: center}
-    .index tr .asc::after {content: " ↑"; font-weight: bold; color: #D0FFD0;}
-    .index tr .desc::after {content: " ↓"; font-weight: bold; color: #FFD0D0;}
+    .index tr.entry .rfc {font-family:'Courier New'; font-weight:bold;}
+    .index tr.entry .timestamp {text-align:center}
+    .index tr .asc::after {content:" ↑"; font-weight:bold; color:#D0FFD0;}
+    .index tr .desc::after {content:" ↓"; font-weight:bold; color:#FFD0D0;}
 
     /* RFC pages */
-    .line {background-color: #ddd; text-decoration:none; user-select: none;}
+    .line {background-color:#ddd; text-decoration:none; user-select:none;}
 
-    pre.rfc.obsoleted {background-color: #FFD0D0;}
-    pre.rfc.updated {background-color: #FFFFF0;}
+    pre.rfc.obsoleted {background-color:#FFD0D0;}
+    pre.rfc.updated {background-color:#FFFFF0;}
 
-    .area .annotation {background-color:#eee; width:0%; flex-grow:1; padding-left:2px; padding-right:4px; font-size:16px;}
-    .area .annotation .entry {font-size: 0.8em; background-color: #FFFC90; margin-bottom: 4px; border-style: solid; border-width: 1px; box-shadow: 2px 2px;}
-    .area .annotation .err {font-size: 0.8em; background-color: #dddddd; margin-bottom: 4px; border-style: solid; border-width: 1px; box-shadow: 2px 2px; overflow: auto;}
-    .area .annotation .outdated {font-size: 0.8em; background-color: #ff8888; margin-bottom: 4px; border-style: solid; border-width: 1px; box-shadow: 2px 2px; overflow: auto;}
-    .area .annotation .outdated .info {font-size: 1.2em; font-weight:bold; float: right;}
-    .area .annotation .status {font-size: 0.8em; background-color: #eeeeee; margin-bottom: 4px; border-style: solid; border-width: 1px; box-shadow: 2px 2px; overflow: auto;}
-    .area .annotation .title {font-size: 1.2em; background-color: #000000a0; color: white; padding-left: 2px; padding-right: 2px; font-style: italic;}
-    .area .annotation .title a {color: white;}
-    .area .annotation .title .reference a {font-size: 0.6em; font-style: normal; vertical-align: top;}
-    .area .annotation .title .caption {padding-left: 1ch; font-style: normal; font-weight: bold;}
-    .area .annotation .title .timestamp {font-size: 0.6em; float: right; font-style: normal;}
-    .area .annotation .correct {margin-top: 1em; font-weight: bold;}
-    .area .annotation .note {font-style: italic;}
-    .area .annotation .reported {background-color: #FFF8D0; color: #A00;}
-    .area .annotation .rejected {display: none;}
-    .area .annotation .eclipsed {display: none;}
-    .area .annotation .updated {background-color: #0E0;}
-    .area .annotation .potentiallyupdated {background-color: #AEA;}
-    .area .annotation .obsoleted {background-color: #E00;}
-    .area .annotation .potentiallyobsoleted {background-color: #EAA;}
+    .area .annotation {background-color:#eee; width:1vw; flex-wrap:nowrap; flex-grow:1; flex-shrink:1; padding-left:2px; padding-right:4px; font-size:1rem; overflow:auto;}
+    .area .annotation .entry {font-size:0.8rem; background-color:#FFFC90; margin-bottom:4px; border-style:solid; border-width:1px; box-shadow:2px 2px;}
+    .area .annotation .err {font-size:0.8rem; background-color:#dddddd; margin-bottom:4px; border-style:solid; border-width:1px; box-shadow:2px 2px; overflow:auto;}
+    .area .annotation .outdated {font-size:0.8rem; background-color:#ff8888; margin-bottom:4px; border-style:solid; border-width: 1px; box-shadow:2px 2px; overflow:auto;}
+    .area .annotation .outdated .info {font-size:1.2rem; font-weight:bold; float:right;}
+    .area .annotation .status {font-size:0.8rem; background-color:#eeeeee; margin-bottom:4px; border-style:solid; border-width:1px; box-shadow:2px 2px; overflow:auto;}
+    .area .annotation .title {font-size:1.2rem; background-color:#000000a0; color:white; padding-left:2px; padding-right:2px; font-style:italic;}
+    .area .annotation .title a {color:white;}
+    .area .annotation .title .reference a {font-size:0.6rem; font-style:normal; vertical-align:top;}
+    .area .annotation .title .caption {padding-left:1ch; font-style:normal; font-weight:bold;}
+    .area .annotation .title .timestamp {font-size:0.6rem; float:right; font-style:normal;}
+    .area .annotation .correct {margin-top:1rem; font-weight:bold;}
+    .area .annotation .note {font-style:italic;}
+    .area .annotation .reported {background-color:#FFF8D0; color:#A00;}
+    .area .annotation .rejected {display:none;}
+    .area .annotation .eclipsed {display:none;}
+    .area .annotation .updated {background-color:#0E0;}
+    .area .annotation .potentiallyupdated {background-color:#AEA;}
+    .area .annotation .obsoleted {background-color:#E00;}
+    .area .annotation .potentiallyobsoleted {background-color:#EAA;}
 
     del {color: red; user-select: none;}
     ins {color: green;}
@@ -91,178 +92,184 @@
         document.getElementById("hideBtn").removeAttribute("hidden");
         window.location.hash = window.location.hash;
     }
+
+    function adjustFontSize() {
+        fontHeight = Math.min(14, Math.max(6, screen.width / 50))
+        document.getElementById("html").style.fontSize = fontHeight + "px";
+    }
 </script>
 
 </head>
-<body>
+<body onload="adjustFontSize()">
+<noscript>For full functionality of this page please enable JavaScript</noscript>
 <button class="floating" onclick="hideRFC()" id="hideBtn">Hide RFC</button>
 <button class="floating" onclick="showRFC()" id="showBtn" hidden="hidden">Show RFC</button>
 <div class="area">
-<pre class="rfc"><span class="rfc"><a class="line" id="line-1" href="#line-1">    1</a> Internet Engineering Task Force (IETF)                       R. Hamilton
-<a class="line" id="line-2" href="#line-2">    2</a> Request for Comments: 9220                                        Google
-<a class="line" id="line-3" href="#line-3">    3</a> Category: Standards Track                                      June 2022
-<a class="line" id="line-4" href="#line-4">    4</a> ISSN: 2070-1721
-<a class="line" id="line-5" href="#line-5">    5</a> 
-<a class="line" id="line-6" href="#line-6">    6</a> 
+<pre class="rfc"><span class="rfc"><a class="line" id="line-1" href="#line-1">    1</a> Internet Engineering Task Force (IETF)                       R. Hamilton 
+<a class="line" id="line-2" href="#line-2">    2</a> Request for Comments: 9220                                        Google 
+<a class="line" id="line-3" href="#line-3">    3</a> Category: Standards Track                                      June 2022 
+<a class="line" id="line-4" href="#line-4">    4</a> ISSN: 2070-1721                                                          
+<a class="line" id="line-5" href="#line-5">    5</a>                                                                          
+<a class="line" id="line-6" href="#line-6">    6</a>                                                                          
 <a class="line" id="line-7" href="#line-7">    7</a>                   <span class="h1">Bootstrapping WebSockets with HTTP/3</span>
-<a class="line" id="line-8" href="#line-8">    8</a> 
-<a class="line" id="line-9" href="#line-9">    9</a> <a id="abstract" href="#abstract" class="selflink">Abstract</a>
-<a class="line" id="line-10" href="#line-10">   10</a> 
-<a class="line" id="line-11" href="#line-11">   11</a>    The mechanism for running the WebSocket Protocol over a single stream
-<a class="line" id="line-12" href="#line-12">   12</a>    of an HTTP/2 connection is equally applicable to HTTP/3, but the
-<a class="line" id="line-13" href="#line-13">   13</a>    HTTP-version-specific details need to be specified.  This document
-<a class="line" id="line-14" href="#line-14">   14</a>    describes how the mechanism is adapted for HTTP/3.
-<a class="line" id="line-15" href="#line-15">   15</a> 
-<a class="line" id="line-16" href="#line-16">   16</a> Status of This Memo
-<a class="line" id="line-17" href="#line-17">   17</a> 
-<a class="line" id="line-18" href="#line-18">   18</a>    This is an Internet Standards Track document.
-<a class="line" id="line-19" href="#line-19">   19</a> 
-<a class="line" id="line-20" href="#line-20">   20</a>    This document is a product of the Internet Engineering Task Force
-<a class="line" id="line-21" href="#line-21">   21</a>    (IETF).  It represents the consensus of the IETF community.  It has
-<a class="line" id="line-22" href="#line-22">   22</a>    received public review and has been approved for publication by the
-<a class="line" id="line-23" href="#line-23">   23</a>    Internet Engineering Steering Group (IESG).  Further information on
+<a class="line" id="line-8" href="#line-8">    8</a>                                                                          
+<a class="line" id="line-9" href="#line-9">    9</a> <a id="abstract" href="#abstract" class="selflink">Abstract</a>          
+<a class="line" id="line-10" href="#line-10">   10</a>                                                                          
+<a class="line" id="line-11" href="#line-11">   11</a>    The mechanism for running the WebSocket Protocol over a single stream 
+<a class="line" id="line-12" href="#line-12">   12</a>    of an HTTP/2 connection is equally applicable to HTTP/3, but the      
+<a class="line" id="line-13" href="#line-13">   13</a>    HTTP-version-specific details need to be specified.  This document    
+<a class="line" id="line-14" href="#line-14">   14</a>    describes how the mechanism is adapted for HTTP/3.                    
+<a class="line" id="line-15" href="#line-15">   15</a>                                                                          
+<a class="line" id="line-16" href="#line-16">   16</a> Status of This Memo                                                      
+<a class="line" id="line-17" href="#line-17">   17</a>                                                                          
+<a class="line" id="line-18" href="#line-18">   18</a>    This is an Internet Standards Track document.                         
+<a class="line" id="line-19" href="#line-19">   19</a>                                                                          
+<a class="line" id="line-20" href="#line-20">   20</a>    This document is a product of the Internet Engineering Task Force     
+<a class="line" id="line-21" href="#line-21">   21</a>    (IETF).  It represents the consensus of the IETF community.  It has   
+<a class="line" id="line-22" href="#line-22">   22</a>    received public review and has been approved for publication by the   
+<a class="line" id="line-23" href="#line-23">   23</a>    Internet Engineering Steering Group (IESG).  Further information on   
 <a class="line" id="line-24" href="#line-24">   24</a>    Internet Standards is available in <a href="https://datatracker.ietf.org/doc/rfc7841/#section-2">Section&nbsp;2 of RFC 7841</a>.
-<a class="line" id="line-25" href="#line-25">   25</a> 
-<a class="line" id="line-26" href="#line-26">   26</a>    Information about the current status of this document, any errata,
-<a class="line" id="line-27" href="#line-27">   27</a>    and how to provide feedback on it may be obtained at
+<a class="line" id="line-25" href="#line-25">   25</a>                                                                          
+<a class="line" id="line-26" href="#line-26">   26</a>    Information about the current status of this document, any errata,    
+<a class="line" id="line-27" href="#line-27">   27</a>    and how to provide feedback on it may be obtained at                  
 <a class="line" id="line-28" href="#line-28">   28</a>    <a href="https://www.rfc-editor.org/info/rfc9220">https://www.rfc-editor.org/info/rfc9220</a>.
-<a class="line" id="line-29" href="#line-29">   29</a> 
-<a class="line" id="line-30" href="#line-30">   30</a> Copyright Notice
-<a class="line" id="line-31" href="#line-31">   31</a> 
-<a class="line" id="line-32" href="#line-32">   32</a>    Copyright (c) 2022 IETF Trust and the persons identified as the
-<a class="line" id="line-33" href="#line-33">   33</a>    document authors.  All rights reserved.
-<a class="line" id="line-34" href="#line-34">   34</a> 
+<a class="line" id="line-29" href="#line-29">   29</a>                                                                          
+<a class="line" id="line-30" href="#line-30">   30</a> Copyright Notice                                                         
+<a class="line" id="line-31" href="#line-31">   31</a>                                                                          
+<a class="line" id="line-32" href="#line-32">   32</a>    Copyright (c) 2022 IETF Trust and the persons identified as the       
+<a class="line" id="line-33" href="#line-33">   33</a>    document authors.  All rights reserved.                               
+<a class="line" id="line-34" href="#line-34">   34</a>                                                                          
 <a class="line" id="line-35" href="#line-35">   35</a>    This document is subject to <a href="./bcp78">BCP 78</a> and the IETF Trust&#x27;s Legal
-<a class="line" id="line-36" href="#line-36">   36</a>    Provisions Relating to IETF Documents
+<a class="line" id="line-36" href="#line-36">   36</a>    Provisions Relating to IETF Documents                                 
 <a class="line" id="line-37" href="#line-37">   37</a>    (<a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a>) in effect on the date of
-<a class="line" id="line-38" href="#line-38">   38</a>    publication of this document.  Please review these documents
-<a class="line" id="line-39" href="#line-39">   39</a>    carefully, as they describe your rights and restrictions with respect
-<a class="line" id="line-40" href="#line-40">   40</a>    to this document.  Code Components extracted from this document must
+<a class="line" id="line-38" href="#line-38">   38</a>    publication of this document.  Please review these documents          
+<a class="line" id="line-39" href="#line-39">   39</a>    carefully, as they describe your rights and restrictions with respect 
+<a class="line" id="line-40" href="#line-40">   40</a>    to this document.  Code Components extracted from this document must  
 <a class="line" id="line-41" href="#line-41">   41</a>    include Revised BSD License text as described in <a href="#section-4">Section 4</a>.e of the
-<a class="line" id="line-42" href="#line-42">   42</a>    Trust Legal Provisions and are provided without warranty as described
-<a class="line" id="line-43" href="#line-43">   43</a>    in the Revised BSD License.
-<a class="line" id="line-44" href="#line-44">   44</a> 
-<a class="line" id="line-45" href="#line-45">   45</a> Table of Contents
-<a class="line" id="line-46" href="#line-46">   46</a> 
-<a class="line" id="line-47" href="#line-47">   47</a>    1.  Introduction
-<a class="line" id="line-48" href="#line-48">   48</a>    2.  Conventions and Definitions
-<a class="line" id="line-49" href="#line-49">   49</a>    3.  WebSockets Upgrade over HTTP/3
-<a class="line" id="line-50" href="#line-50">   50</a>    4.  Security Considerations
-<a class="line" id="line-51" href="#line-51">   51</a>    5.  IANA Considerations
-<a class="line" id="line-52" href="#line-52">   52</a>    6.  Normative References
-<a class="line" id="line-53" href="#line-53">   53</a>    Acknowledgments
-<a class="line" id="line-54" href="#line-54">   54</a>    Author&#x27;s Address
-<a class="line" id="line-55" href="#line-55">   55</a> 
+<a class="line" id="line-42" href="#line-42">   42</a>    Trust Legal Provisions and are provided without warranty as described 
+<a class="line" id="line-43" href="#line-43">   43</a>    in the Revised BSD License.                                           
+<a class="line" id="line-44" href="#line-44">   44</a>                                                                          
+<a class="line" id="line-45" href="#line-45">   45</a> Table of Contents                                                        
+<a class="line" id="line-46" href="#line-46">   46</a>                                                                          
+<a class="line" id="line-47" href="#line-47">   47</a>    1.  Introduction                                                      
+<a class="line" id="line-48" href="#line-48">   48</a>    2.  Conventions and Definitions                                       
+<a class="line" id="line-49" href="#line-49">   49</a>    3.  WebSockets Upgrade over HTTP/3                                    
+<a class="line" id="line-50" href="#line-50">   50</a>    4.  Security Considerations                                           
+<a class="line" id="line-51" href="#line-51">   51</a>    5.  IANA Considerations                                               
+<a class="line" id="line-52" href="#line-52">   52</a>    6.  Normative References                                              
+<a class="line" id="line-53" href="#line-53">   53</a>    Acknowledgments                                                       
+<a class="line" id="line-54" href="#line-54">   54</a>    Author&#x27;s Address                                                 
+<a class="line" id="line-55" href="#line-55">   55</a>                                                                          
 <a class="line" id="line-56" href="#line-56">   56</a> <span class="h2"><a class="selflink" id="section-1" href="#section-1">1</a>.  Introduction</span>
-<a class="line" id="line-57" href="#line-57">   57</a> 
+<a class="line" id="line-57" href="#line-57">   57</a>                                                                          
 <a class="line" id="line-58" href="#line-58">   58</a>    &quot;Bootstrapping WebSockets with HTTP/2&quot; [<a href="https://datatracker.ietf.org/doc/rfc8441/" title="&quot;Bootstrapping WebSockets with HTTP/2&quot;">RFC8441</a>] defines an extension
-<a class="line" id="line-59" href="#line-59">   59</a>    to HTTP/2 [HTTP/2] that is also useful in HTTP/3 [HTTP/3].  This
+<a class="line" id="line-59" href="#line-59">   59</a>    to HTTP/2 [HTTP/2] that is also useful in HTTP/3 [HTTP/3].  This      
 <a class="line" id="line-60" href="#line-60">   60</a>    extension makes use of an HTTP/2 setting.  <a href="#appendix-A.3">Appendix A.3</a> of [HTTP/3]
-<a class="line" id="line-61" href="#line-61">   61</a>    gives some guidance on what changes (if any) are appropriate when
-<a class="line" id="line-62" href="#line-62">   62</a>    porting settings from HTTP/2 to HTTP/3.
-<a class="line" id="line-63" href="#line-63">   63</a> 
+<a class="line" id="line-61" href="#line-61">   61</a>    gives some guidance on what changes (if any) are appropriate when     
+<a class="line" id="line-62" href="#line-62">   62</a>    porting settings from HTTP/2 to HTTP/3.                               
+<a class="line" id="line-63" href="#line-63">   63</a>                                                                          
 <a class="line" id="line-64" href="#line-64">   64</a> <span class="h2"><a class="selflink" id="section-2" href="#section-2">2</a>.  Conventions and Definitions</span>
-<a class="line" id="line-65" href="#line-65">   65</a> 
+<a class="line" id="line-65" href="#line-65">   65</a>                                                                          
 <a class="line" id="line-66" href="#line-66">   66</a>    The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;,
 <a class="line" id="line-67" href="#line-67">   67</a>    &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;NOT RECOMMENDED&quot;, &quot;MAY&quot;, and
 <a class="line" id="line-68" href="#line-68">   68</a>    &quot;OPTIONAL&quot; in this document are to be interpreted as described in
 <a class="line" id="line-69" href="#line-69">   69</a>    <a href="./bcp14">BCP 14</a> [<a href="https://datatracker.ietf.org/doc/rfc2119/" title="&quot;Key words for use in RFCs to Indicate Requirement Levels&quot;">RFC2119</a>] [<a href="https://datatracker.ietf.org/doc/rfc8174/" title="&quot;Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words&quot;">RFC8174</a>] when, and only when, they appear in all
-<a class="line" id="line-70" href="#line-70">   70</a>    capitals, as shown here.
-<a class="line" id="line-71" href="#line-71">   71</a> 
+<a class="line" id="line-70" href="#line-70">   70</a>    capitals, as shown here.                                              
+<a class="line" id="line-71" href="#line-71">   71</a>                                                                          
 <a class="line" id="line-72" href="#line-72">   72</a> <span class="h2"><a class="selflink" id="section-3" href="#section-3">3</a>.  WebSockets Upgrade over HTTP/3</span>
-<a class="line" id="line-73" href="#line-73">   73</a> 
+<a class="line" id="line-73" href="#line-73">   73</a>                                                                          
 <a class="line" id="line-74" href="#line-74">   74</a>    [<a id="ref-RFC8441">RFC8441</a>] defines a mechanism for running the WebSocket Protocol
 <a class="line" id="line-75" href="#line-75">   75</a>    [<a href="https://datatracker.ietf.org/doc/rfc6455/" title="&quot;The WebSocket Protocol&quot;">RFC6455</a>] over a single stream of an HTTP/2 connection.  It defines
 <a class="line" id="line-76" href="#line-76">   76</a>    an Extended CONNECT method that specifies a new &quot;:protocol&quot; pseudo-
 <a class="line" id="line-77" href="#line-77">   77</a>    header field and new semantics for the &quot;:path&quot; and &quot;:authority&quot;
-<a class="line" id="line-78" href="#line-78">   78</a>    pseudo-header fields.  It also defines a new HTTP/2 setting sent by a
-<a class="line" id="line-79" href="#line-79">   79</a>    server to allow the client to use Extended CONNECT.
-<a class="line" id="line-80" href="#line-80">   80</a> 
-<a class="line" id="line-81" href="#line-81">   81</a>    The semantics of the pseudo-header fields and setting are identical
+<a class="line" id="line-78" href="#line-78">   78</a>    pseudo-header fields.  It also defines a new HTTP/2 setting sent by a 
+<a class="line" id="line-79" href="#line-79">   79</a>    server to allow the client to use Extended CONNECT.                   
+<a class="line" id="line-80" href="#line-80">   80</a>                                                                          
+<a class="line" id="line-81" href="#line-81">   81</a>    The semantics of the pseudo-header fields and setting are identical   
 <a class="line" id="line-82" href="#line-82">   82</a>    to those in HTTP/2 as defined in [<a href="https://datatracker.ietf.org/doc/rfc8441/" title="&quot;Bootstrapping WebSockets with HTTP/2&quot;">RFC8441</a>].  <a href="#appendix-A.3">Appendix A.3</a> of [HTTP/3]
-<a class="line" id="line-83" href="#line-83">   83</a>    requires that HTTP/3 settings be registered separately for HTTP/3.
-<a class="line" id="line-84" href="#line-84">   84</a>    The SETTINGS_ENABLE_CONNECT_PROTOCOL value is 0x08 (decimal 8), as in
-<a class="line" id="line-85" href="#line-85">   85</a>    HTTP/2.
-<a class="line" id="line-86" href="#line-86">   86</a> 
-<a class="line" id="line-87" href="#line-87">   87</a>    If a server advertises support for Extended CONNECT but receives an
+<a class="line" id="line-83" href="#line-83">   83</a>    requires that HTTP/3 settings be registered separately for HTTP/3.    
+<a class="line" id="line-84" href="#line-84">   84</a>    The SETTINGS_ENABLE_CONNECT_PROTOCOL value is 0x08 (decimal 8), as in 
+<a class="line" id="line-85" href="#line-85">   85</a>    HTTP/2.                                                               
+<a class="line" id="line-86" href="#line-86">   86</a>                                                                          
+<a class="line" id="line-87" href="#line-87">   87</a>    If a server advertises support for Extended CONNECT but receives an   
 <a class="line" id="line-88" href="#line-88">   88</a>    Extended CONNECT request with a &quot;:protocol&quot; value that is unknown or
-<a class="line" id="line-89" href="#line-89">   89</a>    is not supported, the server SHOULD respond to the request with a 501
+<a class="line" id="line-89" href="#line-89">   89</a>    is not supported, the server SHOULD respond to the request with a 501 
 <a class="line" id="line-90" href="#line-90">   90</a>    (Not Implemented) status code (Section 15.6.2 of [<a href="#ref-HTTP" title="&quot;HTTP Semantics&quot;">HTTP</a>]).  A server
 <a class="line" id="line-91" href="#line-91">   91</a>    MAY provide more information via a &quot;problem details&quot; response
 <a class="line" id="line-92" href="#line-92">   92</a>    [<a href="https://datatracker.ietf.org/doc/rfc7807/" title="&quot;Problem Details for HTTP APIs&quot;">RFC7807</a>].
-<a class="line" id="line-93" href="#line-93">   93</a> 
-<a class="line" id="line-94" href="#line-94">   94</a>    The HTTP/3 stream closure is also analogous to the TCP connection
+<a class="line" id="line-93" href="#line-93">   93</a>                                                                          
+<a class="line" id="line-94" href="#line-94">   94</a>    The HTTP/3 stream closure is also analogous to the TCP connection     
 <a class="line" id="line-95" href="#line-95">   95</a>    closure of [<a href="https://datatracker.ietf.org/doc/rfc6455/" title="&quot;The WebSocket Protocol&quot;">RFC6455</a>].  Orderly TCP-level closures are represented as
 <a class="line" id="line-96" href="#line-96">   96</a>    a FIN bit on the stream (<a href="#section-4.4">Section 4.4</a> of [HTTP/3]).  RST exceptions
 <a class="line" id="line-97" href="#line-97">   97</a>    are represented with a stream error (<a href="#section-8">Section 8</a> of [HTTP/3]) of type
 <a class="line" id="line-98" href="#line-98">   98</a>    H3_REQUEST_CANCELLED (<a href="#section-8.1">Section 8.1</a> of [HTTP/3]).
-<a class="line" id="line-99" href="#line-99">   99</a> 
+<a class="line" id="line-99" href="#line-99">   99</a>                                                                          
 <a class="line" id="line-100" href="#line-100">  100</a> <span class="h2"><a class="selflink" id="section-4" href="#section-4">4</a>.  Security Considerations</span>
-<a class="line" id="line-101" href="#line-101">  101</a> 
-<a class="line" id="line-102" href="#line-102">  102</a>    This document introduces no new security considerations beyond those
+<a class="line" id="line-101" href="#line-101">  101</a>                                                                          
+<a class="line" id="line-102" href="#line-102">  102</a>    This document introduces no new security considerations beyond those  
 <a class="line" id="line-103" href="#line-103">  103</a>    discussed in [<a href="https://datatracker.ietf.org/doc/rfc8441/" title="&quot;Bootstrapping WebSockets with HTTP/2&quot;">RFC8441</a>].
-<a class="line" id="line-104" href="#line-104">  104</a> 
+<a class="line" id="line-104" href="#line-104">  104</a>                                                                          
 <a class="line" id="line-105" href="#line-105">  105</a> <span class="h2"><a class="selflink" id="section-5" href="#section-5">5</a>.  IANA Considerations</span>
-<a class="line" id="line-106" href="#line-106">  106</a> 
+<a class="line" id="line-106" href="#line-106">  106</a>                                                                          
 <a class="line" id="line-107" href="#line-107">  107</a>    This document registers a new setting in the &quot;HTTP/3 Settings&quot;
-<a class="line" id="line-108" href="#line-108">  108</a>    registry (<a href="#section-11.2.2">Section 11.2.2</a> of [HTTP/3]).
-<a class="line" id="line-109" href="#line-109">  109</a> 
-<a class="line" id="line-110" href="#line-110">  110</a>    Value:  0x08
-<a class="line" id="line-111" href="#line-111">  111</a>    Setting Name:  SETTINGS_ENABLE_CONNECT_PROTOCOL
-<a class="line" id="line-112" href="#line-112">  112</a>    Default:  0
-<a class="line" id="line-113" href="#line-113">  113</a>    Status:  permanent
-<a class="line" id="line-114" href="#line-114">  114</a>    Specification:  This document
-<a class="line" id="line-115" href="#line-115">  115</a>    Change Controller:  IETF
-<a class="line" id="line-116" href="#line-116">  116</a>    Contact:  HTTP Working Group (ietf-http-wg@w3.org)
-<a class="line" id="line-117" href="#line-117">  117</a> 
+<a class="line" id="line-108" href="#line-108">  108</a>    registry (<a href="#section-11.2.2">Section 11.2.2</a> of [HTTP/3]).  
+<a class="line" id="line-109" href="#line-109">  109</a>                                                                          
+<a class="line" id="line-110" href="#line-110">  110</a>    Value:  0x08                                                          
+<a class="line" id="line-111" href="#line-111">  111</a>    Setting Name:  SETTINGS_ENABLE_CONNECT_PROTOCOL                       
+<a class="line" id="line-112" href="#line-112">  112</a>    Default:  0                                                           
+<a class="line" id="line-113" href="#line-113">  113</a>    Status:  permanent                                                    
+<a class="line" id="line-114" href="#line-114">  114</a>    Specification:  This document                                         
+<a class="line" id="line-115" href="#line-115">  115</a>    Change Controller:  IETF                                              
+<a class="line" id="line-116" href="#line-116">  116</a>    Contact:  HTTP Working Group (ietf-http-wg@w3.org)                    
+<a class="line" id="line-117" href="#line-117">  117</a>                                                                          
 <a class="line" id="line-118" href="#line-118">  118</a> <span class="h2"><a class="selflink" id="section-6" href="#section-6">6</a>.  Normative References</span>
-<a class="line" id="line-119" href="#line-119">  119</a> 
+<a class="line" id="line-119" href="#line-119">  119</a>                                                                          
 <a class="line" id="line-120" href="#line-120">  120</a>    [<a id="ref-HTTP">HTTP</a>]     Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
 <a class="line" id="line-121" href="#line-121">  121</a>               Ed., &quot;HTTP Semantics&quot;, STD 97, <a href="https://datatracker.ietf.org/doc/rfc9110/">RFC 9110</a>,
-<a class="line" id="line-122" href="#line-122">  122</a>               DOI 10.17487/RFC9110, June 2022,
+<a class="line" id="line-122" href="#line-122">  122</a>               DOI 10.17487/RFC9110, June 2022,                           
 <a class="line" id="line-123" href="#line-123">  123</a>               &lt;<a href="https://www.rfc-editor.org/info/rfc9110">https://www.rfc-editor.org/info/rfc9110</a>&gt;.
-<a class="line" id="line-124" href="#line-124">  124</a> 
+<a class="line" id="line-124" href="#line-124">  124</a>                                                                          
 <a class="line" id="line-125" href="#line-125">  125</a>    [HTTP/2]   Thomson, M., Ed. and C. Benfield, Ed., &quot;HTTP/2&quot;, <a href="https://datatracker.ietf.org/doc/rfc9113/">RFC 9113</a>,
-<a class="line" id="line-126" href="#line-126">  126</a>               DOI 10.17487/RFC9113, June 2022,
+<a class="line" id="line-126" href="#line-126">  126</a>               DOI 10.17487/RFC9113, June 2022,                           
 <a class="line" id="line-127" href="#line-127">  127</a>               &lt;<a href="https://www.rfc-editor.org/info/rfc9113">https://www.rfc-editor.org/info/rfc9113</a>&gt;.
-<a class="line" id="line-128" href="#line-128">  128</a> 
+<a class="line" id="line-128" href="#line-128">  128</a>                                                                          
 <a class="line" id="line-129" href="#line-129">  129</a>    [HTTP/3]   Bishop, M., Ed., &quot;HTTP/3&quot;, <a href="https://datatracker.ietf.org/doc/rfc9114/">RFC 9114</a>, DOI 10.17487/RFC9114,
 <a class="line" id="line-130" href="#line-130">  130</a>               June 2022, &lt;<a href="https://www.rfc-editor.org/info/rfc9114">https://www.rfc-editor.org/info/rfc9114</a>&gt;.
-<a class="line" id="line-131" href="#line-131">  131</a> 
+<a class="line" id="line-131" href="#line-131">  131</a>                                                                          
 <a class="line" id="line-132" href="#line-132">  132</a>    [<a id="ref-RFC2119">RFC2119</a>]  Bradner, S., &quot;Key words for use in RFCs to Indicate
 <a class="line" id="line-133" href="#line-133">  133</a>               Requirement Levels&quot;, <a href="./bcp14">BCP 14</a>, <a href="https://datatracker.ietf.org/doc/rfc2119/">RFC 2119</a>,
-<a class="line" id="line-134" href="#line-134">  134</a>               DOI 10.17487/RFC2119, March 1997,
+<a class="line" id="line-134" href="#line-134">  134</a>               DOI 10.17487/RFC2119, March 1997,                          
 <a class="line" id="line-135" href="#line-135">  135</a>               &lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;.
-<a class="line" id="line-136" href="#line-136">  136</a> 
+<a class="line" id="line-136" href="#line-136">  136</a>                                                                          
 <a class="line" id="line-137" href="#line-137">  137</a>    [<a id="ref-RFC6455">RFC6455</a>]  Fette, I. and A. Melnikov, &quot;The WebSocket Protocol&quot;,
 <a class="line" id="line-138" href="#line-138">  138</a>               <a href="https://datatracker.ietf.org/doc/rfc6455/">RFC 6455</a>, DOI 10.17487/RFC6455, December 2011,
 <a class="line" id="line-139" href="#line-139">  139</a>               &lt;<a href="https://www.rfc-editor.org/info/rfc6455">https://www.rfc-editor.org/info/rfc6455</a>&gt;.
-<a class="line" id="line-140" href="#line-140">  140</a> 
+<a class="line" id="line-140" href="#line-140">  140</a>                                                                          
 <a class="line" id="line-141" href="#line-141">  141</a>    [<a id="ref-RFC7807">RFC7807</a>]  Nottingham, M. and E. Wilde, &quot;Problem Details for HTTP
 <a class="line" id="line-142" href="#line-142">  142</a>               APIs&quot;, <a href="https://datatracker.ietf.org/doc/rfc7807/">RFC 7807</a>, DOI 10.17487/RFC7807, March 2016,
 <a class="line" id="line-143" href="#line-143">  143</a>               &lt;<a href="https://www.rfc-editor.org/info/rfc7807">https://www.rfc-editor.org/info/rfc7807</a>&gt;.
-<a class="line" id="line-144" href="#line-144">  144</a> 
+<a class="line" id="line-144" href="#line-144">  144</a>                                                                          
 <a class="line" id="line-145" href="#line-145">  145</a>    [<a id="ref-RFC8174">RFC8174</a>]  Leiba, B., &quot;Ambiguity of Uppercase vs Lowercase in <a href="https://datatracker.ietf.org/doc/rfc2119/">RFC</a>
 <a class="line" id="line-146" href="#line-146">  146</a>               <a href="https://datatracker.ietf.org/doc/rfc2119/">2119</a> Key Words&quot;, <a href="./bcp14">BCP 14</a>, <a href="https://datatracker.ietf.org/doc/rfc8174/">RFC 8174</a>, DOI 10.17487/RFC8174,
 <a class="line" id="line-147" href="#line-147">  147</a>               May 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;.
-<a class="line" id="line-148" href="#line-148">  148</a> 
+<a class="line" id="line-148" href="#line-148">  148</a>                                                                          
 <a class="line" id="line-149" href="#line-149">  149</a>    [<a id="ref-RFC8441">RFC8441</a>]  McManus, P., &quot;Bootstrapping WebSockets with HTTP/2&quot;,
 <a class="line" id="line-150" href="#line-150">  150</a>               <a href="https://datatracker.ietf.org/doc/rfc8441/">RFC 8441</a>, DOI 10.17487/RFC8441, September 2018,
 <a class="line" id="line-151" href="#line-151">  151</a>               &lt;<a href="https://www.rfc-editor.org/info/rfc8441">https://www.rfc-editor.org/info/rfc8441</a>&gt;.
-<a class="line" id="line-152" href="#line-152">  152</a> 
-<a class="line" id="line-153" href="#line-153">  153</a> Acknowledgments
-<a class="line" id="line-154" href="#line-154">  154</a> 
-<a class="line" id="line-155" href="#line-155">  155</a>    This document had reviews and input from many contributors in the
-<a class="line" id="line-156" href="#line-156">  156</a>    IETF HTTP and QUIC Working Groups, with substantive input from David
-<a class="line" id="line-157" href="#line-157">  157</a>    Schinazi, Martin Thomson, Lucas Pardue, Mike Bishop, Dragana
-<a class="line" id="line-158" href="#line-158">  158</a>    Damjanovic, Mark Nottingham, and Julian Reschke.
-<a class="line" id="line-159" href="#line-159">  159</a> 
-<a class="line" id="line-160" href="#line-160">  160</a> Author&#x27;s Address
-<a class="line" id="line-161" href="#line-161">  161</a> 
-<a class="line" id="line-162" href="#line-162">  162</a>    Ryan Hamilton
-<a class="line" id="line-163" href="#line-163">  163</a>    Google
-<a class="line" id="line-164" href="#line-164">  164</a>    Email: rch@google.com
-<a class="line" id="line-165" href="#line-165">  165</a> 
+<a class="line" id="line-152" href="#line-152">  152</a>                                                                          
+<a class="line" id="line-153" href="#line-153">  153</a> Acknowledgments                                                          
+<a class="line" id="line-154" href="#line-154">  154</a>                                                                          
+<a class="line" id="line-155" href="#line-155">  155</a>    This document had reviews and input from many contributors in the     
+<a class="line" id="line-156" href="#line-156">  156</a>    IETF HTTP and QUIC Working Groups, with substantive input from David  
+<a class="line" id="line-157" href="#line-157">  157</a>    Schinazi, Martin Thomson, Lucas Pardue, Mike Bishop, Dragana          
+<a class="line" id="line-158" href="#line-158">  158</a>    Damjanovic, Mark Nottingham, and Julian Reschke.                      
+<a class="line" id="line-159" href="#line-159">  159</a>                                                                          
+<a class="line" id="line-160" href="#line-160">  160</a> Author&#x27;s Address                                                    
+<a class="line" id="line-161" href="#line-161">  161</a>                                                                          
+<a class="line" id="line-162" href="#line-162">  162</a>    Ryan Hamilton                                                         
+<a class="line" id="line-163" href="#line-163">  163</a>    Google                                                                
+<a class="line" id="line-164" href="#line-164">  164</a>    Email: rch@google.com                                                 
+<a class="line" id="line-165" href="#line-165">  165</a>                                                                          
 </span></pre><div class="annotation"></div></div>
 
 </body></html>
