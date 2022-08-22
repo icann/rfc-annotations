@@ -36,4 +36,9 @@
         document.getElementById("hideBtn").removeAttribute("hidden");
         window.location.hash = window.location.hash;
     }
+
+    function adjustFontSize() {
+        fontHeight = Math.min(14, Math.max(6, screen.width / 50))
+        document.getElementById("html").style.fontSize = fontHeight + "px";
+    }
 </script>

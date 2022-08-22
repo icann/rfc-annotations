@@ -25,12 +25,15 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
     try:
         with open(os.path.join(write_directory, file_name), "w") as f:
             title = 'Overview' if prefix is None else f'Overview of {prefix.upper()}-related RFCs'
-            f.write(f'<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8"><title>{title}</title>\n')
+            f.write(f'<!DOCTYPE html>\n<html lang="en" id="html">\n<head>\n<meta charset="UTF-8">'
+                    f'<title>{title}</title>\n')
             if css is not None:
                 f.write(f'{css}\n')
             if scripts is not None:
                 f.write(f'{scripts}\n')
             f.write(f'</head>\n\n<body onload="makeTableSortable(\'table\', {len(sections)})">\n')
+            if scripts is not None:
+                f.write("<noscript>For full functionality of this page please enable JavaScript</noscript>\n")
             for nr, section in enumerate(sections):
                 rfc_list, index_text = section
                 f.write(f'{index_text}<table class="index" id="table{nr}">\n<thead><tr class="header">'
@@ -293,13 +296,16 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                         t = r["type"]
                         if t in annotations.built_in_annotation_types():
                             rfc_class += " " + t
-                f.write(f'<!DOCTYPE html>\n<html lang="en">\n<head><meta charset="UTF-8"><title>RFC {rfc_nr}</title>')
+                f.write(f'<!DOCTYPE html>\n<html lang="en" id="html">\n<head><meta charset="UTF-8">'
+                        f'<title>RFC {rfc_nr}</title>')
                 if css is not None:
                     f.write(f'\n{css}')
                 if scripts is not None:
                     f.write(f'{scripts}\n')
                 f.write('</head>\n')
-                f.write('<body>\n')
+                f.write('<body onload="adjustFontSize()">\n')
+                if scripts is not None:
+                    f.write("<noscript>For full functionality of this page please enable JavaScript</noscript>\n")
                 f.write('<button class="floating" onclick="hideRFC()" id="hideBtn">Hide RFC</button>\n')
                 f.write('<button class="floating" onclick="showRFC()" id="showBtn" hidden="hidden">Show RFC</button>\n')
                 f.write(f'<div class="area">\n<pre class="{rfc_class}"><span class="{rfc_class}">')
@@ -325,7 +331,7 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                         line_nr += 1
                         aid = "line-" + str(line_nr)
                         text = str(line_nr).rjust(5)
-                        line = f'<a class="line" id="{aid}" href="#{aid}">{text}</a> {line}'
+                        line = f'<a class="line" id="{aid}" href="#{aid}">{text}</a> {line.ljust(73)}'
                     line = __rewrite_anchor(line, rfc_list)
 
                     rem_present = False

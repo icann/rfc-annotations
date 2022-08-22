@@ -1,50 +1,51 @@
 <style>
     /* some "global" declarations, please do not modify */
+    html {font-size:8px;}
     pre {margin-top:0px; margin-bottom:0px;}
-    .area {display:flex; flex-wrap:nowrap;}
-    .area .rfc {width:80ch;}
-    .area .rfc .pagebreak {position: absolute; background-color:#eee; width: 80ch; border: 1px dashed #000; margin-top: 0.5em;}
-    .floating {position: fixed; top: 2px; right: 2px;}
+    .area {display:flex; flex-wrap:nowrap; overflow: auto;}
+    .area .rfc {overflow:auto; flex-grow:0; flex-shrink:0;}
+    .area .rfc .pagebreak {position:absolute; background-color:#eee; width:79ch; border:1px dashed #000; margin-top:0.5rem;}
+    .floating {position:fixed; top:2px; right:2px;}
 
     /* font, color, background and other attributes which may be changed */
     body {font-family:'Arial';}
 
     /* index page only */
-    .index .header {background-color: #222; color: #fff; font-weight: bold;}
-    .index .odd {background-color: #e0e0e0;}
-    .index .even {background-color: #e8e8e8;}
+    .index .header {background-color:#222; color:#fff; font-weight:bold;}
+    .index .odd {background-color:#e0e0e0;}
+    .index .even {background-color:#e8e8e8;}
     .index tr.entry {font-family:'Arial Narrow';}
-    .index tr.entry .rfc {font-family: 'Courier New'; font-weight: bold;}
-    .index tr.entry .timestamp {text-align: center}
-    .index tr .asc::after {content: " ↑"; font-weight: bold; color: #D0FFD0;}
-    .index tr .desc::after {content: " ↓"; font-weight: bold; color: #FFD0D0;}
+    .index tr.entry .rfc {font-family:'Courier New'; font-weight:bold;}
+    .index tr.entry .timestamp {text-align:center}
+    .index tr .asc::after {content:" ↑"; font-weight:bold; color:#D0FFD0;}
+    .index tr .desc::after {content:" ↓"; font-weight:bold; color:#FFD0D0;}
 
     /* RFC pages */
-    .line {background-color: #ddd; text-decoration:none; user-select: none;}
+    .line {background-color:#ddd; text-decoration:none; user-select:none;}
 
-    pre.rfc.obsoleted {background-color: #FFD0D0;}
-    pre.rfc.updated {background-color: #FFFFF0;}
+    pre.rfc.obsoleted {background-color:#FFD0D0;}
+    pre.rfc.updated {background-color:#FFFFF0;}
 
-    .area .annotation {background-color:#eee; width:0%; flex-grow:1; padding-left:2px; padding-right:4px; font-size:16px;}
-    .area .annotation .entry {font-size: 0.8em; background-color: #FFFC90; margin-bottom: 4px; border-style: solid; border-width: 1px; box-shadow: 2px 2px;}
-    .area .annotation .err {font-size: 0.8em; background-color: #dddddd; margin-bottom: 4px; border-style: solid; border-width: 1px; box-shadow: 2px 2px; overflow: auto;}
-    .area .annotation .outdated {font-size: 0.8em; background-color: #ff8888; margin-bottom: 4px; border-style: solid; border-width: 1px; box-shadow: 2px 2px; overflow: auto;}
-    .area .annotation .outdated .info {font-size: 1.2em; font-weight:bold; float: right;}
-    .area .annotation .status {font-size: 0.8em; background-color: #eeeeee; margin-bottom: 4px; border-style: solid; border-width: 1px; box-shadow: 2px 2px; overflow: auto;}
-    .area .annotation .title {font-size: 1.2em; background-color: #000000a0; color: white; padding-left: 2px; padding-right: 2px; font-style: italic;}
-    .area .annotation .title a {color: white;}
-    .area .annotation .title .reference a {font-size: 0.6em; font-style: normal; vertical-align: top;}
-    .area .annotation .title .caption {padding-left: 1ch; font-style: normal; font-weight: bold;}
-    .area .annotation .title .timestamp {font-size: 0.6em; float: right; font-style: normal;}
-    .area .annotation .correct {margin-top: 1em; font-weight: bold;}
-    .area .annotation .note {font-style: italic;}
-    .area .annotation .reported {background-color: #FFF8D0; color: #A00;}
-    .area .annotation .rejected {display: none;}
-    .area .annotation .eclipsed {display: none;}
-    .area .annotation .updated {background-color: #0E0;}
-    .area .annotation .potentiallyupdated {background-color: #AEA;}
-    .area .annotation .obsoleted {background-color: #E00;}
-    .area .annotation .potentiallyobsoleted {background-color: #EAA;}
+    .area .annotation {background-color:#eee; width:1vw; flex-wrap:nowrap; flex-grow:1; flex-shrink:1; padding-left:2px; padding-right:4px; font-size:1rem; overflow:auto;}
+    .area .annotation .entry {font-size:0.8rem; background-color:#FFFC90; margin-bottom:4px; border-style:solid; border-width:1px; box-shadow:2px 2px;}
+    .area .annotation .err {font-size:0.8rem; background-color:#dddddd; margin-bottom:4px; border-style:solid; border-width:1px; box-shadow:2px 2px; overflow:auto;}
+    .area .annotation .outdated {font-size:0.8rem; background-color:#ff8888; margin-bottom:4px; border-style:solid; border-width: 1px; box-shadow:2px 2px; overflow:auto;}
+    .area .annotation .outdated .info {font-size:1.2rem; font-weight:bold; float:right;}
+    .area .annotation .status {font-size:0.8rem; background-color:#eeeeee; margin-bottom:4px; border-style:solid; border-width:1px; box-shadow:2px 2px; overflow:auto;}
+    .area .annotation .title {font-size:1.2rem; background-color:#000000a0; color:white; padding-left:2px; padding-right:2px; font-style:italic;}
+    .area .annotation .title a {color:white;}
+    .area .annotation .title .reference a {font-size:0.6rem; font-style:normal; vertical-align:top;}
+    .area .annotation .title .caption {padding-left:1ch; font-style:normal; font-weight:bold;}
+    .area .annotation .title .timestamp {font-size:0.6rem; float:right; font-style:normal;}
+    .area .annotation .correct {margin-top:1rem; font-weight:bold;}
+    .area .annotation .note {font-style:italic;}
+    .area .annotation .reported {background-color:#FFF8D0; color:#A00;}
+    .area .annotation .rejected {display:none;}
+    .area .annotation .eclipsed {display:none;}
+    .area .annotation .updated {background-color:#0E0;}
+    .area .annotation .potentiallyupdated {background-color:#AEA;}
+    .area .annotation .obsoleted {background-color:#E00;}
+    .area .annotation .potentiallyobsoleted {background-color:#EAA;}
 
     del {color: red; user-select: none;}
     ins {color: green;}
