@@ -125,12 +125,12 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
             target_text = split[0:end].strip()
 
             # find RFC number (and line or section reference) inside {target_text}
-            fmt1 = r"(?P<sectionstring>(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))"\
-                   "(?P<fill1>\s*(of|in)\s*\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>\]?)"
-            fmt2 = r"(?P<fill1>\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>\]?,?\s*)(?P<sectionstring>"\
-                   "(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))"
-            fmt3 = r"(?P<fill1>\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>]?)"
-            fmt4 = r"(?P<sectionstring>(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))"
+            fmt1 = r"^(?P<sectionstring>(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))"\
+                   "(?P<fill1>\s*(of|in)\s*\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>\]?)$"
+            fmt2 = r"^(?P<fill1>\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>\]?,?\s*)(?P<sectionstring>"\
+                   "(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))$"
+            fmt3 = r"^(?P<fill1>\[?)(?P<docstring>RFC\s*(?P<docno>[0-9]+))(?P<fill2>]?)$"
+            fmt4 = r"^(?P<sectionstring>(?P<sectiontype>Section|Appendix|Line)\s*(?P<sectionno>[0-9A-Z\.]+))$"
 
             replacement = None
             match = re.search(fmt1, target_text, flags=re.IGNORECASE)
