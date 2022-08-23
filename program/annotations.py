@@ -216,7 +216,7 @@ def __create_status_annotations(rfc_nr: str, rfc_list: list, root: Element, draf
             else:
                 target = util.get_rfc_target(rfc, rfc_list)
                 entry = f"RFC{rfc}"
-            s += util.create_anchor(target, entry)
+            s += util.create_anchor(href=target, text=entry)
             count += 1
         return caption, f"{prefix}{s}", line
 

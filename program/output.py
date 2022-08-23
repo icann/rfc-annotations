@@ -51,7 +51,8 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
                     rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
                     node = None if root is None else rfcindex.fetch_element(root, rfc.upper())
                     f.write(f"<tr class='entry " + ("odd" if odd else "even") + "'>" +
-                            util.create_anchor(rfc + ".html", rfc[3:], "</td>", "<td class='rfc'>"))
+                            util.create_anchor(href=rfc + ".html", text=rfc[3:], suffix="</td>",
+                                               prefix="<td class='rfc'>"))
                     odd = not odd
                     if node is not None:
                         title = node.getElementsByTagName("title")[0].firstChild.data
@@ -66,7 +67,8 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
                                 rfc = node.firstChild.data
                                 suffix += "; Obsoleted by" if len(suffix) == 0 else ","
                                 text = f"{rfc[0:3]} {rfc[3:]}" if len(rfc) > 3 else rfc
-                                suffix += __rewrite_anchor(util.create_anchor(rfc.lower(), text, "", " "), rfc_list)
+                                suffix += __rewrite_anchor(util.create_anchor(prefix=" ", href=rfc.lower(), text=text),
+                                                           rfc_list)
                         status = f"{status}{suffix}"
                         f.write(f"<td class='title'>{title}</td>"
                                 f"<td class='date'>{date}</td>"
@@ -241,8 +243,9 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                 caption = ""
             else:
                 caption += " "
-            caption = f'<span id="' + create_unique_erratum_ref(erratum_id) + f'">{caption}({prefix}Erratum #' + \
-                      util.create_anchor(link, erratum_id, ")" + suffix + "</span>", "", {"title": link_title})
+            caption = f'<span id="' + create_unique_erratum_ref(erratum_id) + f'">{caption}'\
+                      + util.create_anchor(prefix=f"({prefix}Erratum #", href=link, text=erratum_id,
+                                           suffix=")" + suffix + "</span>", attributes={"title": link_title})
 
         if author is not None:
             entry_type += f' {author}'
