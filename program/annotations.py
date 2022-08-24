@@ -74,11 +74,18 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
                 annotation["outdated"] = True
         return annotation
 
+    def apply(default_values: dict, to: dict) -> dict:
+        for key in default_values.keys():
+            if key not in to:
+                to[key] = default_values[key]
+        return to
+
     ret = []
     with open(path, "r") as f:
         lines = f.readlines()
         notes = []
-        entry = {"section": "global", "path": path}
+        entry = {}
+        defaults = {"section": "global", "path": path}
         is_plain_text = False
         for line in lines:
             if line.strip() == "####################":
@@ -88,11 +95,11 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
                 else:
                     notes = util.rewrite_rfc_anchors(htmlfilter.filter_html(notes, path=path), rfc_list)
                 entry["notes"] = notes
-                ret.append(check_errata_status(entry))
+                ret.append(check_errata_status(apply(default_values=defaults, to=entry)))
                 notes = []
-                entry = entry.copy()
-                del entry["notes"]
-                entry["section"] = "global"
+                defaults = entry.copy()
+                del defaults["notes"]
+                entry = {}
                 is_plain_text = False
             elif line.strip() == "#" or line.startswith("# "):
                 # it's a comment
@@ -101,19 +108,26 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
                 # this line contains metadata
                 tag = line[1].upper()
                 s = None if len(line) <= 2 else line[2:].strip()
+
+                def set(key: str, value: str, warn_if_present=True):
+                    if warn_if_present and key in entry:
+                        util.warn(f"a #{tag} line may exist only once per annotation ({path})")
+                    else:
+                        entry[key] = value
+
                 if tag == "A":
-                    entry["submitter_name"] = s
+                    set(key="submitter_name", value=s)
                 elif tag == "C":
-                    entry["caption"] = s
+                    set(key="caption", value=s)
                 elif tag == "D":
                     if util.is_valid_date_string(s):
-                        entry["date"] = s
+                        set(key="date", value=s)
                     else:
                         util.warn(f"File {path} contains invalid formatted date: {s}. Must use YYYY-MM-DD.")
                 elif tag == "F":
-                    entry["section"] = "fragment-" + s
+                    set(key="section", value=f"fragment-{s}", warn_if_present=False)
                 elif tag == "L":
-                    entry["section"] = "line-" + s
+                    set(key="section", value=f"line-{s}", warn_if_present=False)
                     # check whether the line reference may be unstable
                     try:
                         line_nr = int(s)
@@ -124,13 +138,14 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
                     except ValueError:
                         pass
                 elif tag == "S":
-                    entry["section"] = "global" if s == "99" or s.lower() == "none" else s.lower().strip()
+                    set(key="section", warn_if_present=False,
+                        value="global" if s == "99" or s.lower() == "none" else s.lower().strip())
                 elif tag == "T":
-                    entry["type"] = s
+                    set(key="type", value=s)
                 elif tag == "X":
                     items = s.split(":", maxsplit=2)
                     if len(items) == 2:
-                        entry[items[0]] = items[1]
+                        set(key=items[0], value=items[1])
             else:
                 if len(notes) == 0:
                     # it's the first line, check whether we have plain text or a html fragment
@@ -148,7 +163,7 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
             notes = util.rewrite_rfc_anchors(htmlfilter.filter_html(notes, path=path), rfc_list)
         entry["notes"] = notes
         if len(notes) > 0:
-            ret.append(check_errata_status(entry))
+            ret.append(check_errata_status(apply(default_values=defaults, to=entry)))
         else:
             util.error(f"{path} has invalid format.")
     return ret
