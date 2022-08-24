@@ -20,11 +20,11 @@ def info(s: str, end='\n'):
 
 
 def warn(s: str):
-    print(f"\n   Warning: {s}", file=sys.stderr)
+    print(f"\n\n   Warning: {s}\n", file=sys.stderr)
 
 
 def error(s: str):
-    print(f"\n   Error: {s}", file=sys.stderr)
+    print(f"\n\n   ERROR: {s}\n", file=sys.stderr)
 
 
 def is_valid_date_string(s: str) -> bool:
