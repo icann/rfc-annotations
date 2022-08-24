@@ -139,6 +139,8 @@ def __normalize_annotation_references(remark_list: list) -> list:
                     section = "appendix-" + section[9:].upper()
                 elif section == "global" or section == "line-1":
                     section = "global"
+                elif section == "toc" or section == "table of contents":
+                    section = "table-of-contents"
                 elif not section.startswith("line-") and section != "abstract":
                     section = "section-" + section
                 if section.endswith("."):
