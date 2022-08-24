@@ -39,7 +39,7 @@ def correct_path(directory: str) -> str:
     return directory
 
 
-def get_from_environment(name: str, default):
+def get_from_environment(name: str, default: Optional[str] = None) -> Optional[str]:
     if not name.startswith("RFC_"):
         name = "RFC_" + name
     return os.environ[name] if name in os.environ else default
@@ -64,14 +64,14 @@ def create_checksum(d: dict) -> str:
     return hashlib.md5(bytes(s, "utf-8")).hexdigest()
 
 
-def create_anchor(href_target: str, text: str, suffix: str = "", prefix: str = "", attributes: Optional[dict] = None) \
+def create_anchor(href: str, text: str, suffix: str = "", prefix: str = "", attributes: Optional[dict] = None) \
         -> str:
-    extra = "" if href_target.startswith("#") else "target='_blank' "
+    extra = "" if href.startswith("#") else "target='_blank' "
     if attributes is not None:
         for name, val in attributes.items():
             if name != "target":
                 extra += f"{name}='{val}' "
-    return f"{prefix}<a {extra}href='{href_target}'>{text}</a>{suffix}"
+    return f"{prefix}<a {extra}href='{href}'>{text}</a>{suffix}"
 
 
 def replace_links_in_text(line: str, replace_special_chars: bool) -> str:
@@ -96,7 +96,7 @@ def replace_links_in_text(line: str, replace_special_chars: bool) -> str:
                         href = href[0:href.index(end)]
                         stop = False
                     search_fragment = f"{start}{href}{end}"
-                    line = line.replace(search_fragment, create_anchor(href, href))
+                    line = line.replace(search_fragment, create_anchor(href=href, text=href))
     return line
 
 
@@ -137,34 +137,35 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
             if match is not None:
                 target_rfc = match.group("docno")
                 target_section = get_reference_type(match.group("sectiontype")) + "-" + match.group("sectionno")
-                a1 = create_anchor(get_rfc_target(target_rfc, rfc_list, target_section), match.group("sectionstring"),
-                                   match.group("fill1"))
-                a2 = create_anchor(get_rfc_target(target_rfc, rfc_list), match.group("docstring"), match.group("fill2"))
+                a1 = create_anchor(href=get_rfc_target(target_rfc, rfc_list, target_section),
+                                   text=match.group("sectionstring"), suffix=match.group("fill1"))
+                a2 = create_anchor(href=get_rfc_target(target_rfc, rfc_list), text=match.group("docstring"),
+                                   suffix=match.group("fill2"))
                 replacement = f"{a1}{a2}"
             else:
                 match = re.search(fmt2, target_text, flags=re.IGNORECASE)
                 if match is not None:
                     target_rfc = match.group("docno")
                     target_section = get_reference_type(match.group("sectiontype")) + "-" + match.group("sectionno")
-                    a1 = create_anchor(get_rfc_target(target_rfc, rfc_list, target_section),
-                                       match.group("sectionstring") )
-                    a2 = create_anchor(get_rfc_target(target_rfc, rfc_list), match.group("docstring"),
-                                       match.group("fill2"), match.group("fill1"))
+                    a1 = create_anchor(href=get_rfc_target(target_rfc, rfc_list, target_section),
+                                       text=match.group("sectionstring"))
+                    a2 = create_anchor(prefix=match.group("fill1"), href=get_rfc_target(target_rfc, rfc_list),
+                                       text=match.group("docstring"), suffix=match.group("fill2"))
                     replacement = f"{a2}{a1}"
                 else:
                     match = re.search(fmt3, target_text, flags=re.IGNORECASE)
                     if match is not None:
                         target_rfc = match.group("docno")
-                        replacement = create_anchor(get_rfc_target(target_rfc, rfc_list),
-                                                    match.group("docstring"), match.group("fill2"),
-                                                    match.group("fill1"))
+                        replacement = create_anchor(prefix=match.group("fill1"),
+                                                    href=get_rfc_target(target_rfc, rfc_list),
+                                                    text=match.group("docstring"), suffix=match.group("fill2"))
                     else:
                         match = re.search(fmt4, target_text, flags=re.IGNORECASE)
                         if match is not None:
                             target_section = get_reference_type(match.group("sectiontype")) + "-" + \
                                              match.group("sectionno")
                             contents = match.group("sectionstring")
-                            replacement = create_anchor("#" + target_section, contents)
+                            replacement = create_anchor(href="#" + target_section, text=contents)
 
             if replacement is not None:
                 line = line.replace(f"@@{target_text}@@", replacement)
