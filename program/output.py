@@ -51,8 +51,8 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
                     rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
                     node = None if root is None else rfcindex.fetch_element(root, rfc.upper())
                     f.write(f"<tr class='entry " + ("odd" if odd else "even") + "'>" +
-                            util.create_anchor(href=rfc + ".html", text=rfc[3:], suffix="</td>",
-                                               prefix="<td class='rfc'>"))
+                            util.create_anchor(prefix="<td class='rfc'>", href=rfc + ".html", text=rfc[3:],
+                                               suffix="</td>"))
                     odd = not odd
                     if node is not None:
                         title = node.getElementsByTagName("title")[0].firstChild.data
@@ -336,7 +336,36 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                         line_nr += 1
                         aid = "line-" + str(line_nr)
                         text = str(line_nr).rjust(5)
-                        line = f'<a class="line" id="{aid}" href="#{aid}">{text}</a> {line.ljust(73)}'
+
+                        # fills the line so that we have a fixed number of visible characters (=fixed width)
+                        def adjust_line_length(current_line: str, desired_len: int = 75, fill_with: str = " ") -> str:
+                            # we do have an error in the txt file of RFC7231
+                            if rfc_nr == "7231" and line_nr == 211 and current_line.startswith("ed"):
+                                current_line = current_line[3:]
+
+                            stripped = ""
+                            in_element = False
+                            in_entity = False
+                            for ch in current_line:
+                                if ch == "&" and not in_element:
+                                    in_entity = True
+                                    stripped += ch
+                                elif ch == ";" and in_entity:
+                                    in_entity = False
+                                elif ch == "<":
+                                    in_element = True
+                                elif ch == ">":
+                                    in_element = False
+                                elif not in_element and not in_entity:
+                                    stripped += ch
+                            if len(stripped) > desired_len:
+                                util.warn(f"RFC{rfc_nr}: line#{line_nr} '{current_line}' is too long. "
+                                          f"Counted {len(stripped)} chars in '{stripped}'.")
+                                return current_line
+                            else:
+                                return current_line + fill_with*(desired_len - len(stripped))
+
+                        line = f'<a class="line" id="{aid}" href="#{aid}">{text}</a> ' + adjust_line_length(line)
                     line = __rewrite_anchor(line, rfc_list)
 
                     rem_present = False
