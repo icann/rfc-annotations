@@ -339,10 +339,6 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
 
                         # fills the line so that we have a fixed number of visible characters (=fixed width)
                         def adjust_line_length(current_line: str, desired_len: int = 75, fill_with: str = " ") -> str:
-                            # we do have an error in the txt file of RFC7231
-                            if rfc_nr == "7231" and line_nr == 211 and current_line.startswith("ed"):
-                                current_line = current_line[3:]
-
                             stripped = ""
                             in_element = False
                             in_entity = False
