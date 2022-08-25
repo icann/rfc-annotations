@@ -109,25 +109,25 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
                 tag = line[1].upper()
                 s = None if len(line) <= 2 else line[2:].strip()
 
-                def set(key: str, value: str, warn_if_present=True):
+                def set_in_dict(key: str, value: str, warn_if_present=True):
                     if warn_if_present and key in entry:
                         util.warn(f"a #{tag} line may exist only once per annotation ({path})")
                     else:
                         entry[key] = value
 
                 if tag == "A":
-                    set(key="submitter_name", value=s)
+                    set_in_dict(key="submitter_name", value=s)
                 elif tag == "C":
-                    set(key="caption", value=s)
+                    set_in_dict(key="caption", value=s)
                 elif tag == "D":
                     if util.is_valid_date_string(s):
-                        set(key="date", value=s)
+                        set_in_dict(key="date", value=s)
                     else:
                         util.warn(f"File {path} contains invalid formatted date: {s}. Must use YYYY-MM-DD.")
                 elif tag == "F":
-                    set(key="section", value=f"fragment-{s}", warn_if_present=False)
+                    set_in_dict(key="section", value=f"fragment-{s}", warn_if_present=False)
                 elif tag == "L":
-                    set(key="section", value=f"line-{s}", warn_if_present=False)
+                    set_in_dict(key="section", value=f"line-{s}", warn_if_present=False)
                     # check whether the line reference may be unstable
                     try:
                         line_nr = int(s)
@@ -138,14 +138,14 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
                     except ValueError:
                         pass
                 elif tag == "S":
-                    set(key="section", warn_if_present=False,
-                        value="global" if s == "99" or s.lower() == "none" else s.lower().strip())
+                    set_in_dict(key="section", warn_if_present=False,
+                                value="global" if s == "99" or s.lower() == "none" else s.lower().strip())
                 elif tag == "T":
-                    set(key="type", value=s)
+                    set_in_dict(key="type", value=s)
                 elif tag == "X":
                     items = s.split(":", maxsplit=2)
                     if len(items) == 2:
-                        set(key=items[0], value=items[1])
+                        set_in_dict(key=items[0], value=items[1])
             else:
                 if len(notes) == 0:
                     # it's the first line, check whether we have plain text or a html fragment
