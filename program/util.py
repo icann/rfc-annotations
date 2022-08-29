@@ -114,8 +114,11 @@ def get_rfc_target(rfc: str, rfc_list: Optional[list] = None, target_id: Optiona
 
 
 def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
-    def get_reference_type(entity: str) -> str:
-        return "section" if entity.lower() == "appendix" else entity.lower()
+    def get_target_id(entity: str, number: str) -> str:
+        reftype = entity.lower()
+        if reftype == "section" and len(number) > 1 and number[:1].isalpha():
+            reftype = "appendix"
+        return reftype + "-" + number.upper()
 
     if "@@" in line:
         start = line.index("@@")
@@ -136,7 +139,7 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
             match = re.search(fmt1, target_text, flags=re.IGNORECASE)
             if match is not None:
                 target_rfc = match.group("docno")
-                target_section = get_reference_type(match.group("sectiontype")) + "-" + match.group("sectionno")
+                target_section = get_target_id(match.group("sectiontype"), match.group("sectionno"))
                 a1 = create_anchor(href=get_rfc_target(target_rfc, rfc_list, target_section),
                                    text=match.group("sectionstring"), suffix=match.group("fill1"))
                 a2 = create_anchor(href=get_rfc_target(target_rfc, rfc_list), text=match.group("docstring"),
@@ -146,7 +149,7 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
                 match = re.search(fmt2, target_text, flags=re.IGNORECASE)
                 if match is not None:
                     target_rfc = match.group("docno")
-                    target_section = get_reference_type(match.group("sectiontype")) + "-" + match.group("sectionno")
+                    target_section = get_target_id(match.group("sectiontype"), match.group("sectionno"))
                     a1 = create_anchor(href=get_rfc_target(target_rfc, rfc_list, target_section),
                                        text=match.group("sectionstring"))
                     a2 = create_anchor(prefix=match.group("fill1"), href=get_rfc_target(target_rfc, rfc_list),
@@ -162,8 +165,7 @@ def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
                     else:
                         match = re.search(fmt4, target_text, flags=re.IGNORECASE)
                         if match is not None:
-                            target_section = get_reference_type(match.group("sectiontype")) + "-" + \
-                                             match.group("sectionno")
+                            target_section = get_target_id(match.group("sectiontype"), match.group("sectionno"))
                             contents = match.group("sectionstring")
                             replacement = create_anchor(href="#" + target_section, text=contents)
 
