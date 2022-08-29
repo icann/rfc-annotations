@@ -115,10 +115,10 @@ def get_rfc_target(rfc: str, rfc_list: Optional[list] = None, target_id: Optiona
 
 def rewrite_rfc_anchor(line: str, rfc_list: Optional[list]) -> str:
     def get_target_id(entity: str, number: str) -> str:
-        reftype = entity.lower();
+        reftype = entity.lower()
         if reftype == "section" and number[:1].isalpha():
             reftype = "appendix"
-        return reftype + "-" + number.upper();
+        return reftype + "-" + number.upper()
 
     if "@@" in line:
         start = line.index("@@")
