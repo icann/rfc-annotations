@@ -60,6 +60,11 @@ def get_draft_status(directory: str, url: str = "https://www.ietf.org/id/all_id.
     try:
         with open(file_path, "r") as f:
             document = json.loads(f.read())
+            key = list(document.keys())[0]
+            val = document[key]
+            if type(val) == str:
+                util.info(f"Converting 'status.json' to new format.")
+                document = None
     except Exception:
         pass
 
@@ -72,7 +77,12 @@ def get_draft_status(directory: str, url: str = "https://www.ietf.org/id/all_id.
             for entry in text_content.split("\n"):
                 items = entry.rstrip().split("\t", maxsplit=2)
                 if len(items) == 3 and len(items[0]) > 3:
-                    document[items[0]] = items[2]
+                    draft_name = items[0]
+                    date = items[1]
+                    state = items[2].replace("\t", "")
+                    if not util.is_valid_date_string(date):
+                        util.warn(f"can't analyze date '{date}' of draft {draft_name}")
+                    document[draft_name] = {"state": state, "date": date}
             with open(file_path, "w") as f:
                 f.write(json.dumps(document))
             util.info(" Done.")

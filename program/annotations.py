@@ -3,6 +3,7 @@ import re
 import textwrap
 from typing import Optional, List
 from xml.dom.minidom import Element
+from datetime import datetime
 
 import drafts       # get_draft_index, get_draft_status
 import errata       # filter_errata, errata_checksum
@@ -223,7 +224,8 @@ def __create_status_annotations(rfc_nr: str, rfc_list: list, root: Element, draf
                     entry = f"search?sort=&rfcs=on&activedrafts=on&name={entry}"
                 target = f"https://datatracker.ietf.org/doc/{entry}"
                 if rfc.lower() in draft_status:
-                    status = draft_status[rfc.lower()].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                    status = draft_status[rfc.lower()]["state"].replace("&", "&amp;")\
+                        .replace("<", "&lt;").replace(">", "&gt;")
                     entry = f"{entry} ({status})"
             elif entry_type == "e":
                 target = entry if count == 0 else f"https://www.rfc-editor.org/errata/eid{entry}"
@@ -234,6 +236,30 @@ def __create_status_annotations(rfc_nr: str, rfc_list: list, root: Element, draf
             s += util.create_anchor(href=target, text=entry)
             count += 1
         return caption, f"{prefix}{s}", line
+
+    def filter_valid_drafts(draft_names: [str]) -> []:
+        filtered_drafts = []
+        for draft_name in draft_names:
+            if draft_name in draft_status:
+                state = draft_status[draft_name]["state"].lower()
+                if state.startswith("rfc") or state.startswith("replaced") or state.startswith("withdrawn"):
+                    util.warn(f"ignoring draft '{draft_name}' with state {state}")
+                else:
+                    if state.startswith("in iesg processing"):
+                        filtered_drafts.append(draft_name)
+                    elif state in ["active", "expired"]:
+                        s = draft_status[draft_name]["date"]
+                        delta = datetime.today() - datetime.strptime(s, "%Y-%m-%d")
+                        if delta.days > 365:
+                            util.info(f"\nWill skip draft '{draft_name}' because current state '{state}' is"
+                                      f" too old ({s}).")
+                        else:
+                            filtered_drafts.append(draft_name)
+                    else:
+                        util.warn(f"\nUnknown state '{state}'. Skipping draft '{draft_name}'.")
+            else:
+                util.warn(f"\nCan't check state of draft '{draft_name}'. Will be skipped.")
+        return filtered_drafts
 
     ret = []
     rfc_nr = rfc_nr.upper()
@@ -266,11 +292,15 @@ def __create_status_annotations(rfc_nr: str, rfc_list: list, root: Element, draf
         if rfc_nr.upper().startswith("RFC"):
             rfc_nr = rfc_nr[3:]
         if "obsoleted" in draft_index and rfc_nr in draft_index["obsoleted"]:
-            ret.append(create_entry("POTENTIALLY OBSOLETED", "Potentially obsoleted by ",
-                                    draft_index["obsoleted"][rfc_nr], 1, "d"))
+            valid_drafts = filter_valid_drafts(draft_index["obsoleted"][rfc_nr])
+            if len(valid_drafts) > 0:
+                ret.append(create_entry("POTENTIALLY OBSOLETED", "Potentially obsoleted by ",
+                                        valid_drafts, 1, "d"))
         if "updated" in draft_index and rfc_nr in draft_index["updated"]:
-            ret.append(create_entry("POTENTIALLY UPDATED", "Potentially updated by ",
-                                    draft_index["updated"][rfc_nr], 2, "d"))
+            valid_drafts = filter_valid_drafts(draft_index["updated"][rfc_nr])
+            if len(valid_drafts) > 0:
+                ret.append(create_entry("POTENTIALLY UPDATED", "Potentially updated by ",
+                                        valid_drafts, 2, "d"))
     return ret
 
 
