@@ -102,6 +102,9 @@ The list of RFCs is stored in a file whose name follows the pattern`*-rfcs.txt`.
 The tool comes with a `dns-rfcs.txt` file pre-populated with over 100 RFCs related to the DNS.
 The index file that is generated has the same prefix as the input name, such as `dns-index.html`.
 
+ICANN supports the list of DNS-related RFCs in this repository.
+A similar repository for HTTP-related RFCs can be found [here](https://github.com/greenbytes/http-rfc-annotations).
+
 ### Annotations
 
 The annotations are stored in the `annotations/` directory.
