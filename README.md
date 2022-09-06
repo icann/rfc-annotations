@@ -163,7 +163,7 @@ and the status of "updated" show the annotations that have on a blue background.
 
 You can also create CSS for individual document authors, such as:
 ```
-.area .annotation .chris_smith {font-size: 1em; background-color: #00FC90;}
+.area .annotation .chris_smith {font-size: 125%; background-color: #000;}
 ```
 
 Similarly, the `scripts.html` configuration file contains Javascript that is added to each generated RFC.
