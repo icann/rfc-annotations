@@ -82,20 +82,26 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
         return to
 
     ret = []
+    plain_text_enclosing_element = "p"
     with open(path, "r") as f:
         lines = f.readlines()
         notes = []
         entry = {}
         defaults = {"section": "global", "path": path}
         is_plain_text = False
+
+        def save_current_annotation(ann_notes: list) -> list:
+            if is_plain_text:
+                ann_notes.append(f"</{plain_text_enclosing_element}>")
+            else:
+                ann_notes = util.rewrite_rfc_anchors(htmlfilter.filter_html(ann_notes, path=path), rfc_list)
+            entry["notes"] = ann_notes
+            return ann_notes
+
         for line in lines:
             if line.strip() == "####################":
                 # a new annotation entry starts here
-                if is_plain_text:
-                    notes.append("</pre>")
-                else:
-                    notes = util.rewrite_rfc_anchors(htmlfilter.filter_html(notes, path=path), rfc_list)
-                entry["notes"] = notes
+                save_current_annotation(notes)
                 ret.append(check_errata_status(apply(default_values=defaults, to=entry)))
                 notes = []
                 defaults = entry.copy()
@@ -154,15 +160,11 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
                     pos = None if search_result is None else search_result.span()[0]
                     if pos is None or pos > 0:
                         is_plain_text = True
-                        notes.append("<pre>")
+                        notes.append(f"<{plain_text_enclosing_element} class='annotation'>")
                 if is_plain_text:
                     line = util.rewrite_rfc_anchor(util.replace_links_in_text(line, True), rfc_list)
                 notes.append(line)
-        if is_plain_text:
-            notes.append("\n</pre>")
-        else:
-            notes = util.rewrite_rfc_anchors(htmlfilter.filter_html(notes, path=path), rfc_list)
-        entry["notes"] = notes
+        notes = save_current_annotation(notes)
         if len(notes) > 0:
             ret.append(check_errata_status(apply(default_values=defaults, to=entry)))
         else:
