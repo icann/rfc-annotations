@@ -4,11 +4,9 @@
 #L 123
 #
 This annotation would be plain text.
-It will be displayed respecting
-all
-line breaks,
-using a fixed-width font.
+It will be displayed
+as a
+paragraph.
 
-Blank lines will be displayed as normal, as are
-  lines that start with spaces
-			and even those witt tab characters.
+Blank lines will be ignored.
+That is, it will be one big paragraph.
