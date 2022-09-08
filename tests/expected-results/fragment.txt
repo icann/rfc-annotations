@@ -1,1 +1,1 @@
-[{"submitter_name": "John Doe", "caption": "Fragment Example", "section": "fragment-this is a text fragment", "notes": ["<p class='annotation'>", "This annotation should be placed close to the referenced text fragment.", "</p>"]}]
+[{"submitter_name": "John Doe", "caption": "Fragment Example", "section": "fragment-this is a text fragment", "notes": ["<p class='plaintext'>", "This annotation should be placed close to the referenced text fragment.", "</p>"]}]

@@ -160,7 +160,7 @@ def get_annotation_from_file(path: str, errata_list: list, patches: Optional[dic
                     pos = None if search_result is None else search_result.span()[0]
                     if pos is None or pos > 0:
                         is_plain_text = True
-                        notes.append(f"<{plain_text_enclosing_element} class='annotation'>")
+                        notes.append(f"<{plain_text_enclosing_element} class='plaintext'>")
                 if is_plain_text:
                     line = util.rewrite_rfc_anchor(util.replace_links_in_text(line, True), rfc_list)
                 notes.append(line)
