@@ -2,7 +2,6 @@ import os
 import re
 import textwrap
 from typing import Optional, List
-from xml.dom.minidom import Element
 from datetime import datetime
 
 import drafts       # get_draft_index, get_draft_status
@@ -203,7 +202,7 @@ def __get_annotations_from_dir(rfc: str, directory: str, errata_list: list, patc
 
 # returns status information (like obsoleted, updated etc.) for a single RFC (based on the information of
 # https://www.rfc-editor.org/rfc-index.xml). This information is used for the generation of annotation files.
-def __create_status_annotations(rfc_nr: str, rfc_list: list, root: Element, draft_index: Optional[dict],
+def __create_status_annotations(rfc_nr: str, rfc_list: list, root: dict, draft_index: Optional[dict],
                                 errata_list: Optional[list] = None, patches=None,
                                 draft_status: Optional[dict] = None) -> list:
 
@@ -311,21 +310,20 @@ def __create_status_annotations(rfc_nr: str, rfc_list: list, root: Element, draf
 def create_from_status(rfc_list: list, annotation_directory: str, read_directory: str = ".",
                        errata_list: Optional[list] = None, patches=None):
     read_directory = util.correct_path(read_directory)
-    response = rfcindex.read_xml_document(read_directory)
-    if response is None:
+    _, lookup_map = rfcindex.read_xml_document(read_directory)
+    if lookup_map is None:
         util.error("can't read RFC index")
         return
     draft_index = drafts.get_draft_index(read_directory)
     draft_status = drafts.get_draft_status(read_directory)
 
-    root: Optional[Element] = response.firstChild
     util.info("Creating status annotations... ", end="")
     has_skipped_files = False
     for rfc in rfc_list:
         rfc: str = rfc.lower().strip()
         rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
-        for caption, notes, line in __create_status_annotations(rfc, rfc_list, root, draft_index, errata_list, patches,
-                                                                draft_status):
+        for caption, notes, line in __create_status_annotations(rfc, rfc_list, lookup_map, draft_index, errata_list,
+                                                                patches, draft_status):
             annotation_type = caption.replace(' ', '_').lower()
             local_name = f"{rfc}.{annotation_type}"
             fn = os.path.join(annotation_directory, local_name)
