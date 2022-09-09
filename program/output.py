@@ -12,10 +12,8 @@ import util          # correct_path, get_from_environment, config_directories, c
 # creates an index html page containing details and links to the given RFCs
 def create_index(prefix: Optional[str], sections: [tuple], write_directory: str = ".", path: str = ".",
                  rfcs_last_updated: Optional[dict] = None):
-    root = None
-    response = rfcindex.read_xml_document(path)
-    if response is not None:
-        root = response.firstChild
+    response, lookup_map = rfcindex.read_xml_document(path)
+    root = response.firstChild if response is not None else None
 
     write_directory = util.correct_path(write_directory)
     file_name = "index.html" if prefix is None else f"{prefix}-index.html"
@@ -49,7 +47,7 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
                 for rfc in rfc_list:
                     rfc: str = rfc.lower().strip()
                     rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
-                    node = None if root is None else rfcindex.fetch_element(root, rfc.upper())
+                    node = None if lookup_map is None else rfcindex.fetch_element(lookup_map, rfc.upper())
                     f.write(f"<tr class='entry " + ("odd" if odd else "even") + "'>" +
                             util.create_anchor(prefix="<td class='rfc'>", href=rfc + ".html", text=rfc[3:],
                                                suffix="</td>"))

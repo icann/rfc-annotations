@@ -1,7 +1,7 @@
 import os
 from xml.dom.minidom import Element, Node, Document, parseString
 from urllib.request import urlopen
-from typing import Union, Optional
+from typing import Union, Optional, Tuple
 
 import util  # debug, info, error
 
@@ -9,7 +9,8 @@ import util  # debug, info, error
 
 
 # returns a cached version of https://www.rfc-editor.org/rfc-index.xml. Will be automatically created if absent.
-def read_xml_document(path: str = ".", url: str = "https://www.rfc-editor.org/rfc-index.xml") -> Optional[Document]:
+def read_xml_document(path: str = ".", url: str = "https://www.rfc-editor.org/rfc-index.xml") \
+        -> Tuple[Optional[Document], Optional[dict]]:
     file_path = os.path.join(path, "rfc-index.xml")
     xml_content = None
     # noinspection PyBroadException
@@ -41,16 +42,29 @@ def read_xml_document(path: str = ".", url: str = "https://www.rfc-editor.org/rf
             doc: Document = document
             root: Node = doc.firstChild
             util.debug(f"Got {len(root.childNodes)} entries.\n")
-            return doc
+            return doc, __build_lookup_map(doc)
         else:
             util.debug("")
             util.error(f"got unexpected parsing response type {type(document)}.")
-    return None
+    return None, None
+
+
+# creates a dictionary for faster lookup of desired elements
+def __build_lookup_map(parent: Document, element: str = "rfc-entry", attribute: str = "doc-id") -> dict:
+    ret = {}
+    for candidate in parent.getElementsByTagName(element):
+        for child in candidate.childNodes:
+            if child.localName == attribute:
+                ret[child.firstChild.data] = candidate
+    return ret
 
 
 # returns the details of a node (usually a 'rfc-entry' node defined by its RFC number)
-def fetch_element(parent: Union[Element, Document], value: str, element: str = "rfc-entry", attribute: str = "doc-id") \
-        -> Optional[Element]:
+def fetch_element(parent: Union[Element, Document, dict], value: str, element: str = "rfc-entry",
+                  attribute: str = "doc-id") -> Optional[Element]:
+    if type(parent) == dict:
+        return parent[value]
+
     for candidate in parent.getElementsByTagName(element):
         for child in candidate.childNodes:
             if child.localName == attribute and child.firstChild.data == value:
