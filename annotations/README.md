@@ -30,7 +30,8 @@ global annotations.
 The first line that does not contain a comment or metadata is the beginning of the annotation content.
 If this first line starts with an allowed HTML tag, the rest of the annotation is assumed to be HTML.
 This is typically done with a `<div>` tag, but it could be any of the tags listed below.
-If the first non-comment, non-metadata line does not start with an HTML tag, the rest of the annotation is treated as plain, pre-formatted text.
+If the first non-comment, non-metadata line does not start with an HTML tag, the rest of the annotation is treated as
+plain text that is not formatted.
 
 The HTML tags that you use are currently:
 
