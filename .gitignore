@@ -6,3 +6,5 @@ annotations/
 program/__pycache__
 local-config
 .DS_Store
+*.mp4
+
