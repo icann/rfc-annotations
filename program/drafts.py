@@ -36,6 +36,12 @@ def download_drafts(target_dir: str = ".") -> Optional[dict]:
         util.info(f"Retrieving {nr} changes with rsync.")
     subprocess.run(f'rsync -avz {rsync_filter} rsync.ietf.org::internet-drafts {drafts_dir}', shell=True)
     util.info("Finished rsync.")
+
+    # remove cached status information, if present
+    file_path = os.path.join(drafts_dir, "status.json")
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
     return __create_index(target_dir)
 
 
