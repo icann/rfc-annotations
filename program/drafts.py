@@ -122,9 +122,10 @@ def __create_index(directory: str) -> Optional[dict]:
     handled = []
     drafts_dir = os.path.join(directory, "drafts")
     util.debug("Creating index for drafts in xml format... ", end="")
-    try:
-        for file in util.filtered_files(drafts_dir, "draft-", ".xml"):
-            with open(os.path.join(drafts_dir, file), "rb") as f:
+    for file in util.filtered_files(drafts_dir, "draft-", ".xml"):
+        file_name = os.path.join(drafts_dir, file)
+        try:
+            with open(file_name, "rb") as f:
                 xml_content = f.read()
                 document = parseString(xml_content)
                 if type(document) is Document:
@@ -132,12 +133,12 @@ def __create_index(directory: str) -> Optional[dict]:
                     root = doc.getElementsByTagName("rfc")
                     if len(root) == 1:
                         draft_name = root[0].attributes["docName"].firstChild.data
-                        handled.append(draft_name)
                         add_element_to_list(obsoleted_by, draft_name, "obsoletes", root[0])
                         add_element_to_list(updated_by, draft_name, "updates", root[0])
+                        handled.append(draft_name)
+        except Exception as e:
+            util.warn(f"reading xml file {file_name}: {e}. The corresponding txt fill be used instead.")
         util.debug("Done.")
-    except Exception as e:
-        util.error(f"reading xml in {drafts_dir}: {e}")
 
     util.debug("Creating index for drafts in txt format... ", end="")
     try:
