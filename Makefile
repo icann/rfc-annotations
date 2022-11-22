@@ -53,5 +53,5 @@ docker-remove:
 	fi
 
 clean: docker-remove
-	rm -rf generated-html && rm -rf raw-originals && rm -rf annotations/_generated && rm -rf .pytest_cache \
+	rm -rf generated-html/rfc*.html && rm -rf raw-originals && rm -rf annotations/_generated && rm -rf .pytest_cache \
 	rm -rf program/__pycache__
