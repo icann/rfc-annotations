@@ -221,6 +221,8 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                     entry_type = f"status {annotation_type.replace('_', '')}"
                 else:
                     entry_type += f" {annotation_type}"
+            if "path" in rem:
+                caption = util.create_anchor("../" + rem["path"], caption)
         else:
             entry_type = "err"
             prefix = ""
