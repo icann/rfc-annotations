@@ -57,6 +57,6 @@ def test_html_output_plain():
 
 def test_html_output_annotated():
     errata_list, patches = prepare_files()
-    output.create_files(RFC_LIST, errata_list, patches, TXT_DIR, os.path.join(my_dir, "rfc-annotations"), GEN_DIR)
+    output.create_files(RFC_LIST, errata_list, patches, TXT_DIR, os.path.join(my_dir, "rfc-annotations"), GEN_DIR, None)
     for rfc in RFC_LIST:
         compare_file(f"rfc{rfc}.html", GEN_DIR, os.path.join(RESULT_DIR, "annotated"))

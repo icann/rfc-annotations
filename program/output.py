@@ -180,7 +180,8 @@ def __handle_annotations_with_fragment_references(remark_list: list, lines: list
 
 # creates annotated html files for a given list of RFCs.
 def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], read_directory: str = ".",
-                 annotation_directory: str = None, write_directory: str = ".") -> dict:
+                 annotation_directory: str = None, write_directory: str = ".", anchor_prefix: Optional[str] = "../") \
+        -> dict:
 
     def create_unique_erratum_ref(eid: str) -> str:
         if eid in erratum_references:
@@ -221,8 +222,8 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                     entry_type = f"status {annotation_type.replace('_', '')}"
                 else:
                     entry_type += f" {annotation_type}"
-            if "path" in rem:
-                caption = util.create_anchor("../" + rem["path"], caption)
+            if "path" in rem and anchor_prefix is not None:
+                caption = util.create_anchor(anchor_prefix + rem["path"], caption)
         else:
             entry_type = "err"
             prefix = ""
