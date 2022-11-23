@@ -165,7 +165,3 @@ The GitHub repository for the tool can be found <a href="https://github.com/ican
 9167
 9224
 
-####################
-<p>
-We have updated our website terms of service to provide greater transparency and promote simplification. <a href="terms.html">Learn more.</a>
-</p>
