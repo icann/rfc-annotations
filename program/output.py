@@ -34,48 +34,50 @@ def create_index(prefix: Optional[str], sections: [tuple], write_directory: str 
                 f.write("<noscript>For full functionality of this page please enable JavaScript</noscript>\n")
             for nr, section in enumerate(sections):
                 rfc_list, index_text = section
-                f.write(f'{index_text}<table class="index" id="table{nr}">\n<thead><tr class="header">'
-                        '<th class="rfc" data-type="int">RFC</th>')
-                if root is not None:
-                    f.write('<th class="title">Title</th>'
-                            '<th class="date" data-type="month-year">Date</th>'
-                            '<th class="status">Status</th>')
-                if rfcs_last_updated is not None:
-                    f.write('<th class="timestamp">Latest Ann.</th>')
-                f.write("</tr></thead>\n<tbody>\n")
-                odd = True
-                for rfc in rfc_list:
-                    rfc: str = rfc.lower().strip()
-                    rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
-                    node = None if lookup_map is None else rfcindex.fetch_element(lookup_map, rfc.upper())
-                    f.write(f"<tr class='entry " + ("odd" if odd else "even") + "'>" +
-                            util.create_anchor(prefix="<td class='rfc'>", href=rfc + ".html", text=rfc[3:],
-                                               suffix="</td>"))
-                    odd = not odd
-                    if node is not None:
-                        title = node.getElementsByTagName("title")[0].firstChild.data
-                        status = node.getElementsByTagName("current-status")[0].firstChild.data.title()
-                        month = node.getElementsByTagName("month")[0].firstChild.data
-                        year = node.getElementsByTagName("year")[0].firstChild.data
-                        date = f"{month} {year}".strip()
-                        node_list = node.getElementsByTagName("obsoleted-by")
-                        suffix = ""
-                        if len(node_list) > 0:
-                            for node in node_list[0].getElementsByTagName("doc-id"):
-                                rfc = node.firstChild.data
-                                suffix += "; Obsoleted by" if len(suffix) == 0 else ","
-                                text = f"{rfc[0:3]} {rfc[3:]}" if len(rfc) > 3 else rfc
-                                suffix += __rewrite_anchor(util.create_anchor(prefix=" ", href=rfc.lower(), text=text),
-                                                           rfc_list)
-                        status = f"{status}{suffix}"
-                        f.write(f"<td class='title'>{title}</td>"
-                                f"<td class='date'>{date}</td>"
-                                f"<td class='status'>{status}</td>")
+                f.write(index_text)
+                if len(rfc_list) > 0:
+                    f.write(f'<table class="index" id="table{nr}">\n<thead><tr class="header">'
+                            '<th class="rfc" data-type="int">RFC</th>')
+                    if root is not None:
+                        f.write('<th class="title">Title</th>'
+                                '<th class="date" data-type="month-year">Date</th>'
+                                '<th class="status">Status</th>')
                     if rfcs_last_updated is not None:
-                        s = rfcs_last_updated[rfc] if rfc in rfcs_last_updated else ""
-                        f.write(f'<td class="timestamp">{s}</td>')
-                    f.write("</tr>\n")
-                f.write("</tbody></table>\n")
+                        f.write('<th class="timestamp">Latest Ann.</th>')
+                    f.write("</tr></thead>\n<tbody>\n")
+                    odd = True
+                    for rfc in rfc_list:
+                        rfc: str = rfc.lower().strip()
+                        rfc = rfc if rfc.startswith("rfc") else "rfc" + rfc
+                        node = None if lookup_map is None else rfcindex.fetch_element(lookup_map, rfc.upper())
+                        f.write(f"<tr class='entry " + ("odd" if odd else "even") + "'>" +
+                                util.create_anchor(prefix="<td class='rfc'>", href=rfc + ".html", text=rfc[3:],
+                                                   suffix="</td>"))
+                        odd = not odd
+                        if node is not None:
+                            title = node.getElementsByTagName("title")[0].firstChild.data
+                            status = node.getElementsByTagName("current-status")[0].firstChild.data.title()
+                            month = node.getElementsByTagName("month")[0].firstChild.data
+                            year = node.getElementsByTagName("year")[0].firstChild.data
+                            date = f"{month} {year}".strip()
+                            node_list = node.getElementsByTagName("obsoleted-by")
+                            suffix = ""
+                            if len(node_list) > 0:
+                                for node in node_list[0].getElementsByTagName("doc-id"):
+                                    rfc = node.firstChild.data
+                                    suffix += "; Obsoleted by" if len(suffix) == 0 else ","
+                                    text = f"{rfc[0:3]} {rfc[3:]}" if len(rfc) > 3 else rfc
+                                    suffix += __rewrite_anchor(util.create_anchor(prefix=" ", href=rfc.lower(),
+                                                                                  text=text), rfc_list)
+                            status = f"{status}{suffix}"
+                            f.write(f"<td class='title'>{title}</td>"
+                                    f"<td class='date'>{date}</td>"
+                                    f"<td class='status'>{status}</td>")
+                        if rfcs_last_updated is not None:
+                            s = rfcs_last_updated[rfc] if rfc in rfcs_last_updated else ""
+                            f.write(f'<td class="timestamp">{s}</td>')
+                        f.write("</tr>\n")
+                    f.write("</tbody></table>\n")
             f.write("</body></html>")
             util.info(" Done.")
     except Exception as e:
