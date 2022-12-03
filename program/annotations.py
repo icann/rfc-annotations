@@ -325,7 +325,7 @@ def create_from_status(rfc_list: list, annotation_directory: str, read_directory
         for caption, notes, line in __create_status_annotations(rfc, rfc_list, lookup_map, draft_index, errata_list,
                                                                 patches, draft_status):
             annotation_type = caption.replace(' ', '_').lower()
-            local_name = f"{rfc}.{annotation_type}"
+            local_name = f"{rfc}.{annotation_type}.txt"
             fn = os.path.join(annotation_directory, local_name)
             if os.path.exists(fn):
                 if has_skipped_files:
