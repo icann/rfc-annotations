@@ -182,7 +182,8 @@ def __handle_annotations_with_fragment_references(remark_list: list, lines: list
 
 # creates annotated html files for a given list of RFCs.
 def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], read_directory: str = ".",
-                 annotation_directory: str = None, write_directory: str = ".", anchor_prefix: Optional[str] = "../") \
+                 annotation_directory: str = None, write_directory: str = ".", index: Optional[str] = None,
+                 anchor_prefix: Optional[str] = "../") \
         -> dict:
 
     def create_unique_erratum_ref(eid: str) -> str:
@@ -314,6 +315,8 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                 f.write('<body onload="adjustFontSize()">\n')
                 if scripts is not None:
                     f.write("<noscript>For full functionality of this page please enable JavaScript</noscript>\n")
+                if index is not None:
+                    f.write(f'<button class="floating-left" onclick="window.location.href=\'{index}\'">Back</button>\n')
                 f.write('<button class="floating" onclick="hideRFC()" id="hideBtn">Hide RFC</button>\n')
                 f.write('<button class="floating" onclick="showRFC()" id="showBtn" hidden="hidden">Show RFC</button>\n')
                 f.write(f'<div class="area">\n<pre class="{rfc_class}"><span class="{rfc_class}">')
