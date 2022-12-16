@@ -27,7 +27,8 @@ def process_rfc_lists(rfc_lists: [([str], str)], index_prefix: Optional[str] = N
         annotations.create_from_errata(all_rfcs, ANN_DIR_GENERATED, errata_list, patches)
 
     # create html files
-    rfcs_last_updated = output.create_files(all_rfcs, errata_list, patches, TXT_DIR, ANN_DIR, GEN_DIR)
+    rfcs_last_updated = output.create_files(all_rfcs, errata_list, patches, TXT_DIR, ANN_DIR, GEN_DIR,
+                                            "index.html" if index_prefix is None else f"{index_prefix}-index.html")
 
     # create index.html if necessary
     if util.means_true(util.get_from_environment("INDEX", "NO")):
