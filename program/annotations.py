@@ -184,7 +184,7 @@ def __get_annotations_from_dir(rfc: str, directory: str, errata_list: list, patc
     # Normal processing
     current = 0
     try:
-        for file in util.filtered_files(directory, rfc + "."):
+        for file in util.filtered_files(directory, "global.") + util.filtered_files(directory, f"{rfc}."):
             path = os.path.join(directory, file)
             annotations_in_dir = get_annotation_from_file(path, errata_list, patches, rfc_list)
             ret.extend(annotations_in_dir)

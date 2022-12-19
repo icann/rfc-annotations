@@ -141,7 +141,7 @@ def __normalize_annotation_references(remark_list: list) -> list:
                     section = "global"
                 elif section == "toc" or section == "table of contents":
                     section = "table-of-contents"
-                elif not section.startswith("line-") and section != "abstract":
+                elif not section.startswith("line-") and section != "abstract" and section != "top":
                     section = "section-" + section
                 if section.endswith("."):
                     section = section[:-1]
@@ -196,7 +196,7 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
 
     def write_annotation(remarks_present: bool, annotation_text: str) -> (bool, str):
         erratum_id = str(rem["errata_id"]) if "errata_id" in rem else None
-        caption = str(rem["caption"]) if "caption" in rem else None
+        caption = str(rem["caption"]).replace("{rfc_nr}", f"{rfc_nr}") if "caption" in rem else None
         date = str(rem["date"]) if "date" in rem else ""
         if len(date) > 0:
             if rfc in rfcs_last_updated:
@@ -273,7 +273,7 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
         if "notes" in rem and rem["notes"] is not None:
             if type(rem["notes"]) is list:
                 for entry in rem["notes"]:
-                    annotation_text += entry
+                    annotation_text += entry.replace("{rfc_nr}", f"{rfc_nr}")
 
         annotation_text += "</div></div>"
         return remarks_present, annotation_text
@@ -371,13 +371,15 @@ def create_files(rfc_list: list, errata_list: list, patches: Optional[dict], rea
                     line = __rewrite_anchor(line, rfc_list)
 
                     rem_present = False
-                    for section in remarks_sections:
-                        if section == "global" or (f'id="{section}"' in line):
+                    for section in ["top"] + remarks_sections:
+                        if section == "global" or section == "top" or (f'id="{section}"' in line):
                             remark_written = False
                             for rem in remarks:
                                 if section in rem["section"]:
                                     remark_written = True
                                     rem_present, annotation = write_annotation(rem_present, annotation)
+                                    if section == "top":
+                                        remarks.remove(rem)
                             if remark_written:
                                 remarks_sections.remove(section)
                     f.write(line)
