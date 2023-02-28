@@ -1,6 +1,6 @@
 import os
 from xml.dom.minidom import Element, Node, Document, parseString
-from urllib.request import urlopen
+from requests import get
 from typing import Union, Optional, Tuple
 
 import util  # debug, info, error
@@ -13,6 +13,8 @@ def read_xml_document(path: str = ".", url: str = "https://www.rfc-editor.org/rf
         -> Tuple[Optional[Document], Optional[dict]]:
     file_path = os.path.join(path, "rfc-index.xml")
     xml_content = None
+
+    # fetch cached version of rfc-index.xml
     # noinspection PyBroadException
     try:
         with open(file_path, "rb") as f:
@@ -20,21 +22,37 @@ def read_xml_document(path: str = ".", url: str = "https://www.rfc-editor.org/rf
     except Exception:
         pass
 
-    if xml_content is None:
-        util.info(f"\nFetching data from source of truth {url}... ", end='')
+    util.info(f"\nFetching data from source of truth {url}... ", end='')
+    if xml_content is not None:
+        # check whether the cached version is still up-to-date
         try:
-            xml_content = urlopen(url).read()
-            if type(xml_content) is bytes:
-                util.info(f"Retrieved {len(xml_content)} bytes of data. Parsing... ", end='')
-                with open(file_path, "wb") as f:
-                    f.write(xml_content)
-            else:
-                util.info("")
-                util.error(f"got unexpected fetching response data of type {type(xml_content)}.")
-        except Exception as e:
-            util.error(f"returned with error: {e}.")
-    else:
-        util.debug("\nParsing cached rfc-index... ", end='')
+            with open(file_path + ".etag", "r") as f:
+                response = get(url, headers={"accept-encoding": "identity", "If-None-Match": f.read()})
+                if response.status_code == 304:
+                    util.info("cached version is still valid")
+                else:
+                    util.info("etag changed -> refetching file")
+                    xml_content = None
+        except Exception:
+            util.info("no valid etag found -> refetching file")
+            xml_content = None
+
+    # fetch the file from the server
+    if xml_content is None:
+        response = get(url, headers={"accept-encoding": "identity"})
+        xml_content = response.content
+        # save the ETag
+        if "ETag" in response.headers:
+            with open(file_path + ".etag", "w") as f:
+                f.write(response.headers["ETag"])
+        # and the content
+        if type(xml_content) is bytes:
+            util.info(f"Retrieved {len(xml_content)} bytes of data. Parsing... ", end='')
+            with open(file_path, "wb") as f:
+                f.write(xml_content)
+        else:
+            util.info("")
+            util.error(f"got unexpected fetching response data of type {type(xml_content)}.")
 
     if xml_content is not None:
         document = parseString(xml_content)
