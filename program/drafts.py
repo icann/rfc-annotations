@@ -137,7 +137,7 @@ def __create_index(directory: str) -> Optional[dict]:
                         add_element_to_list(updated_by, draft_name, "updates", root[0])
                         handled.append(draft_name)
         except Exception as e:
-            util.warn(f"reading xml file {file_name}: {e}. The corresponding txt fill be used instead.")
+            util.warn(f"reading xml file {file_name}: {e}. The corresponding txt file be used instead.")
         util.debug("Done.")
 
     util.debug("Creating index for drafts in txt format... ", end="")
