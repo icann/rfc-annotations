@@ -1,7 +1,6 @@
 import os
-from urllib.request import urlopen
 
-import util  # correct_path, debug, info, error
+import util  # correct_path, debug, info, error, urlopen
 
 ''' Download the RFC files for RFC annotations tools '''
 
@@ -24,7 +23,7 @@ def download_rfcs(rfc_list: list, directory: str = "."):
         else:
             util.info(f"Downloading {rfc.ljust(7)}... ", end='')
             try:
-                content = urlopen(f"https://www.rfc-editor.org/rfc/{rfc}.txt").read()
+                content = util.urlopen(f"https://www.rfc-editor.org/rfc/{rfc}.txt").read()
                 if type(content) is bytes:
                     util.info(f"Retrieved {str(len(content)).rjust(6)} bytes of data.")
                     with open(filename, "wb") as f:

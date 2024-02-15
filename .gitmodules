@@ -1,0 +1,9 @@
+[submodule "annotations/from-icann"]
+	path = annotations/from-icann
+	url = https://github.com/icann/icann-annotations.git
+[submodule "annotations/wes-hardaker"]
+	path = annotations/wes-hardaker
+	url = https://github.com/hardaker/dns-rfc-annotations.git
+[submodule "annotations/isc"]
+	path = annotations/isc
+	url = https://gitlab.isc.org/isc-projects/rfc-annotations.git
