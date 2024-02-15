@@ -1,9 +1,8 @@
 import json
 import os
 from typing import Optional
-from urllib.request import urlopen
 
-import util  # correct_path, create_checksum, config_directories, debug, info, error
+import util  # correct_path, create_checksum, config_directories, debug, info, error, urlopen
 
 ''' Create errata for RFC annotations tools '''
 
@@ -22,7 +21,7 @@ def read_errata(path: str = ".", url: str = "https://www.rfc-editor.org/errata.j
     if document is None:
         util.info(f"\nFetching errata from source of truth {url}... ", end='')
         try:
-            json_content = urlopen(url).read()
+            json_content = util.urlopen(url).read()
             util.info("Done")
             if type(json_content) is bytes:
                 util.debug(f"Retrieved {len(json_content)} bytes of data. Parsing... ", end='')
