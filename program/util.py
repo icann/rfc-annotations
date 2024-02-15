@@ -3,6 +3,7 @@ import hashlib
 import re
 import sys
 from typing import Optional
+import urllib.request
 
 ''' Utility functions for RFC annotations tools '''
 
@@ -193,3 +194,6 @@ def means_true(s: str) -> bool:
 
 def config_directories() -> [str]:
     return ["default-config"] if _running_in_test else ["local-config", "default-config"]
+
+def urlopen(url):
+	return urllib.request.urlopen(urllib.request.Request(url, headers ={'User-Agent': 'Mozilla/5.0'}))

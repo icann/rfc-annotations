@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os.path
 import subprocess
-import urllib.request
+import util  # urlopen
 from pathlib import Path
 
 ''' Program to get updates to annotations from remote locations '''
@@ -97,7 +97,7 @@ def process_config_content(config):
                     handle_git(this_url, target_dir)
                     continue
                 try:
-                    with urllib.request.urlopen(this_url) as f:
+                    with util.urlopen(this_url) as f:
                         web_contents = f.read().decode('latin-1')
                 except Exception as e:
                     print(f"** Error reading {this_url}: {e}. Skipping.")

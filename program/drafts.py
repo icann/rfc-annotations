@@ -2,10 +2,9 @@ import json
 import os
 import subprocess
 from typing import Optional
-from urllib.request import urlopen
 from xml.dom.minidom import Document, parseString, Element
 
-import util  # filtered_files, debug, info, error
+import util  # filtered_files, debug, info, error, urlopen
 
 ''' Read and process Internet Drafts for RFC annotations tools '''
 
@@ -77,7 +76,7 @@ def get_draft_status(directory: str, url: str = "https://www.ietf.org/id/all_id.
     if document is None:
         util.info(f"\nFetching draft status from source of truth {url}... ", end='')
         try:
-            text_content = urlopen(url).read().decode('utf-8')
+            text_content = util.urlopen(url).read().decode('utf-8')
             util.info(f"Retrieved {len(text_content)} chars of data. Parsing and converting...", end='')
             document = {}
             for entry in text_content.split("\n"):
