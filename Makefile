@@ -5,7 +5,6 @@ CURRENT_CONTAINER=$(shell docker ps -aq --filter name=${CONTAINERNAME})
 CURRENT_IMAGE=$(shell docker image list --filter reference=${IMAGENAME} -q)
 
 all: folders
-	python3 program/pull_updates.py
 	RFC_INDEX="YES" python3 -u program/main.py
 
 generated-html local-config raw-originals raw-originals/drafts annotations/_generated:
@@ -14,7 +13,6 @@ generated-html local-config raw-originals raw-originals/drafts annotations/_gene
 folders: generated-html local-config raw-originals raw-originals/drafts annotations/_generated
 
 annotations: folders
-	python3 program/pull_updates.py
 	RFC_FETCH_FILES="NO" python3 -u program/main.py
 
 test: tests folders
