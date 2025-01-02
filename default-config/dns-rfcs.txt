@@ -67,7 +67,6 @@ The GitHub repository for the tool can be found <a href="https://github.com/ican
 8483
 8484
 8490
-8499
 8501
 8618
 8767
@@ -81,6 +80,12 @@ The GitHub repository for the tool can be found <a href="https://github.com/ican
 9108
 9156
 9210
+9250
+9364
+9432
+9460
+9476
+9499
 
 ####################
 <h1>RFCs Related to DNSSEC</h1>
@@ -112,6 +117,7 @@ The GitHub repository for the tool can be found <a href="https://github.com/ican
 9077
 9157
 9276
+9539
 
 ####################
 <h1>RFCs Related to IDNA</h1>
